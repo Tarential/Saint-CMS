@@ -1,0 +1,1 @@
+<h4><a href="/blog/single.<?php echo $id; ?>"><?php echo Saint::getBlockLabel($block,$id,"title","this is a test"); ?></a></h4>

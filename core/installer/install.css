@@ -1,0 +1,36 @@
+body {
+	padding: 50px 0 0 0;
+}
+
+div {
+	display: block; }
+
+div.info-block {
+	margin: 0 auto;
+	width: 600px; }
+
+h1 {
+	text-align: center; }
+
+#get-details form label {
+	display: inline-block;
+	width: 50%;
+	text-align: right; }
+
+#get-details div {
+	width: 100%; }
+
+#get-details h3 {
+	text-align: center; }
+
+#get-details p {
+	text-align: center; }
+
+#get-details label {
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+
+#get-details input.submit {
+	display: block;
+	margin: 10px auto; }

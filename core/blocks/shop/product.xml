@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<block>
+	<name>shop/product</name>
+	<setting>Name</setting>
+	<setting>SKU</setting>
+	<setting>Price</setting>
+	<setting>File</setting>
+</block>

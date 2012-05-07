@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<block>
+	<name>shop/admin/discount</name>
+	<setting>Name</setting>
+	<setting>Type</setting>
+	<setting>Amount</setting>
+	<setting>StartDate</setting>
+	<setting>EndDate</setting>
+	<setting>Filters</setting>
+</block>

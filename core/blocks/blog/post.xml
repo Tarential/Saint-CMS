@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<block>
+	<name>blog/post</name>
+	<setting datatype="datetime">postdate</setting>
+	<setting>tags</setting>
+	<setting>seo-title</setting>
+	<setting>seo-keywords</setting>
+	<setting>seo-description</setting>
+</block>
