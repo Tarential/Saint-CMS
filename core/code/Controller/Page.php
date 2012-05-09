@@ -13,8 +13,7 @@ class Saint_Controller_Page {
 		$this->_discounter = null;
 		$this->_page = new Saint_Model_Page();
 		$this->_page->setArgs($args);
-		if (!$this->_page->loadByName($name))
-			throw new Exception("Can't find page named $name.");
+		return $this->_page->loadByName($name);
 	}
 	
 	public function getCurrentPage() {

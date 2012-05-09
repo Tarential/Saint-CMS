@@ -43,7 +43,7 @@ class Saint_Model_FileLabel {
 				return Saint::getOne("SELECT `fileid` FROM `st_filelabels` WHERE `name`='$sname'");
 			} catch (Exception $e) {
 				# No file label yet assigned, that's ok we'll create one with the default
-				if (isset($arguments['default']) && file_exists(Saint::getSiteRoot() . $arguments['default'])) {
+				if (isset($arguments['default']) && file_exists(SAINT_SITE_ROOT . $arguments['default'])) {
 					$fileloc = $arguments['default'];
 				} else
 					$fileloc = Saint_Model_FileManager::getImageIconUrl();

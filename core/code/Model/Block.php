@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Model of a content block for the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_Block {
 	protected $_id;
 	protected $_uid;
@@ -8,6 +13,11 @@ class Saint_Model_Block {
 	protected $_settingnames;
 	protected $_enabled;
 	
+	/**
+	 * Get the ID number for the current block template.
+	 * @param string $name Name of block template.
+	 * @return int ID number of current block template or zero for failure.
+	 */
 	public static function getBlockTypeId($name) {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
 		$btid = 0;
@@ -27,7 +37,16 @@ class Saint_Model_Block {
 		}
 		return $btid;
 	}
-
+	
+	/**
+	 * Get dynamic block's unique ID.
+	 * 
+	 * Each repeating block created is given a unique ID by which to identify it globally.
+	 * This is different than the block's regular ID, which is only unique for that block's type.
+	 * 
+	 * @param string $name Name of the block.
+	 * @param id $id Block's regular ID.
+	 */
 	public static function getBlockUid($name,$id) {
 		$sname = Saint_Model_Block::convertNameFromWeb(Saint::sanitize($name));
 		$sid = Saint::sanitize($id,SAINT_REG_ID);
@@ -47,9 +66,9 @@ class Saint_Model_Block {
 	}
 	
 	/**
-	 * Tests if a block exists
-	 * @param string $block Name of block
-	 * @return boolean True if exists, false otherwise
+	 * Check if a given block exists.
+	 * @param string $block Name of block.
+	 * @return boolean True if exists, false otherwise.
 	 */
 	public static function inUse($block) {
 		if ($block = Saint::sanitize($block,SAINT_REG_NAME)) {
@@ -62,9 +81,9 @@ class Saint_Model_Block {
 	}
 	
 	/**
-	 * Include block in page, prioritizing user blocks over core blocks.
-	 * @param string $block Name of block
-	 * @return boolean True if successful, false otherwise
+	 * Include block in page, prioritizing user directory.
+	 * @param string $block Name of block.
+	 * @return boolean True if successful, false otherwise.
 	 */
 	public static function includeBlock($block, $container = true, $view = null) {
 		$page = Saint::getCurrentPage();
@@ -99,6 +118,12 @@ class Saint_Model_Block {
 		}
 	}
 	
+	/**
+	 * Generate and return SQL query for selecting repeating blocks using given parameters.
+	 * @param string $block Name of block to which the query will apply.
+	 * @param array[] $arguments Optional arguments to filter the query.
+	 * @return string SQL query.
+	 */
 	public static function makeQuery($block, $arguments = null) {
 		if ($sblock = Saint::sanitize($block)) {
 			# Default settings
@@ -204,6 +229,12 @@ EOT;
 		}
 	}
 	
+	/**
+	 * Get blocks which match given arguments.
+	 * @param string $block Name of block template.
+	 * @param array[] $arguments Optional arguments to filter which blocks are selected.
+	 * @return array[] Blocks matching the given arguments.
+	 */
 	public static function getBlocks($block, $arguments = null) {
 			if (!is_array($arguments))
 				$arguments = array();
@@ -219,11 +250,12 @@ EOT;
 	}
 	
 	/**
-	 * Inserts a number of dynamic content blocks at the given position.
-	 * @param string $block Name of block to be included
-	 * @param Array $arguments Arguments for sorting/filtering blocks
-	 * @param boolean $container True to include a block container, false otherwise
-	 * @return boolean True for success, false otherwise
+	 * Include multiple copies of a template block with dynamic data.
+	 * @param string $block Name of block to include. Corresponds to filename in blocks directory.
+	 * @param array[] $arguments Optional arguments for sorting/filtering blocks
+	 * @param boolean $container Optional flag to wrap block in div container if true.
+	 * @param string $view Optional name of block to use as a view template for selected block's data.
+	 * @return boolean True for success, false otherwise 
 	 */
 	public static function includeRepeatingBlock($block, $arguments = null, $container = false, $view = null) {
 		$sblock = Saint::sanitize($block);
@@ -308,34 +340,26 @@ EOT;
 		}
 	}
 	
+	/**
+	 * Get URL for viewing an individual block on a given page.
+	 * @param string $block Name of block template.
+	 * @param int $id ID of individual block.
+	 * @param string $page Name of page to use.
+	 * @return string URL to view block.
+	 */
 	public static function getBlockUrl($block, $id, $page) {
 		if ($page == null)
 			$page = "system";
 		return SAINT_BASE_URL.$page.'/single.'.$id;
 	}
 
-	public static function addNewBlock($ublock,$sortid = null) {
-		if ($block = Saint::sanitize($ublock,SAINT_REG_NAME)) {
-			if ($sortid == null) {
-				try {
-					$sortid = Saint::getOne("SELECT max(`orderby`) FROM `st_blocks` WHERE `name`='$block'");
-				} catch (Exception $e) {
-					Saint::logWarning($e->getMessage(),__LINE__,__FILE__);
-					$sortid = 1000;
-				}
-			}
-			try {
-				Saint::query("INSERT INTO st_blocks (name,orderby) VALUES ('$block','$sortid')");
-			} catch (Exception $e) {
-				Saint::logError("Could not add block $block with sort id $sortid because ".$e->getMessage());
-			}
-			return 1;
-		} else {
-			Saint::logError("Block name '$block' could not be validated.",__FILE__,__LINE__);
-			return 0;
-		}
-	}
-	
+	/**
+	 * Get specified setting value for given block name/id.
+	 * @param string $blockname Name of block template.
+	 * @param int $blockid ID of individual block. 
+	 * @param string $settingname Name of setting to retrieve.
+	 * @return string Value of setting.
+	 */
 	public static function getBlockSetting($blockname,$blockid,$settingname) {
 		$block = new Saint_Model_Block($blockname,$blockid);
 		if ($block)
@@ -344,6 +368,14 @@ EOT;
 			return 0;
 	}
 
+	/**
+	 * Change the specified setting value for given block name/id.
+	 * @param string $blockname Name of block template.
+	 * @param int $blockid ID of individual block. 
+	 * @param string $settingname Name of setting to change.
+	 * @param string $newvalue New value for setting.
+	 * @return boolean True for success, false for failure.
+	 */
 	public static function setBlockSetting($blockname,$blockid,$settingname,$newvalue) {
 		$block = new Saint_Model_Block($blockname,$blockid);
 		if ($block) {
@@ -355,10 +387,20 @@ EOT;
 			return 0;
 	}
 	
+	/**
+	 * Format the given string for use in a database table name.
+	 * @param string $name Name to format.
+	 * @return string Formatted name.
+	 */
 	public static function formatForTable($name) {
 		return substr(preg_replace('/\//','_',$name),-54);
 	}
 	
+	/**
+	 * Format the given string for display in the user interface.
+	 * @param string $name Name to format.
+	 * @return string Formatted name.
+	 */
 	public static function formatForDisplay($name) {
 		$name = preg_replace('/^.*\/([^\/]+)$/','$1',$name);
 		$name = preg_replace('/-/',' ',$name);
@@ -369,18 +411,27 @@ EOT;
 		return $name;
 	}
 
+	/**
+	 * Convert the given name into a valid HTML element ID.
+	 * @param string $name Name to format.
+	 * @return string Formatted name.
+	 */
 	public static function convertNameFromWeb($name) {
 		return preg_replace('/_/','/',$name);
 	}
 	
+	/**
+	 * Revert the given name into standard format.
+	 * @param string $name Name to revert.
+	 * @return string Standard format name.
+	 */
 	public static function convertNameToWeb($name) {
 		return preg_replace('/\//','_',$name);
 	}
 	
 	/**
-	 * Processes all XML files in block directories then
-	 * updates the associated block tables if necessary.
-	 * @return boolean True for success, false otherwise
+	 * Processes all XML files in block directories then updates the associated block tables if necessary.
+	 * @return boolean True for success, false otherwise.
 	 */
 	public static function processSettings() {
 		# Scan files in user and system directories
@@ -464,9 +515,10 @@ EOT;
 	}
 	
 	/**
-	 * Recursively scan directory for XML files
-	 * @param $dir Directory to scan
-	 * @param $limit 
+	 * Recursively scan directory for XML files.
+	 * @param string $dir Directory to scan.
+	 * @param int $limit Depth limit for recursion.
+	 * @return string[] Matching files.
 	 */
 	public static function recursiveScan($dir, $extensions = null, $limit = 10, $counter = 0) {
 		if ($counter >= $limit)
@@ -494,27 +546,30 @@ EOT;
 		return $matchingfiles;
 	}
 	
+	/**
+	 * Get names of settings for given block.
+	 * @param string $name Block name for which to retrieve settings.
+	 * @return string[] Names of settings.
+	 */
 	public static function getSettings($name) {
 		if ($name = Saint_Model_Block::formatForTable(Saint::sanitize($name))) {
 			try {
 				return Saint::getAll("SHOW COLUMNS FROM `st_blocks_$name`");
-				/*
-				$settings = array();
-				foreach (Saint::getAll("SHOW COLUMNS FROM `st_blocks_$name`") as $curset) {
-					$settings[] = $curset;
-				}
-				return $settings;
-				*/
 			} catch (Exception $g) {
 				Saint::logError("Error selecting table columns for st_blocks_$name . ".$g->getMessage(),__FILE__,__LINE__);
 				return array();
 			}
 		} else {
 			Saint::logError("Invalid block name $name.",__FILE__,__LINE__);
-			return 0;
+			return array();
 		}
 	}
 	
+	/**
+	 * Create a dynamic block model.
+	 * @param string $name Name of block template.
+	 * @param int $id ID of individual block.
+	 */
 	public function __construct($name = null, $id = null) {
 		if ($name != null && $id != null) {
 			if (!$this->load($name,$id)) {
@@ -527,9 +582,10 @@ EOT;
 	}
 	
 	/**
-	 * Load block with $id from database
-	 * @param int $id
-	 * @return boolean True if successful, false otherwise
+	 * Load block information for given name/ID from the database.
+	 * @param string $name Name of block template.
+	 * @param int $id ID of individual block.
+	 * @return boolean True if successful, false otherwise.
 	 */
 	public function load($name,$id) {
 		$id = Saint::sanitize($id,SAINT_REG_ID);
@@ -565,6 +621,11 @@ EOT;
 		}
 	}
 	
+	/**
+	 * Create a new dynamic block for given template and load it into the model.
+	 * @param string $name Name of block template.
+	 * @return boolean True for success, false otherwise.
+	 */
 	public function loadNew($name) {
 		if ($name = Saint::sanitize($name)) {
 			$fname = Saint_Model_Block::formatForTable($name);
@@ -587,26 +648,51 @@ EOT;
 		}
 	}
 	
+	/**
+	 * Get the block ID.
+	 * @return int ID for the loaded block.
+	 */
 	public function getId() {
 		return $this->_id;
 	}
 	
+	/**
+	 * Get the block's globally unique ID.
+	 * @return int Unique ID for the loaded block.
+	 */
 	public function getUid() {
 		return Saint_Model_Block::getBlockUid($this->_name,$this->_id);
 	}
 	
+	/**
+	 * Get the name of the block template.
+	 * @return string Template name for the loaded block.
+	 */
 	public function getName() {
 		return $this->_name;
 	}
 	
+	/**
+	 * Get the setting names associated with the loaded block.
+	 * @return string[] Setting names.
+	 */
 	public function getSettingNames() {
 		return $this->_settingnames;
 	}
 	
+	/**
+	 * Get the setting names and values associated with the loaded block.
+	 * @return string[] Setting names (keys) and values (values).
+	 */
 	public function getAllSettings() {
 		return $this->_settings;
 	}
 	
+	/**
+	 * Get the value of the given setting name for the loaded block.
+	 * @param string $setting Name of the requested setting.
+	 * @return string Value of the requested setting.
+	 */
 	public function get($setting) {
 		if (isset($this->_settings[$setting]))
 			return $this->_settings[$setting];
@@ -616,6 +702,26 @@ EOT;
 		}
 	}
 	
+	/**
+	 * Change the value of the given setting name for the loaded block.
+	 * @param string $setting Name of the setting.
+	 * @return string Value to assign to the setting.
+	 */
+	public function set($setting,$value) {
+		$setting = Saint::sanitize($setting,SAINT_REG_NAME);
+		$value = Saint::sanitize($value);
+		if (in_array($setting,$this->_settingnames) && $setting && $value) {
+			$this->_settings[$setting] = $value;
+			return 1;
+		} else
+			return 0;
+	}
+	
+	/**
+	 * Add the loaded block to the given category.
+	 * @param string $category Name of category to which the block is to be added.
+	 * @return boolean True for success, false for failure.
+	 */
 	public function addToCategory($category) {
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		if ($scategory) {
@@ -642,6 +748,11 @@ EOT;
 		}
 	}
 	
+	/**
+	 * Remove the loaded block from the given category.
+	 * @param string $category Name of category from which the block is to be removed.
+	 * @return boolean True for success, false for failure.
+	 */
 	public function removeFromCategory($category) {
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		if ($scategory) {
@@ -664,6 +775,10 @@ EOT;
 		}
 	}
 	
+	/**
+	 * Set the loaded block's categories en masse.
+	 * @param string[] $newcats Array of category names for the block.
+	 */
 	public function setCategories($newcats) {
 		if (!is_array($newcats))
 			$newcats = explode(',',$newcats);
@@ -678,6 +793,10 @@ EOT;
 		}
 	}
 	
+	/**
+	 * Get the loaded block's categories.
+	 * @return string[] Array of categories' IDs (keys) and names (values).
+	 */
 	public function getCategories() {
 		try {
 			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_blockcats` as `b` WHERE `b`.`blockid`='".$this->getUid()."' AND `b`.`catid`=`c`.`id`");
@@ -693,6 +812,11 @@ EOT;
 		}
 	}
 	
+	/**
+	 * Check if loaded block is in at least one of the given categories.
+	 * @param string[] $category Array of category names to check. Also accepts scalar category name.
+	 * @return boolean True if block is in at least one of the given categories, false otherwise.
+	 */
 	public function inCategory($category) {
 		if (!is_array($category))
 			$category = array($category);
@@ -713,24 +837,24 @@ EOT;
 		return 0;
 	}
 	
-	public function set($setting,$value) {
-		$setting = Saint::sanitize($setting,SAINT_REG_NAME);
-		$value = Saint::sanitize($value);
-		if (in_array($setting,$this->_settingnames) && $setting && $value) {
-			$this->_settings[$setting] = $value;
-			return 1;
-		} else
-			return 0;
-	}
-	
+	/**
+	 * Flag the loaded block as disabled.
+	 */
 	public function disable() {
 		$this->_enabled = false;
 	}
 	
+	/**
+	 * Flag the loaded block as enabled.
+	 */
 	public function enable() {
 		$this->_enabled = true;
 	}
 	
+	/**
+	 * Save the loaded information to the database.
+	 * @return boolean True for success, false for failure.
+	 */
 	public function save() {
 		if ($this->_id && $this->_name != "") {
 			try {

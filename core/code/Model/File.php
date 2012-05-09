@@ -59,7 +59,7 @@ class Saint_Model_File {
 			$id = Saint::getOne("SELECT `fileid` FROM `st_filelabels` WHERE `name`='$sname'");
 		} catch (Exception $e) {
 			# No file label yet assigned, that's ok we'll create one with the default
-			if (isset($arguments['default']) && file_exists(Saint::getSiteRoot() . $arguments['default'])) {
+			if (isset($arguments['default']) && file_exists(SAINT_SITE_ROOT. $arguments['default'])) {
 				$imgfile = $arguments['default'];
 			}
 			Saint_Model_FileLabel::createLabel($sname,$imgfile);
@@ -111,7 +111,7 @@ class Saint_Model_File {
 				$info = Saint::getRow("SELECT `location`,`title`,`keywords`,`description`,`extension`,`type`,`width`,`height`,`size`".
 				 " FROM `st_files` WHERE `id`='$id'");
 				$this->_id = $sid;
-				$this->_location = Saint::getSiteRoot() . $info[0];
+				$this->_location = SAINT_SITE_ROOT . $info[0];
 				$this->_url = $info[0];
 				$this->_title = $info[1];
 				$this->_keywords = $info[2];

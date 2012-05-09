@@ -117,9 +117,9 @@ class Saint_Model_FileManager {
 						}
 						$title = chop($title," ");
 						$keywords = chop($keywords,",");
-						$filesize = filesize(Saint::getSiteRoot().$allfiles[$key]);
+						$filesize = filesize(SAINT_SITE_ROOT.$allfiles[$key]);
 						if ($type == "image") {
-							list($width,$height) = getimagesize(Saint::getSiteRoot().$allfiles[$key]);
+							list($width,$height) = getimagesize(SAINT_SITE_ROOT.$allfiles[$key]);
 						} else {
 							$height = 0;
 							$width = 0;

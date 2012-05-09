@@ -1,6 +1,14 @@
 <?php
-
+/**
+ * Model of a category for Saint blocks and files.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_Category {
+	/**
+	 * Get all category names and IDs.
+	 * @return string[] Category IDs (keys) and names (values).
+	 */
 	public static function getCategories() {
 		try {
 			$all = array();
@@ -16,6 +24,11 @@ class Saint_Model_Category {
 		}
 	}
 	
+	/**
+	 * Get ID for specified category.
+	 * @param string $category Name of category for which to select the ID.
+	 * @return int ID of specified category, or 0 for failure.
+	 */
 	public static function getId($category) {
 		if ($scategory = Saint::sanitize($category,SAINT_REG_NAME)) {
 			try {
@@ -30,6 +43,10 @@ class Saint_Model_Category {
 		}
 	}
 	
+	/**
+	 * Get the name for the category associated with the given ID.
+	 * @param $id
+	 */
 	public static function getName($id) {
 		if ($sid = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {

@@ -1106,3 +1106,11 @@ span.match {
 .ssm.meta-links a {
 	margin: 2px 5px;
 }
+
+#saint_blog_post {
+	width: 600px; }
+
+.inline-right {
+	float: right;
+	margin: 0 0 2px 10px;
+}

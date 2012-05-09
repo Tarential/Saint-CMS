@@ -1,20 +1,25 @@
 <?php
 
+/**
+ * Root class for the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint {
 	static protected $_pc;
 	static protected $_user;
 	
 	/**
-	 * Starts the installation process
+	 * Starts the installation process.
 	 */
 	public static function runInstall() {
 		include SAINT_SITE_ROOT . "/core/installer/install.php";
 	}
 	
 	/**
-	 * Sanitize input for use in database queries and filesystem traversal
-	 * @param string $input Input to sanitize
-	 * @param string $pattern Optional regex pattern to match
+	 * Sanitize input for use in database queries and filesystem traversal.
+	 * @param string $input Input to sanitize.
+	 * @param string $pattern Optional regex pattern to match.
 	 */
 	public static function sanitize($input, $pattern = null) {
 		$safe = mysql_real_escape_string($input);
@@ -25,7 +30,14 @@ class Saint {
 	}
 	
 	/**
-	 * @todo Add proper conflict testing and error reporting
+	 * Add a user to the database.
+	 * @todo Add proper conflict test and error reporting in return code.
+	 * @param string $username Username to add.
+	 * @param string $password Password for user.
+	 * @param string $email E-mail address for user.
+	 * @param string $fname Optional user's first name.
+	 * @param string $lname Optional user's last name.
+	 * @param string $language Optional user's default language.
 	 */
 	public static function addUser($username,$password,$email,$fname = '', $lname = '',$language = null) {
 		if ($language == null)
@@ -44,7 +56,7 @@ class Saint {
 	/**
 	 * Check if site has an administrative user.
 	 * Used internally to test installation status.
-	 * @return boolean True if there exists at least one administrative user in the database, false otherwise
+	 * @return boolean True if there exists at least one administrative user in the database, false otherwise.
 	 */
 	public static function siteHasAdmin() {
 		try {
@@ -56,6 +68,9 @@ class Saint {
 		}
 	}
 	
+	/**
+	 * Returns username of site owner.
+	 */
 	public static function getSiteOwner() {
 		try {
 			$owner = Saint::getOne("SELECT `owner` FROM `st_config`");
@@ -63,15 +78,15 @@ class Saint {
 				throw new Exception("Null owner.");
 			return $owner;
 		} catch (Exception $e) {
-			try {
-				return Saint::getOne("SELECT username FROM st_users WHERE access_level=0 LIMIT 1");
-			} catch (Exception $f) {
-				Saint::logError("Your site has no admin users... how did that happen? Reinstall the cms or see the documentation to add a user manually.",__FILE__,__LINE__);
-				die();
-			}
+			Saint::logError("Your site has no admin users... how did that happen? Reinstall the cms or see the documentation to add a user manually.",__FILE__,__LINE__);
+			die();
 		}
 	}
 	
+	/**
+	 * Notices added here are displayed to the user at each page load if supported by the template.
+	 * @param string $notice Contents of notice to be displayed to user.
+	 */
 	public static function addNotice($notice) {
 		if (isset($_SESSION['saint_notice']) && is_array($_SESSION['saint_notice'])) {
 			$_SESSION['saint_notice'][] = $notice;
@@ -81,6 +96,10 @@ class Saint {
 		return 1;
 	}
 	
+	/**
+	 * Remove given entry from display notices.
+	 * @param string $notice Contents of notice to remove.
+	 */
 	public static function removeNotice($notice) {
 		$index = array_search($notice,$_SESSION['saint_notice']);
 		if ($index !== false) {
@@ -89,22 +108,38 @@ class Saint {
 		return 1;
 	}
 	
+	/**
+	 * Clear list of notices.
+	 */
 	public static function clearNotices() {
 		$_SESSION['saint_notice'] = array();
 	}
 	
+	/**
+	 * Get array of notices.
+	 * @return string[] Current notices.
+	 */
 	public static function getNotices() {
 		if (!isset($_SESSION['saint_notice']))
 			$_SESSION['saint_notice'] = array();
 		return $_SESSION['saint_notice'];
 	}
 	
+	/**
+	 * Get the username of the current user.
+	 * @return string Username of the current user.
+	 */
 	public static function getCurrentUsername() {
 		if (!isset($_SESSION['username']))
 			$_SESSION['username'] = 'guest';
 		return $_SESSION['username'];
 	}
 	
+	/**
+	 * Get the current user.
+	 * Model is cached on first call for performance.
+	 * @return Saint_Model_User Current user model.
+	 */
 	public static function getCurrentUser() {
 		global $_user;
 		if ($_user == null) {
@@ -118,28 +153,54 @@ class Saint {
 		return $_user;
 	}
 
+	/**
+	 * Outputs a phone number in the site format.
+	 * Additional formatting options will be added in the future.
+	 * @param string $phone Phone number in digit-only format
+	 */
 	public static function formatPhoneNumber($phone) {
 		return preg_replace('/(\d{3})(\d{3})(\d{4})/','$1-$2-$3',$phone);
 	}
 	
+	/**
+	 * Shortcut for Saint_Model_User::getAllUsers().
+	 * @return Saint_Model_User[] Array of all site users.
+	 */
 	public static function getAllUsers() {
 		return Saint_Model_User::getAllUsers();
 	}
 	
+	/**
+	 * Shortcut for Saint_Model_Page::getAllPages().
+	 * @return Saint_Model_Page[] Array of all site pages.
+	 */
 	public static function getAllPages() {
 		return Saint_Model_Page::getAllPages();
 	}
 	
+	/**
+	 * Shortcut for Saint_Model_Category::getCategories()
+	 * @return string[] Array with keys matching category ID and values matching category name.
+	 */
 	public static function getAllCategories() {
 		return Saint_Model_Category::getCategories();
 	}
 	
+	/**
+	 * Get the action log for the current user.
+	 * @return string[] Array of action log entries.
+	 */
 	public static function getActionLog() {
 		if (!isset($_SESSION['actionlog']))
 			$_SESSION['actionlog'] = array();
 		return $_SESSION['actionlog'];
 	}
 	
+	/**
+	 * Add an entry to the action log.
+	 * @param string $newentry New log entry.
+	 * @return string[] Updated action log.
+	 */
 	public static function addLogEntry($newentry) {
 		if (!isset($_SESSION['actionlog']))
 			$_SESSION['actionlog'] = array();
@@ -148,26 +209,42 @@ class Saint {
 		return $_SESSION['actionlog'];
 	}
 	
+	/**
+	 * Remove an entry from the action log.
+	 * @param int $key Key of entry to remove.
+	 * @return string[] Updated action log.
+	 */
 	public static function removeLogEntry($key) {
 		if (isset($_SESSION['actionlog'][$key]))
 			unset($_SESSION['actionlog'][$key]);
 		return $_SESSION['actionlog'];
 	}
 	
+	/**
+	 * Clear action log.
+	 */
 	public static function purgeActionLog() {
 		$_SESSION['actionlog'] = array();
 		return 1;
 	}
 	
+	/**
+	 * Get the site title.
+	 * @return string Site title.
+	 */
 	public static function getSiteTitle() {
 		try {
-			return Saint::getOne("SELECT title FROM st_config");
+			return Saint::getOne("SELECT `title` FROM `st_config`");
 		} catch (Exception $e) {
 			Saint::logWarning("Problem getting site title: ".$e->getMessage(),__FILE__,__LINE__);
 			return '';
 		}
 	}
-
+	
+	/**
+	 * Get the site description.
+	 * @return string Site description.
+	 */
 	public static function getSiteDescription() {
 		try {
 			return Saint::getOne("SELECT meta_description FROM st_config");
@@ -177,11 +254,20 @@ class Saint {
 		}
 	}
 	
+	/**
+	 * Get a model for applying sales discounts.
+	 * Model is cached after first access for performance.
+	 * return Saint_Model_Discount Current sales discounts.
+	 */
 	public static function getDiscounter() {
 		global $_pc;
 		return $_pc->getDiscounter();
 	}
 	
+	/**
+	 * Get the ID of the current user's shopping cart.
+	 * @return int Model ID for shopping cart of current user.
+	 */
 	public static function getShoppingCartId() {
 		$user = Saint::getCurrentUser(); 
 		if ($user->getId() != 0) {
@@ -195,20 +281,37 @@ class Saint {
 		}
 	}
 	
+	/**
+	 * Get the current user's shopping cart.
+	 * @return Saint_Model_ShoppingCart Current user's shopping cart.
+	 */
 	public static function getShoppingCart() {
 		$cart = new Saint_Model_ShoppingCart();
 		$cart->load(Saint::getShoppingCartId());
 		return $cart;
 	}
 	
+	/**
+	 * Get the currently selected language.
+	 * @return string Name of the current language.
+	 */
 	public static function getCurrentLanguage() {
 		return Saint_Model_Language::getCurrentLanguage();
 	}
 	
+	/**
+	 * Get the default language.
+	 * @return string Name of the default language.
+	 */
 	public static function getDefaultLanguage() {
 		return Saint_Model_Language::getDefaultLanguage();
 	}
 	
+	/**
+	 * Get layout matching given name.
+	 * @param string $name Name of layout.
+	 * @return Saint_Model_Layout Layout matching parameter name if found, false if not.
+	 */
 	public static function getLayout($name) {
 		$layout = new Saint_Model_Layout();
 		try {
@@ -219,6 +322,10 @@ class Saint {
 		}
 	}
 	
+	/**
+	 * Get a list of in-use layout names.
+	 * @return string[] Array of layout names.
+	 */
 	public static function getLayoutNames() {
 		$layouts = array();
 		$user = glob(SAINT_SITE_ROOT."/blocks/layouts/*.php");
@@ -231,14 +338,31 @@ class Saint {
 		return $layouts;
 	}
 	
+	/**
+	 * Add a page to the site.
+	 * @param string $name Name for new page.
+	 * @param string $layout Name of layout to use for new page.
+	 * @param string $title Title for new page.
+	 * @return boolean True for success, false for failure.
+	 */
 	public static function addPage($name,$layout,$title = '') {
 		return Saint_Model_Page::addPage($name,$layout,$title);
 	}
 	
+	/**
+	 * Remove a page from the site.
+	 * @param int $id Model ID to be removed
+	 */
 	public static function deletePage($id) {
 		return Saint_Model_Page::deletePage($id);
 	}
 	
+	/**
+	 * Start the page pre-rendering process.
+	 * @param string $name Name of page to call.
+	 * @param string[] $args Array of URI arguments on current page.
+	 * @return boolean True if page found, false otherwise
+	 */
 	public static function callPage($name,$args) {
 		global $_pc;
 		# With maintenance mode enabled only users having proper access can view the site.
@@ -261,24 +385,37 @@ class Saint {
 		$_pc->process();
 	}
 
+	/**
+	 * Change the current page.
+	 * @param Saint_Model_Page $page New page to use.
+	 */
 	public static function setCurrentPage($page) {
 		global $_pc;
 		return $_pc->setCurrentPage($page);
 	}
 	
+	/**
+	 * Get the current page.
+	 * @return Saint_Model_Page Currently running page.
+	 */
 	public static function getCurrentPage() {
 		global $_pc;
 		return $_pc->getCurrentPage();
 	}
 	
-	public static function getSiteRoot() {
-		return SAINT_SITE_ROOT;
-	}
-	
+	/**
+	 * Include maintenance block.
+	 */
 	public static function renderMaintenance() {
 		Saint::includeBlock("layouts/maintenance");
 	}
 	
+	/**
+	 * Add message to the error log.
+	 * @param string $message Message to add to the error log.
+	 * @param string $file File in which the error occurred.
+	 * @param string $line Line on which the error occurred.
+	 */
 	public static function logError($message, $file = null, $line = null) {
 		Saint::addLogEntry($message);
 		if (SAINT_LOG_LEVEL >= 1) {
@@ -294,6 +431,12 @@ class Saint {
 		}
 	}
 
+	/**
+	 * Add message to the warning log.
+	 * @param string $message Message to add to the warning log.
+	 * @param string $file File in which the warning occurred.
+	 * @param string $line Line on which the warning occurred.
+	 */
 	public static function logWarning($message, $file = null, $line = null) {
 		Saint::addLogEntry($message);
 		if (SAINT_LOG_LEVEL >= 2) {
@@ -303,12 +446,18 @@ class Saint {
 				$message = $line . " " . $message;
 			if (isset($file))
 				$message = $file . " " . $message;
-			$fh = fopen(SAINT_WARN_FILE, 'a') or Saint::logError("Problem opening warning file (Dir: SAINT_LOG_DIR  File: SAINT_WARN_FILE) for writing. Check config.php and ensure the permissions on your log files and directories are correct (they should be 777).",__FILE__,__LINE__);
+			$fh = fopen(SAINT_WARN_FILE, 'a') or Saint::logError("Problem opening warning file (Dir: ".SAINT_LOG_DIR."  File: ".SAINT_WARN_FILE.") for writing. Check config.php and ensure the permissions on your log files and directories are correct (they should be 777).",__FILE__,__LINE__);
 			fwrite($fh, "\n" . date('Y-m-d H:i:s') . ' ' . $message . "\n");
 			fclose($fh);
 		}
 	}
 
+	/**
+	 * Add message to the event log.
+	 * @param string $message Message to add to the event log.
+	 * @param string $file File in which the event occurred.
+	 * @param string $line Line on which the event occurred.
+	 */
 	public static function logEvent($message, $file = null, $line = null) {
 		Saint::addLogEntry($message);
 		if (SAINT_LOG_LEVEL >= 3) {
@@ -318,12 +467,17 @@ class Saint {
 				$message = $line . " " . $message;
 			if (isset($file))
 				$message = $file . " " . $message;
-			$fh = fopen(SAINT_EVENT_FILE, 'a') or Saint::logError("Problem opening event file (Dir: SAINT_LOG_DIR  File: SAINT_EVENT_FILE) for writing. Check config.php and ensure the permissions on your log files and directories are correct (they should be 777).",__FILE__,__LINE__);
+			$fh = fopen(SAINT_EVENT_FILE, 'a') or Saint::logError("Problem opening event file (Dir: ".SAINT_LOG_DIR."  File: ".SAINT_EVENT_FILE.") for writing. Check config.php and ensure the permissions on your log files and directories are correct (they should be 777).",__FILE__,__LINE__);
 			fwrite($fh, "\n" . date('Y-m-d H:i:s') . ' ' . $message . "\n");
 			fclose($fh);
 		}
 	}
 
+	/**
+	 * Query the database and return a single cell.
+	 * @param string $query Query to execute
+	 * @return string First result from the database.
+	 */
 	public static function getOne($query) {
 		if (!preg_match('/LIMIT/',$query))
 			$query .= " LIMIT 1";
@@ -337,6 +491,11 @@ class Saint {
 			return $accessrow[0]; }
 	}
 
+	/**
+	 * Query the database and return a single row.
+	 * @param string $query Query to execute
+	 * @return string[] First row from the database.
+	 */
 	public static function getRow($query) {
 		if (!preg_match('/LIMIT/',$query))
 			$query .= " LIMIT 1";
@@ -350,6 +509,11 @@ class Saint {
 			return $accessrow; }
 	}
 
+	/**
+	 * Query the database and return all results.
+	 * @param string $query Query to execute
+	 * @return string[] Array containing arrays of data for each row.
+	 */
 	public static function getAll($query) {
 		$result = @mysql_query($query);
 		if (!$result)
@@ -367,6 +531,11 @@ class Saint {
 			return $results; }
 	}
 	
+	/**
+	 * Query the database and return the number of rows.
+	 * @param string $query Query to execute.
+	 * @return int Number of rows of results.
+	 */
 	public static function getNumRows($query) {
 		$result = @mysql_query($query);
 		if (!$result)
@@ -374,6 +543,12 @@ class Saint {
 		return mysql_num_rows($result);
 	}
 
+	/**
+	 * Query the database.
+	 * @param string $query Query to execute.
+	 * @return boolean True for success.
+	 * @throws Exception Database error on failure.
+	 */
 	public static function query($query) {
 		$result = @mysql_query($query);
 		if (!$result)
@@ -382,10 +557,20 @@ class Saint {
 			return 1;	
 	}
 	
+	/**
+	 * Get last insert ID.
+	 * @return int ID of last insert query.
+	 */
 	public static function getLastInsertId() {
 		return mysql_insert_id();
 	}
 	
+	/**
+	 * Compile given search parameters into SQL.
+	 * @param array[] $matches Arguments to match exactly. Also accepts single array of scalar values to match.
+	 * @param array[] $search Arguments to match substrings. Also accepts single string.
+	 * @return string Compiled query.
+	 */
 	public static function compileMatches($matches, $search = null) {
 		$where = '';
 		if (isset($matches[0]) && is_array($matches[0])) {
@@ -423,59 +608,137 @@ class Saint {
 		return $where;
 	}
 	
+	/**
+	 * Shortcut for Saint_Model_Block::convertNameToWeb($name).
+	 * @param string $name Name to be converted.
+	 * @return string Converted name.
+	 */
 	public static function convertNameToWeb($name) {
 		return Saint_Model_Block::convertNameToWeb($name);
 	}
 	
+	/**
+	 * Shortcut for Saint_Model_Block::convertFromToWeb($name).
+	 * @param string $name Name to be reverted.
+	 * @return string Reverted name.
+	 */
 	public static function convertNameFromWeb($name) {
 		return Saint_Model_Block::convertNameFromWeb($name);
 	}
 	
+	/**
+	 * Includes a slideshow block with images matching the given arguments.
+	 * @param string[] $arguments Optional slideshow arguments.
+	 */
 	public static function includeSlideshow($arguments = array()) {
 		$page = Saint::getCurrentPage();
 		$page->sfmarguments = $arguments;
 		Saint::includeBlock("gallery/slideshow",false);
 	}
 	
+	/**
+	 * Includes a gallery block with images matching the given arguments.
+	 * @param string[] $arguments Optional gallery arguments.
+	 */
 	public static function includeGallery($arguments = array()) {
 		$page = Saint::getCurrentPage();
 		$page->sfmarguments = $arguments;
 		Saint::includeBlock("gallery/list",false);
 	}
 	
+	/**
+	 * Get code for CMS-editable image specific to the given block.
+	 * @param string $block Name of block in which image is included.
+	 * @param string $id Model ID of block in which image is included.
+	 * @param string $name Name of image label.
+	 * @param array[] $arguments Optional arguments for image label.
+	 * @return string Code for image label.
+	 */
 	public static function getBlockImage($block, $id, $name, $arguments = array()) {
 		$name = "b/" . $id . "/" . $block . "/n/" . $name;
 		return Saint_Model_ImageLabel::getImage($name, $arguments);
 	}
 	
+	/**
+	 * Get code for CMS-editable image specific to the current page.
+	 * @param string $name Name of image label.
+	 * @param $arguments Optional arguments for image label.
+	 * @return string Code for image label.
+	 */
 	public static function getPageImage($name, $arguments = array()) {
 		$name = Saint::getCurrentPage()->getName()."/".$name;
 		return Saint_Model_ImageLabel::getImage($name, $arguments);
 	}
 	
+	/**
+	 * Get code for CMS-editable image general to the entire site.
+	 * @param string $name Name of image label.
+	 * @param $arguments Optional arguments for image label.
+	 * @return string Code for image label.
+	 */
 	public static function getImage($name, $arguments = array()) {
 		return Saint_Model_ImageLabel::getImage($name, $arguments);
 	}
 	
+	/**
+	 * Get code for CMS-editable WYSIWYG area specific to the given block.
+	 * @param string $block Name of block in which the label is included.
+	 * @param string $id Model ID of block in which the label is included.
+	 * @param string $name Name of WYSIWYG label.
+	 * @param string $default Default content to be inserted on first generation.
+	 * @return string Code for WYSIWYG block.
+	 */
 	public static function getBlockWysiwyg($block, $id, $name, $default = '') {
 		$name = "b/" . $id . "/" . $block . "/n/" . $name;
 		return Saint_Model_Wysiwyg::get($name,$default);
 	}
 	
+	/**
+	 * Get code for CMS-editable WYSIWYG area specific to the current page.
+	 * @param string $name Name of WYSIWYG label.
+	 * @param string $default Default content to be inserted on first generation.
+	 * @return string Code for WYSIWYG block.
+	 */
 	public static function getPageWysiwyg($name, $default = '') {
 		$name = Saint::getCurrentPage()->getName()."/".$name;
 		return Saint_Model_Wysiwyg::get($name,$default);
 	}
 	
+	/**
+	 * Get code for CMS-editable WYSIWYG area general to the entire site.
+	 * @param string $name Name of WYSIWYG label.
+	 * @param string $default Default content to be inserted on first generation.
+	 * @return string Code for WYSIWYG block.
+	 */
 	public static function getWysiwyg($name, $default = '') {
 		return Saint_Model_Wysiwyg::get($name,$default);
 	}
 	
+	/**
+	 * Get code for CMS-editable text area specific to the current page.
+	 * @param string $name Label name.
+	 * @param string $default Label default content.
+	 * @param boolean $container True to include wrapper div, false otherwise.
+	 * @param string $lang Language to use for label. Defaults to current user's selected language.
+	 * @param boolean $wysiwyg True to make label editor WYSIWYG, false by default.
+	 * @return string Code for selected label.
+	 */
 	public static function getPageLabel($name, $default = '', $container = true, $lang = null, $wysiwyg = false) {
 		$name .= "/p" . Saint::getCurrentPage()->getId();
 		return Saint::getLabel($name,$default,$container,$lang,$wysiwyg);
 	}
 	
+	/**
+	 * Get code for CMS-editable text area specific to the given block.
+	 * @param string $block Name of block in which the label is included.
+	 * @param string $id Model ID of block in which the label is included.
+	 * @param string $name Label name.
+	 * @param string $default Label default content.
+	 * @param boolean $container True to include wrapper div, false otherwise.
+	 * @param string $lang Language to use for label. Defaults to current user's selected language.
+	 * @param boolean $wysiwyg True to make label editor WYSIWYG, false by default.
+	 * @return string Code for selected label.
+	 */
 	public static function getBlockLabel($block, $id, $name, $default = '', $container = true, $lang = null, $wysiwyg = false) {
 		$name = "block/" . $id . "/" . $block . "/n/" . $name;
 		return Saint::getLabel($name,$default,$container,$lang,$wysiwyg);
@@ -501,6 +764,11 @@ class Saint {
 		}
 	}
 	
+	/**
+	 * Get the current starting number for repeating block paging system.
+	 * @param int $btid Block type ID.
+	 * @param int $start Default starting number.
+	 */
 	public static function getStartingNumber($btid,$start = 0) {
 		$args = Saint::getCurrentPage()->getArgs();
 		if(isset($args['btid']) && isset($args['pnum'])) {
@@ -512,30 +780,54 @@ class Saint {
 			return $start;
 	}
 	
+	/**
+	 * Shortcut for Saint_Model_Block::includeRepeatingBlock($block, $arguments, $container, $view).
+	 */
 	public static function includeRepeatingBlock($block, $arguments = null, $container = true, $view = null) {
 		return Saint_Model_Block::includeRepeatingBlock($block, $arguments, $container, $view);
 	}
 
+	/**
+	 * Shortcut for Saint_Model_Block::getBlockSetting($blockname,$blockid,$settingname).
+	 */
 	public static function getBlockSetting($blockname,$blockid,$settingname) {
 		return Saint_Model_Block::getBlockSetting($blockname,$blockid,$settingname);
 	}
 
+	/**
+	 * Shortcut for Saint_Model_Block::setBlockSetting($blockname,$blockid,$settingname,$newvalue).
+	 */
 	public static function setBlockSetting($blockname,$blockid,$settingname,$newvalue) {
 		return Saint_Model_Block::setBlockSetting($blockname,$blockid,$settingname,$newvalue);
 	}
 	
+	/**
+	 * Shortcut for Saint_Model_Block::getBlockUrl($blockname,$blockid, $page).
+	 */
 	public static function getBlockUrl($blockname,$blockid,$page = null) {
 		return Saint_Model_Block::getBlockUrl($blockname,$blockid, $page);
 	}
 	
+	/**
+	 * Get the URL used for the blog RSS feed.
+	 * @todo Update this data to be dynamic.
+	 * @return string URL for the RSS feed.
+	 */
 	public static function getBlogRssUrl() {
 		return SAINT_BASE_URL . 'feed';
 	}
 
+	/**
+	 * Shortcut for Saint_Model_Block::includeBlock($block,$container, $view).
+	 */
 	public static function includeBlock($block, $container = true, $view = null) {
 		return Saint_Model_Block::includeBlock($block,$container, $view);
 	}
 	
+	/**
+	 * Include a style of passed name with preference given to user directory.
+	 * @param string $style Name of style file to include. 
+	 */
 	public static function includeStyle($style) {
 		if ($style = Saint::sanitize($style,SAINT_REG_NAME)) {
 			if (file_exists(SAINT_SITE_ROOT .  "/styles/".$style.".css"))
@@ -544,10 +836,13 @@ class Saint {
 				echo '<link rel="stylesheet" type="text/css" href="/core/styles/'.$style.'.css" />';
 			else
 				Saint::logWarning("Cannot find style $style.");
-		} else
-			return 0;
+		}
 	}
 
+	/**
+	 * Include a script of passed name with preference given to user directory.
+	 * @param string $script Name of script file to include. 
+	 */
 	public static function includeScript($script) {
 		if ($script = Saint::sanitize($script,SAINT_REG_NAME)) {
 			if (file_exists(SAINT_SITE_ROOT .  "/scripts/".$script.".js"))
@@ -556,10 +851,17 @@ class Saint {
 				echo '<script type="text/javascript" src="/core/scripts/'.$script.'.js"></script>';
 			else
 				Saint::logWarning("Cannot find script $script.");
-		} else
-			return 0;
+		}
 	}
 	
+	/**
+	 * Generates and returns a form field with the given parameters.
+	 * @param string $name Name of input field.
+	 * @param string $type Type of input field.
+	 * @param string $label Optional label for input field.
+	 * @param string[] $data Optional data for input field (value, select options, etc).
+	 * @param string $rules Optional jQuery validation rules for input field.
+	 */
 	public static function genField ($name,$type,$label = '',$data = null,$rules = '') {
 		$field = '';
 		$label = Saint::getPageLabel("sff-".$name,$label);
@@ -621,6 +923,12 @@ class Saint {
 		return $field;
 	}
 	
+	/**
+	 * Search the labels in the database for content.
+	 * @todo Update search to include WYSIWYG labels and block settings.
+	 * @param string $phrase Phrase for which to search.
+	 * @return array[] Matching labels and URLs of pages on which the label can be found.
+	 */
 	public static function search($phrase) {
 		$phrase = Saint::sanitize($phrase);
 		$phrase = "%$phrase%";
