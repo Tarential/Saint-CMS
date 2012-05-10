@@ -1,11 +1,20 @@
 <?php
-
+/**
+ * Model of a CMS-editable text label within the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_Label {
 	protected $_name;
 	protected $_owner;
 	protected $_security_level;
 	protected $_new_labels;
 
+	/**
+	 * Format given name for display on screen.
+	 * @param string $name Name to format.
+	 * @return string Formatted name.
+	 */
 	public static function formatForDisplay($name) {
 		$name = preg_replace('/[^\/]+\/(.*)$/','$1',$name);
 		$name = preg_replace('/[\/-]/',' ',$name);
@@ -17,6 +26,9 @@ class Saint_Model_Label {
 		return $name;
 	}
 	
+	/**
+	 * Load label model with blank data.
+	 */
 	public function __construct() {
 		$this->_name = "";
 		$this->_owner = "";
@@ -24,54 +36,48 @@ class Saint_Model_Label {
 	}
 
 	/**
-	 * Load label from database by name
-	 * @param string $name Name of label to load
-	 * @global string Pattern to match valid item names
-	 * @return boolean True if successful, false otherwise
+	 * Set the name of the label whose data to load when other functions are called.
+	 * @param string $name Name of label whose data to load.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function loadByName($name) {
 		if ($name = Saint::sanitize($name,SAINT_REG_NAME)) {
-			try {
-				$labels = Saint::getRow("SELECT `owner` FROM `st_labels` WHERE `name`='$name' ORDER BY `revision` DESC LIMIT 1");
-				$this->_name = $name;
-				$this->_owner = $labels[0];
-				return 1;
-			} catch (Exception $e) {
-				$this->_name = $name;
-				return 0;
-			}
+			$this->_name = $name;
+			return 1;
 		} else
 			return 0;
 	}
 	
 	/**
-	 * Get the label name
-	 * @return string Label name
+	 * Get the name of the loaded label.
+	 * @return string Name of loaded label.
 	 */
 	public function getName() {
 		return $this->_name;
 	}
 	
 	/**
-	 * Get the label owner
-	 * @return string Label owner's name
+	 * Get the owner of the loaded label.
+	 * @return string Name of the owner of the loaded label.
 	 */
 	public function getOwner() {
-		// Loading of owner information moved to this function to optimize display times 
-		try {
-			return Saint::getOne("SELECT `owner` FROM `st_labels` WHERE `name`='$name' ORDER BY `revision` DESC LIMIT 1");
-		} catch (Exception $e) {
-			if ($e->getCode()) {
-				Saint::logError("Unable to get label owner for name $this->_name:".$e->getMessage()); }
-			return 0;
+		// Loading of owner information moved to this function to optimize display times
+		if (!isset($this->_owner) || $this->_owner == "") {
+			try {
+				return Saint::getOne("SELECT `owner` FROM `st_labels` WHERE `name`='$name' ORDER BY `revision` DESC LIMIT 1");
+			} catch (Exception $e) {
+				if ($e->getCode()) {
+					Saint::logError("Unable to get label owner for name $this->_name:".$e->getMessage()); }
+				return 0;
+			}
 		}
+		return $this->_owner;
 	}
 	
 	/**
-	 * Get the current revision
-	 * @param string $lang Optional language, uses default if null
-	 * @global string Pattern to match valid item names
-	 * @return int Label max revision
+	 * Get the current revision number of the loaded label.
+	 * @param string $lang Optional language version to select.
+	 * @return int Current revision number.
 	 */
 	public function getRevision($lang = null) {
 		if ($lang = Saint::sanitize($lang,SAINT_REG_NAME)) {
@@ -87,12 +93,10 @@ class Saint_Model_Label {
 	}
 	
 	/**
-	 * Get the label contents. Creates blank label container if not found.
-	 * @param string $lang Optional name of language to retrieve (null uses default)
-	 * @param int $revision Optional revision number to retrieve (null uses highest revision)
-	 * @global string Pattern to match valid item names
-	 * @global string Pattern to match revision numbers
-	 * @return string Label contents
+	 * Get the label contents. Creates label with default content if not found.
+	 * @param string $lang Optional name of language to retrieve (null uses default).
+	 * @param int $revision Optional revision number to retrieve (null uses highest revision).
+	 * @return string Label code.
 	 */
 	public function getLabel($container = true, $default = '', $lang = null, $revision = null) {
 		$label = '';
@@ -126,10 +130,9 @@ class Saint_Model_Label {
 	
 	/**
 	 * Set the label contents.
-	 * @param string $label New contents for label
-	 * @param string $lang Optional name of language to use (null uses default)
-	 * @global string SAINT_REG_NAME Pattern to match valid language names
-	 * @return string Label contents
+	 * @param string $label New contents for label.
+	 * @param string $lang Optional name of language in which to set the label (null uses default).
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setLabel($label, $lang = null) {
 		$label = Saint::sanitize($label);
@@ -146,7 +149,7 @@ class Saint_Model_Label {
 	
 	/**
 	 * Save the active label information to database.
-	 * @return boolean True if successful, false otherwise
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function save() {
 		if ($this->_name) {
@@ -174,10 +177,10 @@ class Saint_Model_Label {
 	}
 	
 	/**
-	 * Create a new content revision
-	 * @param string $label New content
-	 * @param string $lang Optional name of language for new content (null uses default)
-	 * @return boolean True for success, false otherwise
+	 * Create a new content revision. Used internally during saving.
+	 * @param string $label New revision content.
+	 * @param string $lang Optional name of language in which to set new content (null uses default).
+	 * @return boolean True on success, false otherwise.
 	 */
 	protected function newEntry($label,$lang = null) {
 		if ($lang == null)

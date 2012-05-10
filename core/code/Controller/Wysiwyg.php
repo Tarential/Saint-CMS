@@ -5,10 +5,9 @@ class Saint_Controller_Wysiwyg {
 		$page->setTempLayout("system/json");
 		$success = false;
 		$model = new Saint_Model_Wysiwyg($name);
-		if ($model->setContent($content)) {
-			if ($model->save()) {
-				$success = true;
-			}
+		$model->setContent($content);
+		if ($model->save()) {
+			$success = true;
 		}
 		$page->jsondata = array(
 			'success' => $success,

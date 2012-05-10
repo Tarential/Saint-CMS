@@ -1,9 +1,21 @@
 <?php
+/**
+ * Model of a WYSIWYG editable area in the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ * @todo Modify model to be an extension of Saint_Model_Label and support multiple languages / revisions / search.
+ */
 class Saint_Model_Wysiwyg {
 	protected $_id;
 	protected $_name;
 	protected $_content;
 	
+	/**
+	 * Get WYSIWYG label code for given name containing given content if none exists.
+	 * @param string $name Name of label to retrieve.
+	 * @param string $default Default content for label.
+	 * @return string Label content.
+	 */
 	public static function get($name, $default = '') {
 		$wysiwyg = new Saint_Model_Wysiwyg($name);
 		if ($wysiwyg->getContent() == "") {
@@ -14,6 +26,10 @@ class Saint_Model_Wysiwyg {
 		return $content;
 	}
 	
+	/**
+	 * Create a label and attempt to load it using given name.
+	 * @param string $name Name of label to load.
+	 */
 	public function __construct($name = null) {
 		if ($name != null) {
 			if (!$this->load($name)) {
@@ -24,15 +40,27 @@ class Saint_Model_Wysiwyg {
 		}
 	}
 	
+	/**
+	 * Get label content.
+	 * @return string Label content.
+	 */
 	public function getContent() {
 		return $this->_content;
 	}
 	
+	/**
+	 * Set label content.
+	 * @param string $content New label content.
+	 */
 	public function setContent($content) {
 		$this->_content = $content;
-		return 1;
 	}
 	
+	/**
+	 * Load label information for given name from database.
+	 * @param string $name Name of label to load.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function load($name) {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
 		if ($sname) {
@@ -54,6 +82,11 @@ class Saint_Model_Wysiwyg {
 		}
 	}
 	
+	/**
+	 * Save loaded label to database.
+	 * @return boolean True on success, false otherwise.
+	 * @todo Move content sanitization out of save function to individual set functions.
+	 */
 	public function save() {
 		if ($this->_id) {
 			try {

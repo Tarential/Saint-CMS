@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Model of a user in the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_User {
 	protected $_id;
 	protected $_username;
@@ -11,7 +15,12 @@ class Saint_Model_User {
 	protected $_lname;
 	protected $_phone;
 	protected $_scid;
-		
+	
+	/**
+	 * Get all users in the database.
+	 * @return Saint_Model_User[] Models of users.
+	 * @todo Modify function to allow selection of subsets of users.
+	 */
 	public static function getAllUsers() {
 		try {
 			$usernames = Saint::getAll("SELECT `username` FROM `st_users`");
@@ -31,8 +40,8 @@ class Saint_Model_User {
 	
 	/**
 	 * Sets current user. Do not access directly; instead, use the login function.
-	 * @param string $username New username
-	 * @return boolean True for success, false otherwise
+	 * @param string $username New username.
+	 * @return boolean True on success, false otherwise.
 	 */
 	private static function setCurrentUsername($username) {
 		if ($sname = Saint::sanitize($username,SAINT_REG_NAME)) {
@@ -44,24 +53,43 @@ class Saint_Model_User {
 			return 0;
 	}
 	
+	/**
+	 * Remove user with given ID from database.
+	 * @param int $id ID of user to remove.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function deleteUser($id) {
 		$sid = Saint::sanitize($id,SAINT_REG_ID);
 		try {
 			Saint::query("DELETE FROM `st_users` WHERE `id`='$sid'");
+			return 1;
 		} catch (Exception $e) {
 			Saint::logError("Problem deleting user with id '$sid'.",__FILE__,__LINE__);
+			return 0;
 		}
 	}
 	
+	/**
+	 * Destroy all login sessions for the given user.
+	 * @param string $username User to log out. 
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function destroySessions($username) {
 		$username = Saint::sanitize($username,SAINT_REG_NAME);
 		try {
 			Saint::query("DELETE FROM `st_sessions` WHERE `username`='$username'");
+			return 1;
 		} catch (Exception $e) {
 			Saint::logError("Error deleting session information for $username: ".$e->getMessage(),__FILE__,__LINE__);
+			return 0;
 		}
 	}
 	
+	/**
+	 * Create a session cookie and tracking entry in database.
+	 * @param string $sequence Optional sequence number for session.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function setCookie($sequence = null) {
 		if ($sequence == null)
 			$sequence = substr(md5(uniqid(rand(), true)), 0, SAINT_SEQ_LEN);
@@ -71,11 +99,18 @@ class Saint_Model_User {
 			$cookieval = $username.$sequence.$nonce;
 			setcookie("saintcookie",$cookieval,time()+60*60*24*30,'/');
 			Saint::query("INSERT INTO `st_sessions` (`username`,`sequence`,`nonce`) VALUES ('$username','$sequence','$nonce')");
+			return 1;
 		} catch (Exception $e) {
 			Saint::logError("Unable to save cookie info: ".$e->getMessage());
+			return 0;
 		}
 	}
 	
+	/**
+	 * Attempt to log user in via the given cookie var.
+	 * @param string $cookie Value of cookie.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function loginViaCookie($cookie) {
 		$sequence = substr($cookie,-(SAINT_SEQ_LEN+SAINT_NONCE_LEN), -SAINT_SEQ_LEN);
 		$nonce = substr($cookie,-SAINT_SEQ_LEN);
@@ -89,8 +124,10 @@ class Saint_Model_User {
 					Saint::query("DELETE FROM `st_sessions` WHERE `id`='$id'");
 					Saint_Model_User::setCurrentUsername($username);
 					Saint_Model_User::setCookie($sequence);
+					return 1;
 				} catch (Exception $f) {
 					Saint::logError("Problem deleting session with id $id.",__FILE__,__LINE__);
+					return 0;
 				}
 			} else {
 				$page = new Saint_Model_Page();
@@ -100,15 +137,16 @@ class Saint_Model_User {
 				die();
 			}
 		} catch (Exception $e) {
-			# It doesn't match one of our cookies... do nothing
+			return 0;
 		}
 	}
 	
 	/**
-	 * Attempt to log in with username, password
-	 * @param string $username Username requesting login
-	 * @param string $password Password for authentication
-	 * @return boolean True for success, false otherwise
+	 * Attempt to log in with given username and password.
+	 * @param string $username Username requesting login.
+	 * @param string $password Password for authentication.
+	 * @param boolean $setcookie Optional flag; true to set cookie, false by default.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public static function login($username,$password,$setcookie = false) {
 		if (Saint_Model_User::authenticate($username,$password)) {
@@ -122,8 +160,8 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Log out the current user
-	 * @return boolean True for success, false otherwise
+	 * Log the current user out.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public static function logout() {
 		if (Saint_Model_User::setCurrentUsername(''))
@@ -151,9 +189,9 @@ class Saint_Model_User {
 	}
 
 	/**
-	 * Checks if email is available for use
-	 * @param string $email
-	 * @return boolean True if available, false otherwise
+	 * Checks if email is available for use (ie does not exist in DB).
+	 * @param string $email Address for which to check.
+	 * @return boolean True if available, false otherwise.
 	 */
 	public static function emailAvailable($email) {
 		if ($email = Saint::sanitize($email,SAINT_REG_EMAIL)) {
@@ -168,10 +206,10 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Authenticates username/password combination
-	 * @param string $username Username to check
-	 * @param string $password Password to check
-	 * @return boolean True if username/password matches, false otherwise
+	 * Authenticates username/password combination.
+	 * @param string $username Username to check.
+	 * @param string $password Password to check.
+	 * @return boolean True if username/password matches, false otherwise.
 	 */
 	public static function authenticate($username, $password) {
 		if ($username = Saint::sanitize($username,SAINT_REG_NAME)) {
@@ -188,10 +226,10 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Generate SHA1-based password hash with salt
-	 * @param string $text Plain text password to be hashed
-	 * @param string $salt Salt for hashing, null for random
-	 * @return string Hashed password with salt prepended
+	 * Generate SHA1-based hash for given password using given salt.
+	 * @param string $text Plain text password to be hashed.
+	 * @param string $salt Salt for hashing, null for random.
+	 * @return string Hashed password with salt prepended.
 	 */
 	protected static function genHash($text, $salt = null) {
     if ($salt === null)
@@ -205,6 +243,9 @@ class Saint_Model_User {
     return $salt . sha1($salt . $text);
 	}
 	
+	/**
+	 * Create a blank user model.
+	 */
 	public function __construct() {
 		$this->_id = 0;
 		$this->_username = 'guest';
@@ -217,9 +258,9 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Load user with $id from database
-	 * @param int $id
-	 * @return boolean True if successful, false otherwise
+	 * Load user with given ID from database.
+	 * @param int $id ID of user to load.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function loadById($id) {
 		if ($id = Saint::sanitize($id,SAINT_REG_ID)) {
@@ -243,9 +284,9 @@ class Saint_Model_User {
 	}
 
 	/**
-	 * Load user with $username from database. Grabs ID then passes work to loadById().
-	 * @param string $username
-	 * @return boolean True if successful, false otherwise
+	 * Load user with given username from database. Grabs ID then passes work to loadById().
+	 * @param string $username Username of user to load.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function loadByUsername($username) {
 		if ($username === "guest") {
@@ -263,13 +304,17 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Get the user id 
-	 * @return int User ID
+	 * Get the ID of the loaded user.
+	 * @return int User ID.
 	 */
 	public function getId() {
 		return $this->_id;
 	}
 	
+	/**
+	 * Get the shopping cart of the loaded user.
+	 * @return Saint_Model_ShoppingCart Cart of current user if successful, 0 otherwise.
+	 */
 	public function getShoppingCart() {
 		$cart = new Saint_Model_ShoppingCart();
 		$id = $this->getShoppingCartId();
@@ -280,6 +325,10 @@ class Saint_Model_User {
 			return 0;
 	}
 	
+	/**
+	 * Get the ID of the shopping cart of the loaded user.
+	 * @return int ID of the cart of current user.
+	 */
 	public function getShoppingCartId() {
 		try {
 			return Saint::getOne("SELECT `id` FROM `st_shop_carts` WHERE `owner`='".$this->_id."' AND `purchased`='0'");
@@ -294,53 +343,57 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Get the username 
-	 * @return string Username
+	 * Get the loaded user's username.
+	 * @return string Username of the loaded user.
 	 */
 	public function getUsername() {
 		return $this->_username;
 	}
 	
 	/**
-	 * Get the user's chosen language 
-	 * @return string Language name
+	 * Get the loaded user's language.
+	 * @return string User language.
 	 */
 	public function getLanguage() {
 		return $this->_language;
 	}
 	
 	/**
-	 * Get the user's e-mail address 
-	 * @return string User e-mail address
+	 * Get the loaded user's e-mail address.
+	 * @return string User e-mail address.
 	 */
 	public function getEmail() {
 		return $this->_email;
 	}
 	
 	/**
-	 * Get the user's first name 
-	 * @return string User first name
+	 * Get the loaded user's first name.
+	 * @return string User first name.
 	 */
 	public function getFirstName() {
 		return $this->_fname;
 	}
 	
 	/**
-	 * Get the user's last name 
-	 * @return string User last name
+	 * Get the loaded user's last name. 
+	 * @return string User last name.
 	 */
 	public function getLastName() {
 		return $this->_lname;
 	}
 
+	/**
+	 * Get the loaded user's phone number.
+	 * @return string User phone number.
+	 */
 	public function getPhoneNumber() {
 		return $this->_phone;
 	}
 	
 	/**
-	 * Changes the user's username to $username
-	 * @param string $username
-	 * @return boolean True if successful, false otherwise
+	 * Changes the loaded user's username to given one.
+	 * @param string $username New username for user.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setUsername($username) {
 		if ($username = Saint::sanitize($username,SAINT_REG_NAME)) {
@@ -354,9 +407,9 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Changes the user's language to $language
-	 * @param string $language
-	 * @return boolean True if successful, false otherwise
+	 * Change the loaded user's language to given one.
+	 * @param string $language New language for user.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setLanguage($language) {
 		if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
@@ -370,9 +423,9 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Change's the user's e-mail address to $email
-	 * @param string $email
-	 * @return boolean True if successful, false otherwise
+	 * Change's the loaded user's e-mail address to given one.
+	 * @param string $email New e-mail address for user.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setEmail($email) {
 		if ($email = Saint::sanitize($email,SAINT_REG_EMAIL)) {
@@ -386,9 +439,9 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Change's the user's first name to $fname
-	 * @param string $fname
-	 * @return boolean True if successful, false otherwise
+	 * Change's the loaded user's first name to given one.
+	 * @param string $fname New first name for user.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setFirstName($fname) {
 		if ($fname = Saint::sanitize($fname)) {
@@ -399,9 +452,9 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Change's the user's last name to $lname
-	 * @param string $lname
-	 * @return boolean True if successful, false otherwise
+	 * Change's the loaded user's last name to given one.
+	 * @param string $lname New last name for user.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setLastName($lname) {
 		if ($lname = Saint::sanitize($lname)) {
@@ -411,6 +464,11 @@ class Saint_Model_User {
 			return 0;
 	}
 	
+	/**
+	 * Change's the loaded user's phone number to given one.
+	 * @param int $phone New phone number for user. 
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function setPhoneNumber($phone) {
 		if ($phone = Saint::sanitize($phone,SAINT_REG_ID)) {
 			$this->_phone = $phone;
@@ -419,12 +477,19 @@ class Saint_Model_User {
 			return 0;
 	}
 	
+	/**
+	 * Change's the loaded user's password to given one.
+	 * @param string $password New password for user.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function setPassword($password) {
 			$this->_password = Saint_Model_User::genHash($password);
 	}
 	
 	/**
-	 * @todo Implement user permission function
+	 * Checks if a user has permission to perform specified action.
+	 * @param string $action Name of action user is requesting to perform.
+	 * @return boolean True if permission granted, false otherwise.
 	 */
 	public function hasPermissionTo($action) {
 		global $saint_group_access;
@@ -439,6 +504,10 @@ class Saint_Model_User {
 			return 0;
 	}
 
+	/**
+	 * Gets the names of the groups to which the loaded user belongs.
+	 * @return string[] Names of the groups to which user belongs.
+	 */
 	public function getGroups() {
 		if ($this->getUsername() == "guest")
 			return array("guest");
@@ -450,6 +519,11 @@ class Saint_Model_User {
 		}
 	}
 	
+	/**
+	 * Checks if the loaded user is in the specified group.
+	 * @param string $group Name of group in which to check for user.
+	 * @return boolean True if user is in group, false otherwise.
+	 */
 	public function isInGroup($group) {
 		$name = Saint::sanitize($group,SAINT_REG_NAME);
 		if ($name == $group) {
@@ -463,13 +537,19 @@ class Saint_Model_User {
 				$id = Saint::getOne("SELECT `g`.`id` FROM `st_users` as `u`, `st_usergroups` as `g` WHERE `g`.`userid`=`u`.`id` AND `g`.`group`='$name' AND `u`.`id`='".$this->getId()."'");
 				return 1;
 			} catch (Exception $e) {
-				//Saint::logWarning($e->getMessage(),__FILE__,__LINE__);
+				if ($e->getCode()) {
+					Saint::logError($e->getMessage(),__FILE__,__LINE__); }
 				return 0;
 			}
 		} else
 			return 0;
 	}
 	
+	/**
+	 * Add loaded user to the specified group.
+	 * @param string $group Group into which to add user.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function addToGroup($group) {
 		$name = Saint::sanitize($group,SAINT_REG_NAME);
 		if ($name == $group) {
@@ -486,6 +566,11 @@ class Saint_Model_User {
 			return 0;
 	}
 	
+	/**
+	 * Remove loaded user from the specified group.
+	 * @param string $group Group from which to remove user.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function removeFromGroup($group) {
 		$name = Saint::sanitize($group,SAINT_REG_NAME);
 		if ($name == $group) {
@@ -501,8 +586,8 @@ class Saint_Model_User {
 	}
 	
 	/**
-	 * Saves user to database
-	 * @return boolean True if successful, false otherwise
+	 * Saves loaded user information to database.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function save() {
 		if ($this->_id) {

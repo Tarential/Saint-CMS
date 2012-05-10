@@ -1,6 +1,18 @@
 <?php
+/**
+ * Shop functions for the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_Shop {
 	
+	/**
+	 * Create new temporary file access link.
+	 * @param int $productid ID of product whose associated file to link.
+	 * @param int $retries Optional number of times the download link may be used.
+	 * @param int $timeout Optional number of hours until the download link expires.
+	 * @return string URL of file access link or 0 on failure. 
+	 */
 	public static function createDownload($productid,$retries = 5, $timeout = 48) {
 		$spid = Saint::sanitize($productid,SAINT_REG_ID);
 		$sretries = Saint::sanitize($retries,SAINT_REG_ID);
@@ -15,6 +27,12 @@ class Saint_Model_Shop {
 		}
 	}
 	
+	/**
+	 * Decrement the number of times a link may be accessed.
+	 * @param int $productid ID of product to which the file is associated.
+	 * @param int $linkid ID of temporary access link.
+	 * @return boolean True if download link is available, false otherwise. 
+	 */
 	public static function decrementLink($productid,$linkid) {
 		$spid = Saint::sanitize($productid,SAINT_REG_ID);
 		$slinkid = Saint::sanitize($linkid);

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Model of a Saint shop product.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_Product {
 	protected $_id;
 	protected $_enabled;
@@ -8,6 +13,9 @@ class Saint_Model_Product {
 	protected $_file;
 	protected $_categories;
 	
+	/**
+	 * Create model with default data.
+	 */
 	public function __construct() {
 		$this->_id = 0;
 		$this->_enabled = 0;
@@ -18,6 +26,11 @@ class Saint_Model_Product {
 		$this->_categories = array();
 	}
 	
+	/**
+	 * Load information for product matching given ID from the database.
+	 * @param int $id ID of product to load.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function load($id) {
 		$sid = Saint::sanitize($id,SAINT_REG_ID);
 		if ($sid) {
@@ -51,77 +64,136 @@ class Saint_Model_Product {
 		}
 	}
 
+	/**
+	 * Get ID of loaded product.
+	 * @return int ID of loaded product.
+	 */
 	public function getId() {
 		return $this->_id;
 	}
 	
+	/**
+	 * Get enabled status of loaded product.
+	 * @return boolean True if enabled, false otherwise.
+	 */
 	public function getEnabled() {
 		return $this->_enabled;
 	}
 	
+	/**
+	 * Get name of loaded product.
+	 * @return string Name of loaded product.
+	 */
 	public function getName() {
 		return $this->_name;
 	}
 	
+	/**
+	 * Get SKU of loaded product.
+	 * @return string SKU of loaded product.
+	 */
 	public function getSku() {
 		return $this->_sku;
 	}
 	
+	/**
+	 * Get price of loaded product.
+	 * @return float Price of loaded product.
+	 */
 	public function getPrice() {
 		return $this->_price;
 	}
 	
+	/**
+	 * Get file associated with loaded product.
+	 * @return string File associated with loaded product.
+	 */
 	public function getFile() {
 		return $this->_file;
 	}
 	
+	/**
+	 * Get categories of loaded product.
+	 * @return string[] Categories of loaded product.
+	 */
 	public function getCategories() {
 		return $this->_categories;
 	}
 	
+	/**
+	 * Get discounted price of loaded product.
+	 * @return float Discounted price of loaded product.
+	 */
 	public function getDiscountPrice() {
 		return Saint::getDiscounter()->getDiscountedPrice($this->_id, $this->_categories, $this->_price);
 	}
 	
+	/**
+	 * Get tax rate applied to loaded product.
+	 * @return float Tax rate applied to loaded product.
+	 */
 	public function getTaxRate() {
 		// To be implemented at a later date
 		return 1;
 	}
 	
+	/**
+	 * Get final price of loaded product after all discounts and taxes have been applied.
+	 * @return float Final price of loaded product.
+	 */
 	public function getFinalPrice() {
 		return $this->getDiscountPrice()*$this->getTaxRate();
 	}
 	
+	/**
+	 * Set enabled status of loaded product.
+	 * @param boolean $enabled True or false to enable or disable product.
+	 */
 	public function setEnabled($enabled) {
 		$senabled = Saint::sanitize($enabled,SAINT_REG_BOOL);
 		$this->_enabled = $senabled;
-		return 1;
 	}
 	
+	/**
+	 * Set name of loaded product.
+	 * @param string $name New name for loaded product.
+	 */
 	public function setName($name) {
 		$sname = Saint::sanitize($name);
 		$this->_name = $sname;
-		return 1;
 	}
 	
+	/**
+	 * Set sku of loaded product.
+	 * @param string $name New sku for loaded product.
+	 */
 	public function setSku($sku) {
 		$ssku = Saint::sanitize($sku);
 		$this->_sku = $ssku;
-		return 1;
 	}
 	
+	/**
+	 * Set price of loaded product.
+	 * @param string $name New price for loaded product.
+	 */
 	public function setPrice($price) {
 		$sprice = Saint::sanitize($price);
 		$this->_price = $sprice;
-		return 1;
 	}
 	
+	/**
+	 * Set file associated with loaded product.
+	 * @param string $name New file to associate with loaded product.
+	 */
 	public function setFile($file) {
 		$sfile = Saint::sanitize($file);
 		$this->_file = $sfile;
-		return 1;
 	}
 	
+	/**
+	 * Save model information into database.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function save() {
 		if ($this->_id) {
 			try {

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Model for Saint shop transactions.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_Transaction {
 	protected $_id;
 	protected $_ppid;
@@ -8,6 +13,11 @@ class Saint_Model_Transaction {
 	protected $_date;
 	protected $_paypaluser;
 	
+	/**
+	 * Get all shop transactions matching the given arguments.
+	 * @param string[] $arguments Arguments to match.
+	 * @return int[] IDs of all matching transactions.
+	 */
 	public static function getTransactions($arguments = array()) {
 		try {
 			return Saint::getAll(Saint_Model_Transaction::makeQuery($arguments));
@@ -18,6 +28,11 @@ class Saint_Model_Transaction {
 		}
 	}
 	
+	/**
+	 * Generate transaction query based on given arguments.
+	 * @param string[] $arguments Arguments used to create query.
+	 * @return string Generated query.
+	 */
 	public static function makeQuery($arguments = null) {
 		# Default settings
 		$start = 0;
@@ -52,6 +67,16 @@ class Saint_Model_Transaction {
 		return "SELECT `id` FROM `st_shop_transactions` $where $obs $ls";
 	}
 	
+	/**
+	 * Create new transaction with the given parameters if passed, default data if not.
+	 * @param int $userid ID of user who completed the transaction.
+	 * @param int $cartid ID of shopping cart to which the transaction belongs.
+	 * @param float $amount Total amount of transaction.
+	 * @param string $ppid Optional PayPal transaction ID.
+	 * @param string $ppuser Optional PayPal username.
+	 * @param string $details Optional additional details about transaction.
+	 * @return int ID of new transaction if created, 1 otherwise.
+	 */
 	public function __construct($userid = null, $cartid = null, $amount = null, $ppid = 0, $ppuser = '', $details = null) {
 		if ($userid !== null && $cartid !== null && $amount !== null) {
 			return $this->create($userid, $cartid, $amount, $ppid, $ppuser, $details);
@@ -66,6 +91,11 @@ class Saint_Model_Transaction {
 		}
 	}
 	
+	/**
+	 * Load transaction with given ID from the database.
+	 * @param int $id ID of transaction to load.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function load($id) {
 		if ($sid = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {
@@ -90,6 +120,11 @@ class Saint_Model_Transaction {
 		}
 	}
 	
+	/**
+	 * Load transaction with the given PayPal transaction ID from database.
+	 * @param string $ppid PayPal transaction ID.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function loadByPayPalId($ppid = 0) {
 		$sppid = Saint::sanitize($ppid);
 		if ($sppid) {
@@ -108,6 +143,16 @@ class Saint_Model_Transaction {
 		}
 	}
 	
+	/**
+	 * Create a new transaction with the given information.
+	 * @param int $userid ID of user who completed the transaction.
+	 * @param int $cartid ID of shopping cart to which the transaction belongs.
+	 * @param float $amount Total amount of transaction.
+	 * @param string $ppid Optional PayPal transaction ID.
+	 * @param string $ppuser Optional PayPal username.
+	 * @param string $details Optional additional details about transaction.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function create($userid, $cartid, $amount, $ppid = 0, $ppuser = '', $details = null) {
 		$suserid = Saint::sanitize($userid,SAINT_REG_ID);
 		$scartid = Saint::sanitize($cartid,SAINT_REG_ID);
@@ -162,30 +207,58 @@ class Saint_Model_Transaction {
 		}
 	} */
 	
+	/**
+	 * Get PayPal username associated with loaded transaction.
+	 * @return string PayPal username.
+	 */
 	public function getPayPalUser() {
 		return $this->_paypaluser;
 	}
 	
+	/**
+	 * Get PayPal transaction ID associated with loaded transaction.
+	 * @return string PayPal transaction ID.
+	 */
 	public function getPayPalId() {
 		return $this->_ppid;
 	}
 	
+	/**
+	 * Get ID of user who completed the loaded transaction.
+	 * @return int User ID.
+	 */
 	public function getUserId() {
 		return $this->_user;
 	}
 	
+	/**
+	 * Get shopping cart ID associated with loaded transaction.
+	 * @return int Cart ID.
+	 */
 	public function getCartId() {
 		return $this->_cart;
 	}
 	
+	/**
+	 * Get ID of loaded transaction.
+	 * @return int Transaction ID.
+	 */
 	public function getId() {
 		return $this->_id;
 	}
 
+	/**
+	 * Get the value of the loaded transaction.
+	 * @return float Value of transaction.
+	 */
 	public function getAmount() {
 		return $this->_amount;
 	}
 	
+	/**
+	 * Get date and time associated with loaded transaction.
+	 * @return string Date and time of transaction.
+	 */
 	public function getDate() {
 		return $this->_date;
 	}

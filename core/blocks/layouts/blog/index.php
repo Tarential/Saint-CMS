@@ -8,8 +8,8 @@ if (isset($args['single'])) {
 		),
 	);
 	Saint::getCurrentPage()->setTempTitle(Saint_Model_Block::getBlockSetting("blog/post",$args['single'],"seo-title"));
-	Saint::getCurrentPage()->setTempMetaKeywords(explode(",",Saint_Model_Block::getBlockSetting("blog/post",$args['single'],"seo-keywords")));
-	Saint::getCurrentPage()->setTempMetaDescription(Saint_Model_Block::getBlockSetting("blog/post",$args['single'],"seo-description"));
+	Saint::getCurrentPage()->setTempKeywords(explode(",",Saint_Model_Block::getBlockSetting("blog/post",$args['single'],"seo-keywords")));
+	Saint::getCurrentPage()->setTempDescription(Saint_Model_Block::getBlockSetting("blog/post",$args['single'],"seo-description"));
 } else {
 	$arguments = array(
 		"repeat" => 2,

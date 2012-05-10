@@ -1,10 +1,20 @@
 <?php
+/**
+ * Model for a cart containing shop items within the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_ShoppingCart {
 	protected $_id;
 	protected $_owner;
 	protected $_items;
 	protected $_purchased;
 	
+	/**
+	 * Check if there is an active shopping cart matching the given ID.
+	 * @param int $id ID of shopping cart to check.
+	 * @return boolean True if it is active, false otherwise.
+	 */
 	public static function isActive($id) {
 		$sid = Saint::sanitize($id,SAINT_REG_ID);
 		try {
@@ -17,6 +27,11 @@ class Saint_Model_ShoppingCart {
 		}
 	}
 	
+	/**
+	 * Check if a shopping cart with the given ID exists.
+	 * @param int $id ID for which to check.
+	 * @return boolean True if it exists, false otherwise.
+	 */
 	public static function cartExists($id) {
 		$sid = Saint::sanitize($id,SAINT_REG_ID);
 		try {
@@ -29,17 +44,28 @@ class Saint_Model_ShoppingCart {
 		}
 	}
 	
+	/**
+	 * Attempt to load a cart with given ID; use default data on failure.
+	 * @param int $id ID to load.
+	 * @return boolean True if loading is successful, false otherwise.
+	 */
 	public function __construct($id = 0) {
 		if ($id && $this->load($id)) {
-			
+			return 1;
 		} else {
 			$this->_id = 0;
 			$this->_owner = Saint::getCurrentUser()->getId();
 			$this->_items = array();
 			$this->_purchased = false;
+			return 0;
 		}
 	}
 	
+	/**
+	 * Load cart with given ID.
+	 * @param int $id ID to load.
+	 * @return boolean True if loading is successful, false otherwise.
+	 */
 	public function load($id) {
 		if ($id == 0)
 			return $this->loadNew();
@@ -77,6 +103,10 @@ class Saint_Model_ShoppingCart {
 		}
 	}
 
+	/**
+	 * Create a new shopping cart and load it.
+	 * @return int New cart ID on success, 0 on failure.
+	 */
 	public function loadNew() {
 		try {
 			Saint::query("INSERT INTO `st_shop_carts` (`owner`) VALUES ('".Saint::getCurrentUser()->getId()."')");
@@ -89,6 +119,11 @@ class Saint_Model_ShoppingCart {
 		}
 	}
 	
+	/**
+	 * Flag cart contents as purchased/unpurchased.
+	 * @param boolean $boolean True if purchased, false if not.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function setPurchased($boolean) {
 		if ($sb = Saint::sanitize($boolean,SAINT_REG_BOOL)) {
 			$this->_purchased = $sb;
@@ -98,25 +133,47 @@ class Saint_Model_ShoppingCart {
 		}
 	}
 	
+	/**
+	 * Get the ID of the loaded shopping cart.
+	 * @return int ID of the loaded cart.
+	 */
 	public function getId() {
 		return $this->_id;
 	}
 
+	/**
+	 * Get products in the loaded shopping cart.
+	 * @return int[] IDs of products in the loaded cart.
+	 */
 	public function getItems() {
 		return $this->_items;
 	}
 	
+	/**
+	 * Get the owner of the loaded shopping cart.
+	 * @return string Owner of the loaded cart.
+	 */
 	public function getOwner() {
 		return $this->_owner;
 	}
 
+	/**
+	 * Check if the loaded shopping cart has been purchased.
+	 * @return boolean True if cart total has been paid, false otherwise.
+	 */
 	public function isPurchased() {
 		return $this->_purchased;
 	}
 	
-	public function addItem($itemid,$number = 1) {
+	/**
+	 * Add product to the loaded shopping cart.
+	 * @param int $itemid ID of product to add.
+	 * @param int $quantity Quantity to add.
+	 * @return boolean True on success, false otherwise.
+	 */
+	public function addItem($itemid,$quantity = 1) {
 		$sid = Saint::sanitize($itemid,SAINT_REG_ID);
-		$snum = Saint::sanitize($number,SAINT_REG_ID);
+		$snum = Saint::sanitize($quantity,SAINT_REG_ID);
 		if ($sid) {
 			if (isset($this->_items[$sid]))
 				$this->_items[$sid] += $snum;
@@ -129,8 +186,14 @@ class Saint_Model_ShoppingCart {
 		}
 	}
 	
-	public function removeItem($itemid, $number = 1) {
-		$snum = Saint::sanitize($number,SAINT_REG_ID);
+	/**
+	 * Remove item from the loaded shopping cart.
+	 * @param int $itemid ID of product to remove.
+	 * @param int $quantity Quantity to remove.
+	 * @return boolean True on success, false otherwise.
+	 */
+	public function removeItem($itemid, $quantity = 1) {
+		$snum = Saint::sanitize($quantity,SAINT_REG_ID);
 		if (isset($this->_items[$itemid])) {
 			if ($this->_items[$itemid] > $snum)
 				$this->_items[$itemid] -= $snum;
@@ -140,10 +203,17 @@ class Saint_Model_ShoppingCart {
 		return 1;
 	}
 	
+	/**
+	 * Empty the loaded shopping cart.
+	 */
 	public function clearItems() {
 		$this->_items = array();
 	}
 	
+	/**
+	 * Get the total price of all items in the loaded cart.
+	 * @return float Total price of all items in cart.
+	 */
 	public function getTotal() {
 		$total = 0;
 		$product = new Saint_Model_Product();
@@ -154,9 +224,13 @@ class Saint_Model_ShoppingCart {
 		return $total;
 	}
 	
+	/**
+	 * Save current product information to database.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function save() {
 		if ($this->_id) {
-			// First, update the "last edited" time of the cart
+			// First, update the "purchased" status and the "last edited" time of the cart
 			try {
 				Saint::query("UPDATE `st_shop_carts` SET `updated`=NOW(),`purchased`='$this->_purchased' WHERE `id`='$this->_id'");
 			} catch (Exception $e) {

@@ -1,11 +1,20 @@
 <?php
-
+/**
+ * Model of a page layout within the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_Layout {
 	protected $_name;
-	protected $_page; // Saint_Model_Page
+	protected $_page;
 	protected $_saved;
 	protected $_content;
 	
+	/**
+	 * Check if the given layout name has an available template file.
+	 * @param string $layout Layout name to check.
+	 * @return boolean True if layout is active, false otherwise.
+	 */
 	public static function inUse($layout) {
 		if ($layout = Saint::sanitize($layout,SAINT_REG_NAME)) {
 			if (Saint_Model_Block::inUse("layouts/".$layout)) {
@@ -15,6 +24,9 @@ class Saint_Model_Layout {
 		return 0;
 	}
 	
+	/**
+	 * Create a layout with blank data.
+	 */
 	public function __construct() {
 		$this->_id = 0;
 		$this->_name = '';
@@ -23,6 +35,11 @@ class Saint_Model_Layout {
 		$this->_content = '';
 	}
 	
+	/**
+	 * Set the name of the layout to use.
+	 * @param string $name Name of layout to use.
+	 * @return boolean True if layout is active, false otherwise.
+	 */
 	public function loadByName($name) {
 		if ($name = Saint::sanitize($name,SAINT_REG_NAME)) {
 			if (Saint_Model_Layout::inUse($name)) {
@@ -36,12 +53,15 @@ class Saint_Model_Layout {
 			return 0;
 	}
 	
+	/**
+	 * Output selected page to the client.
+	 * @param string $page Name of page to render.
+	 */
 	public function render($page) {
 		$this->_page = $page;
 		if ($this->_name == "")
 			Saint::includeBlock("layouts/default");
 		else
 			Saint::includeBlock("layouts/".$this->_name);
-		return 1;
 	}
 }

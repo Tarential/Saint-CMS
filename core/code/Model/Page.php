@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Model of a single page within the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_Page {
 	protected $_id;
 	protected $_bid;
@@ -18,6 +22,10 @@ class Saint_Model_Page {
 	protected $_blocks;
 	protected $_newblocks; # Blocks are recalculated at each rendering
 
+	/**
+	 * Get all the page names from the database.
+	 * @return string[] Names of all pages in the database.
+	 */
 	public static function getAllPages() {
 		try {
 			$pagenames = Saint::getAll("SELECT `name` FROM `st_pages`");
@@ -37,10 +45,9 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Checks if page name is available for use
-	 * @param string $name Name to test
-	 * @global string SAINT_REG_NAME Pattern matching valid page names
-	 * @return boolean True if available, false otherwise
+	 * Checks if page name is available for use (ie not in database).
+	 * @param string $name Name to test.
+	 * @return boolean True if available, false otherwise.
 	 */
 	public static function nameAvailable($name) {
 		if ($name = Saint::sanitize($name,SAINT_REG_NAME)) {
@@ -54,6 +61,12 @@ class Saint_Model_Page {
 			return 0;
 	}
 	
+	/**
+	 * Add a new page to the database.
+	 * @param string $name URL-friendly identifier for new page.
+	 * @param string $layout Name of layout to use for page.
+	 * @param string $title Title for page.
+	 */
 	public static function addPage($name,$layout,$title = '') {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
 		$slayout = Saint::sanitize($layout,SAINT_REG_NAME);
@@ -73,6 +86,11 @@ class Saint_Model_Page {
 		}
 	}
 	
+	/**
+	 * Delete page with given ID from database.
+	 * @param int $id ID of page to delete.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function deletePage($id) {
 		$delpage = new Saint_Model_Page();
 		if ($delpage->loadById($id)) {
@@ -81,6 +99,9 @@ class Saint_Model_Page {
 			return 0;
 	}
 	
+	/**
+	 * Load page model with blank data.
+	 */
 	public function __construct() {
 		$this->_id = 0;
 		$this->_bid = 0;
@@ -101,9 +122,9 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Load page from database
-	 * @param int $id
-	 * @return boolean Success/failure
+	 * Load page model with information from the database matching the given ID.
+	 * @param int $id ID of page to load.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function loadById($id) {
 		if ($id = Saint::sanitize($id,SAINT_REG_ID)) {
@@ -127,9 +148,9 @@ class Saint_Model_Page {
 	}
 
 	/**
-	 * Retrieve page ID based on name, then load by ID
-	 * @param string $name
-	 * @return boolean Success/failure
+	 * Retrieve page ID based on name, then load by ID.
+	 * @param string $name Name of page to load.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function loadByName($name) {
 		if ($name = Saint::sanitize($name,SAINT_REG_NAME)) {
@@ -145,24 +166,24 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Request page ID
-	 * @return int Page ID
+	 * Request page ID.
+	 * @return int Page ID.
 	 */
 	public function getId() {
 		return $this->_id;
 	}
 	
 	/**
-	 * Request page name
-	 * @return string Page name
+	 * Request page name.
+	 * @return string Page name.
 	 */
 	public function getName() {
 		return $this->_name;
 	}
 	
 	/**
-	 * Request page title
-	 * @return string Name of label used as page title
+	 * Request page title.
+	 * @return string Page title.
 	 */
 	public function getTitle() {
 		if ($this->_temptitle == null)
@@ -172,8 +193,8 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Request page layout
-	 * @return string Name of layout used by this page
+	 * Request page layout.
+	 * @return string Name of layout used by this page.
 	 */
 	public function getLayout() {
 		if ($this->_templayout == null)
@@ -183,8 +204,8 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Request meta keywords
-	 * @return string[] Page meta keywords
+	 * Request page keywords.
+	 * @return string[] Page keywords.
 	 */
 	public function getMetaKeywords() {
 		if ($this->_temp_meta_keywords == null)
@@ -194,8 +215,8 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Request meta description
-	 * @return string Page meta description
+	 * Request page description.
+	 * @return string Page description.
 	 */
 	public function getMetaDescription() {
 		if ($this->_temp_meta_description == null)
@@ -205,32 +226,35 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Request page arguments
-	 * @return string[] Page arguments
+	 * Request page arguments.
+	 * @return string[] Page arguments.
 	 */
 	public function getArgs() {
 		return $this->_args;
 	}
 	
 	/**
-	 * Request page blocks
-	 * @return string[] Block names used in page
+	 * Request page blocks.
+	 * @return string[] Block names used in page.
 	 */
 	public function getBlocks() {
 		return $this->_blocks;
 	}
 
 	/**
-	 * Request page current block id
-	 * @return int Current block id used in page
+	 * Request page current block ID.
+	 * 
+	 * Each time a block is called the page model stores the block ID for reference.
+	 * 
+	 * @return int Current block ID running in page.
 	 */
 	public function getBlockId() {
 		return $this->_bid;
 	}
 	
 	/**
-	 * Flag page as enabled
-	 * @return boolean True if page enabled, false otherwise
+	 * Flag page as enabled.
+	 * @return boolean True if page enabled, false otherwise.
 	 */
 	public function enable() {
 		$this->_enabled = true;
@@ -238,8 +262,8 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Flag page as disabled
-	 * @return boolean True if page disabled, false otherwise
+	 * Flag page as disabled.
+	 * @return boolean True if page disabled, false otherwise.
 	 */
 	public function disable() {
 		$this->_enabled = false;
@@ -247,16 +271,16 @@ class Saint_Model_Page {
 	}
 
 	/**
-	 * Check if robots are allowed
-	 * @return boolean True if robots allowed, false otherwise
+	 * Check if robots are allowed.
+	 * @return boolean True if robots allowed, false otherwise.
 	 */
 	public function allowsRobots() {
 		return $this->_allow_robots;
 	}
 	
 	/**
-	 * Flag robots as allowed
-	 * @return boolean True if robots allowed, false otherwise
+	 * Flag robots as allowed.
+	 * @return boolean True if robots allowed, false otherwise.
 	 */
 	public function enableRobots() {
 		$this->_allow_robots = true;
@@ -264,8 +288,8 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Flag robots as disallowed
-	 * @return boolean True if robots disallowed, false otherwise
+	 * Flag robots as disallowed.
+	 * @return boolean True if robots disallowed, false otherwise.
 	 */
 	public function disableRobots() {
 		$this->_disallow_robots = false;
@@ -273,40 +297,36 @@ class Saint_Model_Page {
 	}
 
 	/**
-	 * Add block association to page
-	 * @param $block Block name
-	 * @return boolean Always true
+	 * Add block association to page.
+	 * 
+	 * To avoid the necessity of developers registering which blocks are used in which page the system tracks them automatically.
+	 * 
+	 * @param string $block Block name.
 	 */
 	public function addBlock($block) {
 		$this->_newblocks[] = $block;
-		return 1;
 	}
 
 	/**
-	 * Remove block from being associated with page
-	 * @param $block Block name
-	 * @return boolean Always true
+	 * Remove block from being associated with page.
+	 * @param string $block Block name.
 	 */
 	public function remBlock($block) {
 		unset($this->_newblocks[array_search($block,$this->_newblocks)]);
-		return 1;
 	}
 	
 	/**
-	 * Set the current block ID
-	 * @param $bid New ID
-	 * @return boolean Always true
+	 * Set the current block ID.
+	 * @param int $bid New ID.
 	 */
 	public function setBlockId($bid) {
 		$this->_bid = $bid;
-		return 1;
 	}
 	
 	/**
-	 * Set page title to a new label.
-	 * Note: This is not the proper function for updating the title. Instead, use the associated Label functions.
-	 * @param string $title Name of the associated label
-	 * @return boolean Success/failure
+	 * Set page title.
+	 * @param string $title New title for page.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setTitle($title) {
 		if ($title = Saint::sanitize($title)) {
@@ -316,6 +336,11 @@ class Saint_Model_Page {
 			return 0;
 	}
 
+	/**
+	 * Set temporary title which will not be saved to database.
+	 * @param string $title Temporary title for page.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function setTempTitle($title) {
 		if ($title = Saint::sanitize($title)) {
 			$this->_temptitle = $title;
@@ -325,9 +350,9 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Set a new page name
-	 * @param string $name New name for page
-	 * @return boolean Success/failure
+	 * Set a new page name.
+	 * @param string $name New name for page.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setName($name) {
 		if ($name = Saint::sanitize($name,SAINT_REG_NAME)) {
@@ -338,9 +363,9 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Set a new page layout
-	 * @param string $layout Name of new layout for page
-	 * @return boolean Success/failure
+	 * Set a new page layout.
+	 * @param string $layout Name of new layout for page.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setLayout($layout) {
 		if (Saint_Model_Layout::inUse($layout)) {
@@ -359,9 +384,9 @@ class Saint_Model_Page {
 
 	
 	/**
-	 * Set a new page layout temporarily (doesn't save to db)
-	 * @param string $layout Name of new layout for page
-	 * @return boolean Success/failure
+	 * Set a temporary page layout which will not be saved to the database.
+	 * @param string $layout Name of new layout for page.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setTempLayout($layout) {
 		if (Saint_Model_Layout::inUse($layout)) {
@@ -379,11 +404,11 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Set a new page meta description
-	 * @param string $description New meta description for page
-	 * @return boolean Success/failure
+	 * Set a new page description.
+	 * @param string $description New description for page.
+	 * @return boolean True on success, false otherwise.
 	 */
-	public function setMetaDescription($description) {
+	public function setDescription($description) {
 		if ($description = Saint::sanitize($description)) {
 			$this->_meta_description = $description;
 			return 1;
@@ -391,7 +416,12 @@ class Saint_Model_Page {
 			return 0;
 	}
 	
-	public function setTempMetaDescription($description) {
+	/**
+	 * Set a temporary page description which will not be saved to the database.
+	 * @param string $description New description for page.
+	 * @return boolean True on success, false otherwise.
+	 */
+	public function setTempDescription($description) {
 		if ($description = Saint::sanitize($description)) {
 			$this->_temp_meta_description = $description;
 			return 1;
@@ -400,9 +430,9 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Set page arguments
-	 * @param string[] $args Set of arguments for page in form $key=>$val
-	 * @return boolean True if successful, false otherwise
+	 * Set page arguments.
+	 * @param string[] $args Arguments passed to current page.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function setArgs($args) {
 		if (is_array($args)) {
@@ -412,6 +442,11 @@ class Saint_Model_Page {
 			return 0;
 	}
 	
+	/**
+	 * Add loaded page to given category.
+	 * @param string $category Name of category to which to add the page.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function addToCategory($category) {
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		if ($scategory) {
@@ -437,6 +472,11 @@ class Saint_Model_Page {
 		}
 	}
 	
+	/**
+	 * Remove loaded page from given category.
+	 * @param string $category Name of category from which to remove the page.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function removeFromCategory($category) {
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		if ($scategory) {
@@ -459,6 +499,10 @@ class Saint_Model_Page {
 		}
 	}
 	
+	/**
+	 * Set categories for loaded page en masse.
+	 * @param string[] $newcats New categories for loaded page.
+	 */
 	public function setCategories($newcats) {
 		if (!is_array($newcats))
 			$newcats = explode(',',$newcats);
@@ -473,6 +517,10 @@ class Saint_Model_Page {
 		}
 	}
 	
+	/**
+	 * Get categories for the loaded page.
+	 * @return string[] Categories for loaded page.
+	 */
 	public function getCategories() {
 		try {
 			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_pagecats` as `p` WHERE `p`.`pageid`='$this->_id' AND `p`.`catid`=`c`.`id`");
@@ -487,7 +535,11 @@ class Saint_Model_Page {
 		}
 	}
 	
-	public function setMetaKeywords($tags) {
+	/**
+	 * Set keywords for loaded page.
+	 * @param string[] $tags New tags for loaded page.
+	 */
+	public function setKeywords($tags) {
 		if (!is_array($tags))
 			$tags = explode(',',$tags);
 		
@@ -498,7 +550,11 @@ class Saint_Model_Page {
 		return 1;
 	}
 	
-	public function setTempMetaKeywords($tags) {
+	/**
+	 * Set temporary keywords which will not be saved to the database.
+	 * @param string[] $tags New tags for loaded page.
+	 */
+	public function setTempKeywords($tags) {
 		if (!is_array($tags))
 			$tags = explode(',',$tags);
 		
@@ -506,15 +562,13 @@ class Saint_Model_Page {
 			$tags[$key] = Saint::sanitize($tag);
 		
 		$this->_temp_meta_keywords = $tags;
-		return 1;
 	}
 	
 	/**
-	 * Add meta keyword(s)
-	 * @param string[] $tags New meta tag(s)
-	 * @return boolean Success/failure
+	 * Add keyword(s).
+	 * @param string[] $tags New meta tag(s).
 	 */
-	public function addMetaKeywords($tags) {
+	public function addKeywords($tags) {
 		if (!is_array($tags))
 			$tags = array($tags);
 		
@@ -523,15 +577,13 @@ class Saint_Model_Page {
 		
 		$this->_meta_keywords = array_unique(
 		array_merge($this->_meta_keywords,$tags));
-		return 1;
 	}
 	
 	/**
-	 * Remove meta keyword(s)
-	 * @param string[] $tags New meta tag(s)
-	 * @return boolean Success/failure
+	 * Remove keyword(s).
+	 * @param string[] $tags New meta tag(s).
 	 */
-	public function remMetaKeywords($tags) {
+	public function remKeywords($tags) {
 		if (!is_array($tags))
 			$tags = array($tags);
 		foreach ($tags as $tag) {
@@ -539,9 +591,12 @@ class Saint_Model_Page {
 				unset($this->_meta_keywords[array_search($tag,$this->_meta_keywords)]);
 			}
 		}
-		return 1;
 	}
 	
+	/**
+	 * Remove loaded page from the database.
+	 * @return string[] Categories for loaded page.
+	 */
 	public function delete() {
 		if ($this->_id) {
 			try {
@@ -556,8 +611,8 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Save page details
-	 * @return boolean True for success, false otherwise
+	 * Save model details to database.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function save($log = true) {
 		if ($this->_id) {
@@ -589,7 +644,6 @@ class Saint_Model_Page {
 					}
 				} catch (Exception $n) {
 					# Happens under normal conditions
-					//Saint::logError("Problem selecting blocks for page '$this->_name': ".$n->getMessage(),__FILE__,__LINE__);
 				}
 				
 				$query = "UPDATE st_pages SET ".
@@ -624,20 +678,17 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Allow the controller to process the page
-	 * @return boolean True for success, false otherwise
+	 * Tell the controller to process the page options.
+	 * @return boolean True on success, false otherwise.
 	 */	
 	public function process() {
 		$controller = new Saint_Controller_Page($this);
-		if ($controller->process())
-			return 1;
-		else
-			return 0;
+		return $controller->process();
 	}
 	
 	/**
-	 * Render page
-	 * @return boolean True for success, false otherwise
+	 * Render the loaded page.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function render() {
 		if (isset($this->_templayout))

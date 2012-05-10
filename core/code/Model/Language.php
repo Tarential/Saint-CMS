@@ -1,12 +1,14 @@
 <?php
-
+/**
+ * Model of a natural language within the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_Language {
-	
 	/**
-	 * Checks if $language is in the database 
-	 * @param string $language Language name to check
-	 * @global string Pattern matching valid language names
-	 * @return boolean True if available, false otherwise
+	 * Checks if given language is in the database.
+	 * @param string $language Name of language to check.
+	 * @return boolean True if in use, false otherwise.
 	 */
 	public static function inUse($language) {
 		if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
@@ -20,11 +22,19 @@ class Saint_Model_Language {
 			return 0;
 	}
 	
+	/**
+	 * Get the active language.
+	 * @return string Name of the active language.
+	 */
 	public static function getCurrentLanguage() {
 		$user = Saint::getCurrentUser();
 		return $user->getLanguage();
 	}
 	
+	/**
+	 * Get the site's default language.
+	 * @return string Name of the default language.
+	 */
 	public static function getDefaultLanguage() {
 		if (defined("SAINT_DEF_LANG")) {
 			return SAINT_DEF_LANG;
@@ -46,6 +56,12 @@ class Saint_Model_Language {
 		}
 	}
 	
+	/**
+	 * Add a new language to the database.
+	 * @param string $language Name of language to add.
+	 * @param string $title Description of language.
+	 * @return boolean True on success, false on failure.
+	 */
 	public static function addLanguage($language,$title) {
 		if (Saint_Model_Language::inUse($language))
 			return 1;
@@ -62,6 +78,11 @@ class Saint_Model_Language {
 		}
 	}
 
+	/**
+	 * Remove language from database.
+	 * @param string $language Name of language to remove.
+	 * @return boolean True on success, false on failure.
+	 */
 	public static function removeLanguage($language) {
 		if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
 			try {
@@ -74,6 +95,11 @@ class Saint_Model_Language {
 			return 0;
 	}
 	
+	/**
+	 * Flag given language as enabled.
+	 * @param string $language Name of language to enable.
+	 * @return boolean True on success, false on failure.
+	 */
 	public static function enableLanguage($language) {
 		if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
 			try {
@@ -86,6 +112,11 @@ class Saint_Model_Language {
 			return 0;
 	}
 	
+	/**
+	 * Flag given language as disabled.
+	 * @param string $language Name of language to disable.
+	 * @return boolean True on success, false on failure.
+	 */
 	public static function disableLanguage($language) {
 		if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
 			try {

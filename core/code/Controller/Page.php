@@ -75,8 +75,8 @@ class Saint_Controller_Page {
 				$spage->setName($_POST['saint_edit_page_name']);
 				$spage->setTitle($_POST['saint_edit_page_title']);
 				$spage->setLayout($_POST['saint_edit_page_layout']);
-				$spage->setMetaKeywords($_POST['saint_edit_page_keywords']);
-				$spage->setMetaDescription($_POST['saint_edit_page_description']);
+				$spage->setKeywords($_POST['saint_edit_page_keywords']);
+				$spage->setDescription($_POST['saint_edit_page_description']);
 				$spage->setCategories($_POST['saint_edit_page_categories']);
 				if ($spage->save())
 					$success = true;
