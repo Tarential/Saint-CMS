@@ -45,7 +45,7 @@ class Saint_Model_Category {
 	
 	/**
 	 * Get the name for the category associated with the given ID.
-	 * @param $id
+	 * @param int $id ID of category for which to retrieve the name.
 	 */
 	public static function getName($id) {
 		if ($sid = Saint::sanitize($id,SAINT_REG_ID)) {
@@ -61,6 +61,11 @@ class Saint_Model_Category {
 		}
 	}
 	
+	/**
+	 * Add a new category with given name.
+	 * @param string $category New category name.
+	 * @return int New category ID on success, 0 on failure.
+	 */
 	public static function addCategory($category) {
 		if ($scategory = Saint::sanitize($category,SAINT_REG_NAME)) {
 			try {
@@ -77,6 +82,11 @@ class Saint_Model_Category {
 		}
 	}
 
+	/**
+	 * Remove category with given ID.
+	 * @param int $id ID of category to remove.
+	 * @return boolean True for success, false for failure.
+	 */
 	public static function removeCategory($id) {
 		$sid = Saint::sanitize($id,SAINT_REG_ID);
 		if ($sid) {
@@ -93,6 +103,11 @@ class Saint_Model_Category {
 		}
 	}
 	
+	/**
+	 * Change name of category with given ID to specified name.
+	 * @param int $id ID of category to change.
+	 * @param string $newname New name for category.
+	 */
 	public static function setCategory($id,$newname) {
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		$sid = Saint::sanitize($id,SAINT_REG_ID);

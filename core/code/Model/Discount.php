@@ -1,7 +1,16 @@
 <?php
+/**
+ * Parses discount rules and applies them to shop items.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_Discount {
 	protected $_discounts;
 	
+	/**
+	 * Load from database, parse and hold discount rules in memory.
+	 * @return boolean True for success, false otherwise.
+	 */
 	public function __construct() {
 		$this->_discounts = array();
 		try {
@@ -35,6 +44,13 @@ class Saint_Model_Discount {
 		return 1;
 	}
 	
+	/**
+	 * Apply discounts which match the given parameters.
+	 * @param int $productid Product ID to match.
+	 * @param int[] $categories Array of category IDs to match.
+	 * @param float $price Original price.
+	 * @return float Discounted price.
+	 */
 	public function getDiscountedPrice($productid,$categories,$price) {
 		if (empty($this->_discounts)) {
 			return $price;

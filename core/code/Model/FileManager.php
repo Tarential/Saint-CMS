@@ -1,5 +1,16 @@
 <?php
+/**
+ * Model for a file meta data editor in the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ * @todo Merge functionality with Saint_Model_File where applicable.
+ */
 class Saint_Model_FileManager {
+	/**
+	 * Get all files matching given arguments.
+	 * @param string[] $arguments Arguments to match when selecting files.
+	 * @return array[] Files matching given arguments.
+	 */
 	public static function getAllFiles($arguments = array()) {
 		$where = '';
 		if (SAINT_USE_CORE_MEDIA)
@@ -73,8 +84,13 @@ class Saint_Model_FileManager {
 		}
 	}
 	
+	/**
+	 * Scan media directories for files and insert them into the database.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function processFiles() {
 		global $saint_filetypes;
+		$return = 1;
 		$saintdir = SAINT_SITE_ROOT . "/core/images";
 		$userdir = SAINT_SITE_ROOT . "/images";
 		$uploaddir = SAINT_SITE_ROOT . "/media";
@@ -128,6 +144,7 @@ class Saint_Model_FileManager {
 							"VALUES ('$allfiles[$key]','$title','$keywords','$extension','$type','$ftype','$width','$height','$filesize')");
 					} catch (Exception $d) {
 						Saint::logError("Error inserting file info into database: ",$d->getMessage(),__FILE__,__LINE__);
+						$return = 0;
 					}
 				}
 			}
@@ -139,78 +156,142 @@ class Saint_Model_FileManager {
 			}
 		}
 		
-		return 1;
+		return $return;
 	}
 	
+	/**
+	 * Remove file entry from database.
+	 * @param int $fileid ID of file to remove.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function removeFromDb($fileid) {
 		$sid = Saint::sanitize($fileid,SAINT_REG_ID);
 		if ($sid) {
 			try {
 				Saint::query("DELETE FROM `st_files` WHERE `id`='$sid'");
+				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Unable to remove file with id '$sid': ".$e->getMessage(),__FILE__,__LINE__);
+				return 0;
 			}
 		} else {
 			Saint::logError("Invalid id: '$fileid'.",__FILE__,__LINE__);
+			return 0;
 		}
 	}
 	
-	public static function getImageUrl($image,$arguments) {
-		
-	}
-
+	/**
+	 * @todo Update icon functions to use dynamic files.
+	 */
+	
+	/**
+	 * Get URL of audio icon.
+	 * @return string URL of icon to represent audio files.
+	 */
 	public static function getAudioIconUrl() {
 		return "/core/images/audio.png";
 	}
 	
+	/**
+	 * Get URL of compressed icon.
+	 * @return string URL of icon to represent compressed files.
+	 */
 	public static function getCompressedIconUrl() {
 		return "/core/images/compressed.png";
 	}
 	
+	/**
+	 * Get URL of database icon.
+	 * @return string URL of icon to represent database files.
+	 */
 	public static function getDatabaseIconUrl() {
 		return "/core/images/database.png";
 	}
 	
+	/**
+	 * Get URL of disk icon.
+	 * @return string URL of icon to represent disk files.
+	 */
 	public static function getDiskIconUrl() {
 		return "/core/images/disk.png";
 	}
 	
+	/**
+	 * Get URL of document icon.
+	 * @return string URL of icon to represent document files.
+	 */
 	public static function getDocumentIconUrl() {
 		return "/core/images/document.png";
 	}
 	
+	/**
+	 * Get URL of executable icon.
+	 * @return string URL of icon to represent executable files.
+	 */
 	public static function getExecutableIconUrl() {
 		return "/core/images/executable.png";
 	}
 	
+	/**
+	 * Get URL of font icon.
+	 * @return string URL of icon to represent font files.
+	 */
 	public static function getFontIconUrl() {
 		return "/core/images/font.png";
 	}
 	
+	/**
+	 * Get URL of image icon.
+	 * @return string URL of icon to represent image files.
+	 */
 	public static function getImageIconUrl() {
 		return "/core/images/image.png";
 	}
 	
+	/**
+	 * Get URL of print icon.
+	 * @return string URL of icon to represent a printer.
+	 */
 	public static function getPrintIconUrl() {
 		return "/core/images/print.png";
 	}
 	
+	/**
+	 * Get URL of source icon.
+	 * @return string URL of icon to represent source files.
+	 */
 	public static function getSourceIconUrl() {
 		return "/core/images/source.png";
 	}
 	
+	/**
+	 * Get URL of spreadsheet icon.
+	 * @return string URL of icon to represent spreadsheet files.
+	 */
 	public static function getSpreadsheetIconUrl() {
 		return "/core/images/spreadsheet.png";
 	}
 	
+	/**
+	 * Get URL of system icon.
+	 * @return string URL of icon to represent system files.
+	 */
 	public static function getSystemIconUrl() {
 		return "/core/images/system.png";
 	}
 	
+	/**
+	 * Get URL of video icon.
+	 * @return string URL of icon to represent video files.
+	 */
 	public static function getVideoIconUrl() {
 		return "/core/images/video.png";
 	}
 	
+	/**
+	 * Get URL of web icon.
+	 * @return string URL of icon to represent web files.
+	 */
 	public static function getWebIconUrl() {
 		return "/core/images/web.png";
 	}
@@ -222,6 +303,9 @@ class Saint_Model_FileManager {
 	protected $_categories;
 	protected $_location;
 	
+	/**
+	 * Instantiate the model with blank data.
+	 */
 	public function __construct() {
 		$this->_id = 0;
 		$this->_title = '';
@@ -230,10 +314,15 @@ class Saint_Model_FileManager {
 		$this->_categories = array();
 	}
 	
+	/**
+	 * Load file information from the database.
+	 * @param int $id ID of file whose meta data to retrieve.
+	 * @return boolean True on success, false on failure.
+	 */
 	public function load($id) {
 		if ($id = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {
-				$info = Saint::getRow("SELECT `title`,`keywords`,`description`,`location` FROM st_files WHERE id='$id'");
+				$info = Saint::getRow("SELECT `title`,`keywords`,`description`,`location` FROM `st_files` WHERE id='$id'");
 				$this->_id = $id;
 				$this->_title=$info[0];
 				$this->_keywords=$info[1];
@@ -248,40 +337,75 @@ class Saint_Model_FileManager {
 			return 0;
 	}
 
+	/**
+	 * Get ID of loaded model.
+	 * @return int ID of loaded model.
+	 */
 	public function getId() {
 		return $this->_id;
 	}
 
+	/**
+	 * Get title of loaded file.
+	 * @return string Title of loaded file.
+	 */
 	public function getTitle() {
 		return $this->_title;
 	}
 
+	/**
+	 * Get keywords of loaded file.
+	 * @return string Keywords of loaded file.
+	 */
 	public function getKeywords() {
 		return $this->_keywords;
 	}
 
+	/**
+	 * Get description of loaded file.
+	 * @return string Description of loaded file.
+	 */
 	public function getDescription() {
 		return $this->_description;
 	}
 	
-	public function getLocation($width = null, $height = null) {
-		if ($width == null && $height == null)
-			return $this->_location;
-		
+	/**
+	 * Get location of loaded file.
+	 * @return string Location of loaded file.
+	 */
+	public function getLocation() {
+		return $this->_location;
 	}
 	
+	/**
+	 * Get name of loaded file.
+	 * @return string Name of loaded file.
+	 */
 	public function getFileName() {
 		return preg_replace('/^.*\/([^\/])$/','$1',$this->_location);
 	}
 	
+	/**
+	 * Get extension of loaded file.
+	 * @return string Extension of loaded file.
+	 */
 	public function getFileExtension() {
 		return $this->_extension;
 	}
 	
+	/**
+	 * Get type of loaded file.
+	 * @return string Type of loaded file.
+	 */
 	public function getFileType() {
 		return $this->_filetype;
 	}
 	
+	/**
+	 * Set the title for the loaded file.
+	 * @param string $title New title for loaded file.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function setTitle($title) {
 		if ($title = Saint::sanitize($title)) {
 			$this->_title = $title;
@@ -290,6 +414,11 @@ class Saint_Model_FileManager {
 			return 0;
 	}
 	
+	/**
+	 * Set the keywords for the loaded file.
+	 * @param string $keywords New keywords for loaded file.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function setKeywords($keywords) {
 		if ($keywords = Saint::sanitize($keywords)) {
 			$this->_keywords = $keywords;
@@ -298,6 +427,11 @@ class Saint_Model_FileManager {
 			return 0;
 	}
 	
+	/**
+	 * Set the description for the loaded file.
+	 * @param string $description New description for loaded file.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function setDescription($description) {
 		if ($description = Saint::sanitize($description)) {
 			$this->_description = $description;
@@ -306,6 +440,11 @@ class Saint_Model_FileManager {
 			return 0;
 	}
 	
+	/**
+	 * Add the loaded file to the given category.
+	 * @param string $category Category into which to add the file.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function addToCategory($category) {
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		if ($scategory) {
@@ -332,6 +471,11 @@ class Saint_Model_FileManager {
 		}
 	}
 	
+	/**
+	 * Remove the loaded file to the given category.
+	 * @param string $category Category from which to remove the file.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function removeFromCategory($category) {
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		if ($scategory) {
@@ -354,6 +498,10 @@ class Saint_Model_FileManager {
 		}
 	}
 	
+	/**
+	 * Change categories for loaded model en masse.
+	 * @param string[] $newcats New categories for loaded file.
+	 */
 	public function setCategories($newcats) {
 		if (!is_array($newcats))
 			$newcats = explode(',',$newcats);
@@ -368,6 +516,10 @@ class Saint_Model_FileManager {
 		}
 	}
 	
+	/**
+	 * Get categories for loaded file.
+	 * @return string[] Category IDs (keys) and names (values) for loaded file.
+	 */
 	public function getCategories() {
 		try {
 			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_filecats` as `p` WHERE `p`.`fileid`='$this->_id' AND `p`.`catid`=`c`.`id`");
@@ -382,6 +534,10 @@ class Saint_Model_FileManager {
 		}
 	}
 	
+	/**
+	 * Save loaded model information to database.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function save() {
 		if ($this->_id) {
 			$query = "UPDATE st_files SET ".

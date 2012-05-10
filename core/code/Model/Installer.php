@@ -1,5 +1,5 @@
 <?php
-
+/* Future integrated installer.
 class Saint_Model_Installer {
 	protected $_labels;
 	protected $_languages;
@@ -46,3 +46,4 @@ class Saint_Model_Installer {
 		
 	}
 }
+*/

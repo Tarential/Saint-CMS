@@ -1,19 +1,15 @@
 <?php
+/**
+ * Model for CMS-manageable files within the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_File {
-	public static function nameIsAvailable($name) {
-		if ($sname = Saint::sanitize($name,SAINT_REG_NAME)) {
-			try {
-					$id = Saint::getOne("SELECT `id` FROM `st_filelabels` WHERE `name`='$sname'");
-					return 0;
-				} catch (Exception $e) {
-					return 1;
-				}
-		} else {
-			Saint::logError("Invalid file name: '$name'. ",__FILE__,__LINE__);
-			return 0;
-		}
-	}
-	
+	/**
+	 * Check if file with given ID exists in database.
+	 * @param int $fileid ID to check for.
+	 * @return int ID of file on success, 0 on failure.
+	 */
 	public static function idExists($fileid) {
 		$sid = Saint::sanitize($fileid,SAINT_REG_ID);
 		if ($sid) {
@@ -26,6 +22,11 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Check if a location in the filesystem is empty.
+	 * @param string $location Path of file to check.
+	 * @return boolean True if no file found, false otherwise.
+	 */
 	public static function locationIsAvailable($location) {
 		if ($sloc = Saint::sanitize($location)) {
 			if (file_exists($location))
@@ -38,6 +39,11 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Remove file with given ID from the database.
+	 * @param int $id ID of file to remove.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function removeFromDb($id) {
 		if ($sid = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {
@@ -53,19 +59,11 @@ class Saint_Model_File {
 		}
 	}
 	
-	public static function setFile($name,$id) {
-		$sname = Saint::sanitize($name,SAINT_REG_NAME);
-		try {
-			$id = Saint::getOne("SELECT `fileid` FROM `st_filelabels` WHERE `name`='$sname'");
-		} catch (Exception $e) {
-			# No file label yet assigned, that's ok we'll create one with the default
-			if (isset($arguments['default']) && file_exists(SAINT_SITE_ROOT. $arguments['default'])) {
-				$imgfile = $arguments['default'];
-			}
-			Saint_Model_FileLabel::createLabel($sname,$imgfile);
-		}
-	}
-	
+	/**
+	 * Get location of file with given ID.
+	 * @param int $id ID of file requested.
+	 * @return string Path of file requested.
+	 */
 	public static function getFileLocation($id) {
 		$sid = Saint::sanitize($id,SAINT_REG_ID);
 		try {
@@ -89,6 +87,10 @@ class Saint_Model_File {
 	protected $_size;
 	protected $_url;
 	
+	/**
+	 * Attempt to load model with information from the database matching the given file ID; otherwise load blank data.
+	 * @param int $id ID of file to load.
+	 */
 	public function __construct($id = null) {
 		if ($id == null || !$this->load($id)) {
 			$this->_id = 0;
@@ -105,6 +107,11 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Load model with information from the database matching the given file ID.
+	 * @param int $id ID of file to load.
+	 * @return boolean True for success, false otherwise.
+	 */
 	public function load($id) {
 		if ($sid = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {
@@ -132,6 +139,11 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Load model with information from the database matching the given file location.
+	 * @param string $location Location of file to load.
+	 * @return boolean True for success, false otherwise.
+	 */
 	public function loadByLocation($location) {
 		$slocation = Saint::sanitize($location);
 		if ($slocation) {
@@ -151,50 +163,98 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Get current file ID.
+	 * @return int ID of loaded model.
+	 */
 	public function getId() {
 		return $this->_id;
 	}
-	
+
+	/**
+	 * Get current file location.
+	 * @return string Location of loaded file.
+	 */
 	public function getLocation() {
 		return $this->_location;
 	}
 	
+	/**
+	 * Get current file URL.
+	 * @return string URL to access loaded file.
+	 */
 	public function getUrl() {
 		return $this->_url;
 	}
 	
+	/**
+	 * Get current file name.
+	 * @return string Name of loaded file.
+	 */
 	public function getName() {
 		return $this->_name;
 	}
 	
+	/**
+	 * Get current file title.
+	 * @return string Title of loaded file.
+	 */
 	public function getTitle() {
 		return $this->_title;
 	}
 	
+	/**
+	 * Get current file keywords.
+	 * @return string Keywords associated with loaded file.
+	 */
 	public function getKeywords() {
 		return $this->_keywords;
 	}
 	
+	/**
+	 * Get current file description.
+	 * @return string Description of loaded file.
+	 */
 	public function getDescription() {
 		return $this->_description;
 	}
 	
+	/**
+	 * Get current file extension.
+	 * @return string Extension of loaded file.
+	 */
 	public function getExtension() {
 		return $this->_extension;
 	}
 	
+	/**
+	 * Get current file size.
+	 * @return int Size of loaded file in bytes.
+	 */
 	public function getSize() {
 		return $this->_size;
 	}
 	
+	/**
+	 * Get current file width; 0 for non-image files.
+	 * @return int Width of loaded file in pixels.
+	 */
 	public function getWidth() {
 		return $this->_width;
 	}
 	
+	/**
+	 * Get current file height; 0 for non-image files.
+	 * @return int Height of loaded file in pixels.
+	 */
 	public function getHeight() {
 		return $this->_height;
 	}
 	
+	/**
+	 * Get URL of icon associated with current file type.
+	 * @return string URL of file icon.
+	 */
 	public function getIconUrl() {
 		switch ($this->_type) {
 			case "audio":
@@ -242,10 +302,19 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Set URL for loaded file.
+	 * @param string $url New URL to associate with loaded file.
+	 */
 	public function setUrl($url) {
 		$this->_url = $url;
 	}
 
+	/**
+	 * Set new file name. 
+	 * @param string $name New name to use.
+	 * @return boolean True for success, false otherwise.
+	 */
 	public function setName($name) {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
 		if ($sname) {
@@ -257,6 +326,11 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Set new file title.
+	 * @param string $title New title to use.
+	 * @return boolean True for success, false otherwise.
+	 */
 	public function setTitle($title) {
 		$stitle = Saint::sanitize($title);
 		if ($stitle) {
@@ -267,6 +341,11 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Set new file keywords.
+	 * @param string $keywords New keywords to use.
+	 * @return boolean True for success, false otherwise.
+	 */
 	public function setKeywords($keywords) {
 		$skeywords = Saint::sanitize($keywords);
 		if ($skeywords) {
@@ -277,6 +356,11 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Set new file description.
+	 * @param string $description New description to use.
+	 * @return boolean True for success, false otherwise.
+	 */
 	public function setDescription($description) {
 		$sdescription = Saint::sanitize($description);
 		if ($sdescription) {
@@ -287,6 +371,11 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Save loaded model information to database.
+	 * @param boolean $log Log save event to file if true.
+	 * @return boolean True for success, false otherwise.
+	 */
 	public function save($log = true) {
 		if ($this->_id) {
 			try {
@@ -308,6 +397,9 @@ class Saint_Model_File {
 		}
 	}
 	
+	/**
+	 * Display loaded file on the page using file-manager/file block template.
+	 */
 	public function display() {
 		$page = Saint::getCurrentPage();
 		$page->curfile = $this;
