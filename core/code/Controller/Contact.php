@@ -1,5 +1,15 @@
 <?php
+/**
+ * Controller to handle outbound notifications from the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Controller_Contact {
+	/**
+	 * E-mail a contact form submission to the site administrator.
+	 * @param array $details Details posted to contact form.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function emailAdmin($details) {
 		$owner = new Saint_Model_User();
 		$owner->loadByUsername(Saint::getSiteOwner());
@@ -21,16 +31,23 @@ class Saint_Controller_Contact {
 		$page->setTempLayout("system/error");
 		if (mail($owner->getEmail(),$mailsub,$mailcon,$mailhead)) {
 			$page->error = "Thank you for submitting your contact request. We will reply to you as soon as availability allows.";
+			return 1;
 		} else {
 			Saint::logError("Cannot connect to the mail server. Check your host php settings and mail server status for more information.",__FILE__,__LINE__);
 			$page->error = "We're sorry, but due to technical difficulties our contact form is not working. If you don't mind, please e-mail <a href=\"".$owner->getEmail()."\">".$owner->getEmail()."</a> and we will look into the problem as soon as possible.";
+			return 0;
 		}
 	}
 	
+	/**
+	 * Send e-mail notification of sale with given ID to both purchaser and site administrator.
+	 * @param int $transactionid ID of transaction for which to send notification.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function sendSaleNotice($transactionid) {
 		$transaction = new Saint_Model_Transaction();
 		if ($transaction->load($transactionid)) {
-			
+			$success = true;
 			$email_subject = "Sale Successful!";
 			
 			$cart_template = <<<EOT
@@ -114,9 +131,10 @@ EOT;
 			foreach ($recipients as $recipient) {
 				if (!mail($recipient,$email_subject,$contents,$mailhead)) {
 					Saint::logError("Unable to establish a connection with the mail server. Check your host php settings and mail server status for more information.",__FILE__,__LINE__);
+					$success = false;
 				}
 			}
-			
+			return $success;
 		} else {
 			return 0;
 		}

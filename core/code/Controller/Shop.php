@@ -1,6 +1,15 @@
 <?php
+/**
+ * Controller for the Saint shop.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Controller_Shop {
-	
+	/**
+	 * Serve a file for the given product if the given link ID is active.
+	 * @param int $productid ID of product whose related file to serve.
+	 * @param string $linkid Link ID sent to customer after purchase confirmation.
+	 */
 	public static function download($productid,$linkid = null) {
 		$page = Saint::getCurrentPage();
 		if (Saint_Model_Shop::decrementLink($productid,$linkid)) {

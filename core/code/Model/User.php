@@ -164,9 +164,11 @@ class Saint_Model_User {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public static function logout() {
-		if (Saint_Model_User::setCurrentUsername(''))
+		$user = Saint::getCurrentUser();
+		$user->destroySessions();
+		if (Saint_Model_User::setCurrentUsername('')) {
 			return 1;
-		else
+		} else
 			return 0;
 	}
 	
@@ -588,6 +590,7 @@ class Saint_Model_User {
 	/**
 	 * Saves loaded user information to database.
 	 * @return boolean True on success, false otherwise.
+	 * @todo Add proper conflict test and error reporting in return code.
 	 */
 	public function save() {
 		if ($this->_id) {

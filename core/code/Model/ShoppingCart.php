@@ -3,6 +3,7 @@
  * Model for a cart containing shop items within the Saint framework.
  * @author Preston St. Pierre
  * @package Saint
+ * @todo Make guest cart items persist through login.
  */
 class Saint_Model_ShoppingCart {
 	protected $_id;

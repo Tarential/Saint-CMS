@@ -1,6 +1,16 @@
 <?php
+/**
+ * Controller for users within the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Controller_User {
 	
+	/**
+	 * Attempt to log in a user with the given username and password.
+	 * @param string $username Username to check.
+	 * @param string $password Password to check.
+	 */
 	public static function login($username,$password) {
 		$page = Saint::getCurrentPage();
 		$success = 1;
@@ -18,6 +28,10 @@ class Saint_Controller_User {
 		return $success;
 	}
 	
+	/**
+	 * Update details for user with given ID.
+	 * @param int $id ID of user to edit.
+	 */
 	public static function saveUser($id) {
 		if (Saint::getCurrentUser()->hasPermissionTo("edit-user") || 
 			(Saint::getCurrentUser()->getId() == $id && Saint::getCurrentUser()->hasPermissionTo("edit-self"))) {
@@ -110,10 +124,6 @@ class Saint_Controller_User {
 				}
 			
 			}
-			/*
-			if (sizeof($errors) == 0 && !$user->save()) {
-				$errors[] = "Unable to save user. Check the error logs for more information.";
-			} */
 			
 			$page = Saint::getCurrentPage();
 			

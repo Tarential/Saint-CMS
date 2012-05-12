@@ -31,7 +31,6 @@ class Saint {
 	
 	/**
 	 * Add a user to the database.
-	 * @todo Add proper conflict test and error reporting in return code.
 	 * @param string $username Username to add.
 	 * @param string $password Password for user.
 	 * @param string $email E-mail address for user.
@@ -810,7 +809,7 @@ class Saint {
 	
 	/**
 	 * Get the URL used for the blog RSS feed.
-	 * @todo Update this data to be dynamic.
+	 * @todo Update blog feed URL to be CMS-editable.
 	 * @return string URL for the RSS feed.
 	 */
 	public static function getBlogRssUrl() {

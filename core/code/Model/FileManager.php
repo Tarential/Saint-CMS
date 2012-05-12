@@ -181,7 +181,7 @@ class Saint_Model_FileManager {
 	}
 	
 	/**
-	 * @todo Update icon functions to use dynamic files.
+	 * @todo Update icon functions to be CMS-editable.
 	 */
 	
 	/**

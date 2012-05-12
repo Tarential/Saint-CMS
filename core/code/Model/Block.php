@@ -873,7 +873,9 @@ EOT;
 				Saint::logError("Failed to save block $name with id $id because ".$e->getMessage(),__FILE__,__LINE__);
 				return 0;
 			}
-		} else
+		} else {
+			Saint::logError("You must load a block before calling save.",__FILE__,__LINE__);
 			return 0;
+		}
 	}
 }

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Index controller and router for the Saint framework.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 session_start();
 
 $profiling = false;
@@ -11,9 +16,7 @@ if ($profiling) {
 }
 
 /**
- * @todo Block all xml file downloads in .htaccess
- * @todo Make guest cart items persist through login
- * @todo Add logout link + make logout function clear cookie
+ * @todo Block all xml file and restricted folder downloads in .htaccess
  */
 
 # Establish some basic runtime variables for use throughout the site
@@ -30,7 +33,11 @@ if (file_exists("config.php"))
 else
 	$installed = false;
 
-# For automatically including classes based on name
+/**
+ * Saint class autoload function.
+ * @param string $class_name Name of class to load.
+ * @return boolean True on success, false otherwise.
+ */
 function st_autoload($class_name) {
 	if (preg_match('/^\w+$/',$class_name)) {
 		$class_name = preg_replace('/Saint_/','',$class_name);

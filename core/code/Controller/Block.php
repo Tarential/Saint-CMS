@@ -1,6 +1,15 @@
 <?php
-
+/**
+ * Repeating block controller.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Controller_Block {
+	/**
+	 * Load block into admin interface for editing.
+	 * @param string $block Name of block to load for editing.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function loadBlock($block) {
 		if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
 			$page = Saint::getCurrentPage();
@@ -16,7 +25,7 @@ class Saint_Controller_Block {
 			if (!$page->addblock) {
 				$page->setTempLayout("error");
 				$page->error = "Failed to load block for editing. Check error logs for further details.";
-				return 1;
+				return 0;
 			}
 			
 			$page->addblockid = $page->addblock->getId();
@@ -27,15 +36,23 @@ class Saint_Controller_Block {
 			);
 			$page->setTempLayout("system/editblock");
 		} else {
-			Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$block."-".$_POST['blockid']." but was denied access.");
+			Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$block."-".$_POST['blockid'].
+				" from IP $_SERVER[REMOTE_ADDR] but was denied access.");
 			$page->setTempLayout("error");
-			$page->error = "You do not have access to edit blocks on this website. This attempt has been logged.";
+			$page->error = "You do not have access to edit data which belongs to other users. This attempt has been logged.";
+			return 0;
 		}
+		return 1;
 	}
-	
+	/**
+	 * Modify block based on input data.
+	 * @param int $editid ID of block to edit.
+	 * @param string $blockname Name of block to edit.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public static function editBlock($editid,$blockname) {
+		$success = false;
 		if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
-			$success = false;
 			$page = Saint::getCurrentPage();
 			$args = $page->getArgs();
 			$page->setTempLayout("system/json");
@@ -61,23 +78,18 @@ class Saint_Controller_Block {
 						$block->set($setting[0],$_POST[$sname]);
 				}
 				if ($block->save()) {
-					$success = true;
-				} else {
-					Saint::logError("Cannot edit block.",__FILE__,__LINE__);
-				}
-			} else {
-				Saint::logError("Failed to load block named '".
-					Saint_Model_Block::convertNameFromWeb($_POST['saint-block-setting-saintname']).
-					"' with ID '".$args['edit']."'.",__FILE__,__LINE__);
+					$success = true; }
 			}
 		} else {
-			Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$_POST['block']."-".$_POST['blockid']." but was denied access.");
+			Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$_POST['block']."-".$_POST['blockid'].
+				" from IP $_SERVER[REMOTE_ADDR] but was denied access.",__FILE__,__LINE__);
 			$page->setLayout("error");
-			$page->error = "You do not have access to edit blocks on this website. This attempt has been logged.";
+			$page->error = "You do not have access to edit data which belongs to other users. This attempt has been logged.";
 		}
 		$page->jsondata = array(
 			'success' => $success,
 			'actionlog' => Saint::getActionLog(),
 		);
+		return $success;
 	}
 }

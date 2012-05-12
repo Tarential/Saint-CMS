@@ -1,6 +1,15 @@
 <?php
+/**
+ * Controller for transactions managed by the Saint shop.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Controller_Transaction {
-	
+	/**
+	 * Verify an IPN message sent by PayPal.
+	 * 
+	 * Reposts given data to PayPal and logs transaction details.
+	 */
 	public static function verifyIpn() {
 		Saint::logError("Verifying IPN",__FILE__,__LINE__);
 		Saint::getCurrentPage()->setTempLayout("system/system");

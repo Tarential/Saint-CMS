@@ -1,14 +1,20 @@
 <?php
 /**
- * This is the main router for our controllers.
- * See the manual for info on creating a custom controller.
+ * Central input controller for the Saint framework.
  * @author Preston St. Pierre
+ * @package Saint
  */
 
 class Saint_Controller_Page {
 	protected $_page;
 	protected $_discounter;
 	
+	/**
+	 * Create a model for the current page and apply given arguments.
+	 * @param string $name Name of page to load.
+	 * @param array $args Arguments to pass.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function __construct($name,$args = array()) {
 		$this->_discounter = null;
 		$this->_page = new Saint_Model_Page();
@@ -16,10 +22,19 @@ class Saint_Controller_Page {
 		return $this->_page->loadByName($name);
 	}
 	
+	/**
+	 * Get the model of the currently running page.
+	 * @return Saint_Model_Page Page being run.
+	 */
 	public function getCurrentPage() {
 		return $this->_page;
 	}
 
+	/**
+	 * Change the active page.
+	 * @param Saint_Model_Page $page New page to hold running information.
+	 * @return boolean True on success, false otherwise.
+	 */
 	public function setCurrentPage($page) {
 		if (is_a($page,'Saint_Model_Page')) {
 			$this->_page = $page;
@@ -28,6 +43,10 @@ class Saint_Controller_Page {
 			return 0;
 	}
 	
+	/**
+	 * Get a model to apply active discounts; cache it after first call.
+	 * @return Saint_Model_Discount Model with active discounts loaded from the database.
+	 */
 	public function getDiscounter() {
 		if ($this->_discounter == null) {
 			$this->_discounter = new Saint_Model_Discount();
@@ -35,6 +54,9 @@ class Saint_Controller_Page {
 		return $this->_discounter;
 	}
 	
+	/**
+	 * Process user input, scan managed directories for changes, then start the page render process.
+	 */
 	public function process() {
 		if(!SAINT_CACHING) {
 			Saint_Model_Block::processSettings();
@@ -45,7 +67,7 @@ class Saint_Controller_Page {
 		
 		$args = $this->_page->getArgs();
 		
-		/**
+		/*
 		 * Page controls
 		 */
 		
@@ -92,7 +114,7 @@ class Saint_Controller_Page {
 			);
 		}
 
-		/**
+		/*
 		 * Search controls
 		 */
 		
@@ -101,7 +123,7 @@ class Saint_Controller_Page {
 			$this->_page->searchresults = Saint::search($_POST['saint-search-phrase']);
 		}
 		
-		/**
+		/*
 		 * Block controls
 		 */
 		
@@ -113,7 +135,7 @@ class Saint_Controller_Page {
 			Saint_Controller_Block::editBlock($args['edit'],$_POST['saint-block-setting-saintname']);
 		}
 		
-		/**
+		/*
 		 * Label controls
 		 */
 		
@@ -121,7 +143,7 @@ class Saint_Controller_Page {
 			Saint_Controller_Label::editLabel($_POST['label-name'],$_POST['label-value']);
 		}
 		
-		/**
+		/*
 		 * User controls
 		 */
 		
@@ -145,7 +167,7 @@ class Saint_Controller_Page {
 			}
 		}
 		
-		/**
+		/*
 		 * Category controls
 		 */
 		
@@ -161,7 +183,7 @@ class Saint_Controller_Page {
 			Saint_Controller_Category::removeCategory($_POST['saint-set-category-id'],$_POST['saint-set-category-name']);
 		}
 		
-		/**
+		/*
 		 * WYSIWYG controls
 		 */
 		
@@ -171,7 +193,7 @@ class Saint_Controller_Page {
 				,$_POST['saint-wysiwyg-content']);
 		}
 		
-		/**
+		/*
 		 * Contact form controls
 		 */
 		
@@ -183,7 +205,7 @@ class Saint_Controller_Page {
 			));
 		}
 		
-		/**
+		/*
 		 * File manager controls
 		 */
 		
@@ -214,7 +236,7 @@ class Saint_Controller_Page {
 			}
 		}
 		
-		/**
+		/*
 		 * Shop controls
 		 */
 			
@@ -260,7 +282,7 @@ class Saint_Controller_Page {
 			}
 		}
 		
-		/**
+		/*
 		 * Parse arguments for potential commands
 		 */
 		foreach ($this->_page->getArgs() as $key=>$val) {

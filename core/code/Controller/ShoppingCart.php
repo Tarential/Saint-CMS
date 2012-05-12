@@ -1,6 +1,14 @@
 <?php
+/**
+ * Controller for a user shopping cart in the Saint store.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Controller_ShoppingCart {
-	
+	/**
+	 * Add an item to the cart of the current user.
+	 * @param int $itemid ID of item to add.
+	 */
 	public static function addToCart($itemid) {
 		$sc = Saint::getShoppingCart();
 		$page = Saint::getCurrentPage();
@@ -25,6 +33,10 @@ class Saint_Controller_ShoppingCart {
 		}
 	}
 	
+	/**
+	 * Remove an item from the cart of the current user.
+	 * @param int $itemid ID of item to remove.
+	 */
 	public static function removeFromCart($itemid) {
 		$sc = Saint::getShoppingCart();
 		$page = Saint::getCurrentPage();
