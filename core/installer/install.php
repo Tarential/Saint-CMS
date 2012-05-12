@@ -1,5 +1,5 @@
 <?php
-
+global $args;
 function setInstalled($owner) {
 	try {
 		if (mysql_num_rows(mysql_query("SELECT `id` FROM `st_config`"))) {
@@ -29,10 +29,15 @@ include chop($_SERVER['DOCUMENT_ROOT'],'/') . "/core/installer/header.php";
 if (phpversion() < 5) {
 	echo "Sorry, Saint requires PHP version 5.0 or greater and we detected PHP version ".phpversion().".";
 } else {
-	/*
-	if (file_exists("config.php")) {
-		require("config.php");
-	*/
+
+	if (isset($args['saint-eula-accept']) && $args['saint-eula-accept'] == "yes") {
+		$_SESSION['saint-eula-accept'] = "yes";
+	}
+	
+	if (!isset($_SESSION['saint-eula-accept']) || $_SESSION['saint-eula-accept'] != "yes") {
+		include SAINT_SITE_ROOT . "/core/installer/eula.php";
+	} else {
+		
 		if (!isset($st_link) || !$st_link || !$st_linkdb) {
 			$st_link = mysql_connect(SAINT_DB_HOST,SAINT_DB_USER,SAINT_DB_PASS);
 			$st_linkdb = mysql_select_db(SAINT_DB_NAME);
@@ -69,10 +74,7 @@ if (phpversion() < 5) {
 				}
 			}
 		}
-	/*
-	} else
-		include chop($_SERVER['DOCUMENT_ROOT'],'/') . "/core/installer/no-config.php";
-	*/
+	}
 }
 include chop($_SERVER['DOCUMENT_ROOT'],'/') . "/core/installer/footer.php";
 

@@ -5,9 +5,27 @@ body {
 div {
 	display: block; }
 
+a {
+	color: #000;
+	font-weight: bold;
+	text-decoration: none; }
+
+a:hover {
+	text-decoration: underline; }
+
 div.info-block {
 	margin: 0 auto;
 	width: 600px; }
+
+#eula p {
+	margin: 2px 0; }
+
+#eula p.section {
+	margin-top: 10px; }
+
+#eula p.section.links {
+	margin: 25px 0 50px;
+	text-align: center; }
 
 h1 {
 	text-align: center; }
