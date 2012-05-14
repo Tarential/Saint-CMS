@@ -115,6 +115,7 @@ class Saint_Model_Label {
 				$label = Saint::getOne($query);
 			} catch (Exception $e) {
 				# It's a new label, nothing to be alarmed about.
+				$label = $default;
 			}
 		}
 		if (Saint::getCurrentUser()->hasPermissionTo("edit-label"))
