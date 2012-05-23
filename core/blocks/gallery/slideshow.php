@@ -9,18 +9,20 @@ $files = Saint_Model_FileManager::getAllFiles($arguments);
 if (isset($arguments['width']))
 	$width = $arguments['width'];
 else
-	$width = '600';
+	$width = null;
 if (isset($arguments['height']))
 	$height = $arguments['height'];
 else
-	$height = '400';
+	$height = null;
 if (isset($arguments['autoplay']))
 	$autoplay = $arguments['autoplay'];
 else
 	$autoplay = '5000';
 ?>
 <div id="slides">
-  <div class="slides_container" style="display:block;width:<?php echo $width; ?>px;height:<?php echo $height; ?>px;">
+  <div class="slides_container" style="display:block;<?php 
+  if ($width != null) echo "width:".$width."px;";
+  if ($height != null) echo "height:".$height."px;";?>">
   	<?php foreach ($files as $curfile): ?>
   	<?php
 		$img = new Saint_Model_Image();

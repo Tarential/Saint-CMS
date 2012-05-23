@@ -22,7 +22,7 @@ class Saint_Controller_User {
 			header("Location: " .SAINT_BASE_URL);
 		} else {
 			$page->error = "Username/password combination incorrect. Please try again.";
-			$page->setTempLayout("error");
+			$page->setTempLayout("system/error");
 			$success = 0;
 		}
 		return $success;
@@ -143,7 +143,7 @@ class Saint_Controller_User {
 				}
 			} else {
 				if (sizeof($errors) == 0) {
-					$page->setTempLayout("error");
+					$page->setTempLayout("system/error");
 					$page->error = "Registration Successful.";
 				} else {
 					$page->setTempLayout("register");

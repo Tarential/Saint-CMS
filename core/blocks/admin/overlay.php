@@ -102,7 +102,7 @@
 					foreach (Saint::getLayoutNames() as $layout)
 						$options[$layout] = ucfirst($layout);
 				?>
-				<li><?php echo Saint::genField("saint_edit_page_layout","select","Layout: ",array('options'=>$options,'selected' => $page->getName())); ?></li>
+				<li><?php echo Saint::genField("saint_edit_page_layout","select","Layout: ",array('options'=>$options,'selected' => $page->getLayout())); ?></li>
 				<li><?php echo Saint::genField("saint_edit_page_keywords","text","Keywords: ",array('value'=> implode(',',$page->getMetaKeywords()))); ?></li>
 				<li><?php echo Saint::genField("saint_edit_page_description","textarea","Description: ",array('value'=> $page->getMetaDescription())); ?></li>
 				<?php

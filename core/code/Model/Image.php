@@ -8,6 +8,7 @@ class Saint_Model_Image extends Saint_Model_File {
 	protected $_linktofull;
 	protected $_imgfile;
 	protected $_imgtype;
+	protected $_arguments;
 	
 	/**
 	 * Attempt to load image matching given ID; load blank model on failure.
@@ -17,6 +18,7 @@ class Saint_Model_Image extends Saint_Model_File {
 	 */
 	public function __construct($id = null,$arguments = array()) {
 		parent::__construct($id);
+		$this->_arguments = $arguments;
 		if (isset($arguments['link'])) {
 			$this->_linktofull = $arguments['link'];
 		} else {
@@ -31,6 +33,7 @@ class Saint_Model_Image extends Saint_Model_File {
 	 * @see core/code/Model/Saint_Model_File::load()
 	 */
 	public function load($id, $arguments = array()) {
+		$this->_arguments = $arguments;
 		if (isset($arguments['link'])) {
 			$this->_linktofull = $arguments['link'];
 		} else {
@@ -48,7 +51,9 @@ class Saint_Model_Image extends Saint_Model_File {
 	 * 
 	 * Argument options include: height, width, max-height, and max-width.
 	 */
-	public function getResizedUrl($arguments) {
+	public function getResizedUrl($arguments = null) {
+		if ($arguments == null)
+			$arguments = $this->_arguments;
 		$size = $this->calcResize($arguments);
 		if ($size['width'] >= $this->_width && $size['height'] >= $this->_height) {
 			return $this->_url;
@@ -84,6 +89,18 @@ class Saint_Model_Image extends Saint_Model_File {
 			'max-width' => 128,
 		);
 		return $this->getResizedUrl($arguments);
+	}
+	
+	/**
+	 * Check if the title is to be displayed.
+	 * @return boolean True if title is flagged for display, false otherwise.
+	 */
+	public function showTitle() {
+		if (isset($this->_arguments['show_title'])) {
+			return $this->_arguments['show_title'];
+		} else {
+			return 0;
+		}
 	}
 	
 	/**

@@ -852,8 +852,8 @@ $(document).ready(function() {
 	}
 	
 	Saint.saveLabel = function(label) {
-		var stripped = Saint.stripTags(label.find('textarea[name=label-value]').val(),'<a><i><b>');
-		stripped = (stripped + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br />' + '$2');
+		var stripped = Saint.stripTags(label.find('textarea[name=label-value]').val(),'<a><i><b><p><ul><li><img><h1><h2><h3><h4><h5><h6>');
+		//stripped = (stripped + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br />' + '$2');
 		label.find('.cache').html(stripped);
 		var sdata = label.find('form').serialize();
 		Saint.callHome("/",sdata,Saint.savedLabel);

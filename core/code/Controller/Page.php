@@ -71,9 +71,12 @@ class Saint_Controller_Page {
 		 * Page controls
 		 */
 		
+		/**
+		 * @todo Add blank field testing with javascript to avoid problems when posting.
+		 */
+		
 		if(isset($_POST['saint_add_page_name']) && isset($_POST['saint_add_page_layout']) && isset($_POST['saint_add_page_title'])) {
 			$this->_page->setTempLayout("system/json");
-			
 			if (Saint::addPage($_POST['saint_add_page_name'],$_POST['saint_add_page_layout'],$_POST['saint_add_page_title']))
 				$success = true;
 			else
@@ -86,20 +89,33 @@ class Saint_Controller_Page {
 		}
 				
 		if(isset($_POST['saint_edit_page_id']) && isset($_POST['saint_edit_page_title']) 
-		&& isset($_POST['saint_edit_page_name']) && isset($_POST['saint_edit_page_layout'])
-		&& isset($_POST['saint_edit_page_keywords']) && isset($_POST['saint_edit_page_description'])
-		&& isset($_POST['saint_edit_page_categories'])) {
+			&& isset($_POST['saint_edit_page_name']) && isset($_POST['saint_edit_page_layout'])) {
 			$this->_page->setTempLayout("system/json");
 			
 			$spage = new Saint_Model_Page();
+			
+			if (isset($_POST['saint_edit_page_categories']))
+				$cats = $_POST['saint_edit_page_categories'];
+			else
+				$cats = array();
+			
+			if (isset($_POST['saint_edit_page_keywords']))
+				$keywords = $_POST['saint_edit_page_keywords'];
+			else
+				$keywords = '';
+			
+			if (isset($_POST['saint_edit_page_description']))
+				$description = $_POST['saint_edit_page_description'];
+			else
+				$description = '';
 			
 			if ($spage->loadById($_POST['saint_edit_page_id'])) {
 				$spage->setName($_POST['saint_edit_page_name']);
 				$spage->setTitle($_POST['saint_edit_page_title']);
 				$spage->setLayout($_POST['saint_edit_page_layout']);
-				$spage->setKeywords($_POST['saint_edit_page_keywords']);
-				$spage->setDescription($_POST['saint_edit_page_description']);
-				$spage->setCategories($_POST['saint_edit_page_categories']);
+				$spage->setKeywords($keywords);
+				$spage->setDescription($description);
+				$spage->setCategories($cats);
 				if ($spage->save())
 					$success = true;
 				else

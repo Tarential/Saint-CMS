@@ -234,6 +234,34 @@ class Saint_Model_Page {
 	}
 	
 	/**
+	 * Request value of page argument for given key.
+	 * @param string Key to match.
+	 * @return string Page argument value.
+	 */
+	public function getArg($key) {
+		if (isset($this->_args[$key]))
+			return $this->_args[$key];
+		else
+			return '';
+	}
+	
+	/**
+	 * Set value of page argument for given key.
+	 * @param string Key whose value to set.
+	 * @param string New value for key.
+	 * @return boolean True on success, false otherwise.
+	 */
+	public function setArg($key,$value) {
+		$sval = Saint::sanitize($value);
+		if ($value == 0 || $sval != 0) {
+			$this->_args[$key] = $sval;
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
+	/**
 	 * Request page blocks.
 	 * @return string[] Block names used in page.
 	 */

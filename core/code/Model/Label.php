@@ -110,11 +110,12 @@ class Saint_Model_Label {
 		else
 			$revcode = " ORDER BY `revision` DESC";
 		if ($lang && $revcode) {
-			$query = "SELECT `label` FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'" . $revcode;
 			try {
-				$label = Saint::getOne($query);
+				$label = Saint::getOne("SELECT `label` FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'" . $revcode);
 			} catch (Exception $e) {
-				# It's a new label, nothing to be alarmed about.
+				if ($e->getCode()) {
+					Saint::logError("Unable to select label '$this->_name': ".$e->getMessage());
+				}
 				$label = $default;
 			}
 		}

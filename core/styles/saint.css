@@ -13,6 +13,9 @@ a {
 a:hover {
 	text-decoration: underline; }
 
+a.disabled:hover {
+	cursor: default; }
+
 .hidden {
 	display: none; }
 
@@ -42,8 +45,12 @@ a:hover {
 }
 
 #content {
-	width: 650px;
+	width: 860px;
 	float: left;
+}
+
+.blog #content {
+	width: 650px;
 }
 
 #content h1 {
@@ -650,7 +657,7 @@ span.match {
 	float: left;
 }
 
-#saint-search label {
+#saint-search span {
 	display: block;
 	margin-bottom: 5px;
 	font-weight: bold; }
@@ -658,6 +665,10 @@ span.match {
 #saint-search input {
 	margin-bottom: 2px;
 	border: 1px solid #000; }
+
+#rss-feed-link {
+	clear: both;
+}
 
 #saint_admin_overlay label {
 	display: block;
@@ -1113,4 +1124,33 @@ span.match {
 .inline-right {
 	float: right;
 	margin: 0 0 2px 10px;
+}
+
+.inline-left {
+	float: left;
+	margin: 0 10px 2px 0;
+}
+
+.three-column .column {
+	width: 30%; }
+
+.three-column .column h3 {
+	margin: 0 auto 10px;
+	text-align: center;
+}
+
+.three-column .left {
+	float: left;
+}
+
+.three-column .center {
+	margin: 0 auto;
+}
+
+.three-column .right {
+	float: right;
+}
+
+.clear {
+	clear: both;
 }

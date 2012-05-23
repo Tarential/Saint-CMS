@@ -60,7 +60,7 @@ class Saint_Model_Layout {
 	public function render($page) {
 		$this->_page = $page;
 		if ($this->_name == "")
-			Saint::includeBlock("layouts/default");
+			Saint::includeBlock("layouts/system/404");
 		else
 			Saint::includeBlock("layouts/".$this->_name);
 	}
