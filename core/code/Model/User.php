@@ -9,7 +9,6 @@ class Saint_Model_User {
 	protected $_username;
 	protected $_password;
 	protected $_language;
-	protected $_access_level;
 	protected $_email;
 	protected $_fname;
 	protected $_lname;

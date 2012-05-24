@@ -53,7 +53,6 @@ class Saint_Controller_Transaction {
 					// check that receiver_email is your Primary PayPal email
 					// check that payment_amount/payment_currency are correct
 					// process payment
-					Saint::logError("VERIFIED",__FILE__,__LINE__);
 					# Check if payment is complete
 					if ($payment_status === "Completed") {
 						Saint::logError("Completed",__FILE__,__LINE__);
@@ -91,10 +90,12 @@ class Saint_Controller_Transaction {
 								Saint::logError("Someone sent an IPN but the target of the transaction does not appear to match your PayPal e-mail address.",__FILE__,__LINE__);
 							}
 						}
+					} else {
+						Saint::logError("Received notification of incomplete IPN. Why? I don't know. Logging it.",__FILE__,__LINE__);
 					}
 				} else if (strcmp ($res, "INVALID") == 0) {
 					// log for manual investigation
-					Saint::logError("Invalid IPN request detected.");
+					Saint::logError("Invalid IPN request detected from $_SERVER[REMOTE_ADDR].");
 				}
 			}
 			fclose ($fp);

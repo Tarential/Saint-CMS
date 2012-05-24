@@ -59,10 +59,11 @@ class Saint {
 	 */
 	public static function siteHasAdmin() {
 		try {
-			Saint::getOne("SELECT `username` FROM `st_users` WHERE `access_level`=0 LIMIT 1");
+			Saint::getOne("SELECT `u`.`id` FROM `st_users` as `u`,`st_usergroups` as `g` WHERE `g`.`group`='administrator' AND `g`.`userid`=`u`.`id` LIMIT 1");
 			return 1;
 		} catch (Exception $f) {
-			Saint::logError($f->getMessage());
+			if ($f->getCode()) {
+				Saint::logError($f->getMessage()); }
 			return 0;
 		}
 	}

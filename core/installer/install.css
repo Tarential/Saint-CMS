@@ -17,6 +17,10 @@ div.info-block {
 	margin: 0 auto;
 	width: 600px; }
 
+#eula img {
+	margin: 0 auto 25px;
+}
+
 #eula p {
 	margin: 2px 0; }
 

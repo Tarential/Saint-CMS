@@ -53,7 +53,8 @@ class Saint_Model_Wysiwyg {
 	 * @param string $content New label content.
 	 */
 	public function setContent($content) {
-		$this->_content = $content;
+		$scontent = Saint::sanitize($content);
+		$this->_content = $scontent;
 	}
 	
 	/**
@@ -85,14 +86,12 @@ class Saint_Model_Wysiwyg {
 	/**
 	 * Save loaded label to database.
 	 * @return boolean True on success, false otherwise.
-	 * @todo Move content sanitization out of save function to individual set functions.
 	 */
 	public function save() {
 		if ($this->_id) {
 			try {
-				$scontent = Saint::sanitize($this->_content);
 				$sname = Saint::sanitize($this->_name,SAINT_REG_NAME);
-				Saint::query("UPDATE `st_wysiwyg` SET `content`='$scontent' WHERE `name`='$sname'");
+				Saint::query("UPDATE `st_wysiwyg` SET `content`='$this->_content' WHERE `name`='$sname'");
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Unable to save WYSIWYG content '$this->_name': ".$e->getMessage(),__FILE__,__LINE__);

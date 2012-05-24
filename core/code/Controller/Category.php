@@ -3,6 +3,7 @@
  * Controller handling user interaction with Saint categories.
  * @author Preston St. Pierre
  * @package Saint
+ * @todo Changing category name results in new category addition; needs fixing.
  */
 class Saint_Controller_Category {
 	/**
