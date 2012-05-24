@@ -761,7 +761,7 @@ $(document).ready(function() {
 		location.reload(true);
 	};
 	
-	Saint.startEdit = function(label) {
+	Saint.startEdit = function(label) { 
 		label.addClass('editing');
 		var labelForm = $('#saint_ajax_templates > .label-form').clone().removeClass('template').removeClass('hidden');
 		labelForm.find('.cache').html(label.html());
@@ -769,6 +769,13 @@ $(document).ready(function() {
 		labelForm.find('textarea[name=label-value]').val(label.html().replace(/<br\s*\/?>/mg,""));
 		label.html(labelForm);
 		labelForm.find('textarea[name=label-value]').focus();
+		lines = labelForm.find('textarea[name=label-value]').val().split("\n");
+		if (lines.length > 1) {
+			multiplier = lines.length * 2;
+		} else {
+			multiplier = 1;
+		}
+		labelForm.find('textarea[name=label-value]').attr('rows',multiplier);
 	};
 	
 	Saint.stopEdit = function(label) {

@@ -1154,3 +1154,8 @@ span.match {
 .clear {
 	clear: both;
 }
+
+.saint-label.editable.editnow textarea {
+	width: 100%;
+	height: auto;
+}

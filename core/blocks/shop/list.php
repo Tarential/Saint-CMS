@@ -20,7 +20,7 @@ if ($product->load($id)) {
 		<a href="<?php echo SAINT_BASE_URL; ?>shop/addtocart.<?php echo $product->getId(); ?>/buynow.1" class="link buy-now">Buy Now</a>
 	</div>
 	<a href="<?php echo SAINT_BASE_URL; ?>shop/pid.<?php echo $product->getId(); ?>/">
-		<?php Saint::getBlockImage($block, $id, "main-image",array('link'=>false)); ?>
+		<?php Saint::getBlockImage($block, $id, "main-image",array('link'=>false,'max-width'=>180,'max-height'=>200)); ?>
 	</a>
 	<?php if ($sale): ?>
 	<h6>Down from $<?php echo $product->getPrice(); ?>. Save <span class="discount"><?php echo round((1-$discount_price/$product->getPrice())*100,0); ?>%</span>!</h6>
