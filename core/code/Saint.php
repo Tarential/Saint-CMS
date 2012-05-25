@@ -328,7 +328,7 @@ class Saint {
 	 */
 	public static function getLayoutNames() {
 		$layouts = array();
-		$user = glob(SAINT_SITE_ROOT."/blocks/layouts/*.php");
+		$user = glob(Saint::getThemeDir()."/blocks/layouts/*.php");
 		$core = glob(SAINT_SITE_ROOT."/core/blocks/layouts/*.php");
 		foreach (array_merge($user,$core) as $name) {
 			$name = preg_replace('/^.*\/([^\/]*)\.php$/','$1',$name);
@@ -781,6 +781,30 @@ class Saint {
 	}
 	
 	/**
+	 * Get the location of the active theme dir for the current site.
+	 * @return string Location of the active theme.
+	 */
+	public static function getThemeDir() {
+		$themedir = SAINT_SITE_ROOT . "/themes/" . SAINT_THEME;
+		if (file_exists($themedir))
+			return $themedir;
+		else
+			return SAINT_SITE_ROOT . "/core";
+	}
+	
+	/**
+	 * Get the URL of the active theme dir for the current site.
+	 * @return string URL of the active theme.
+	 */
+	public static function getThemeUrl() {
+		$themedir = SAINT_SITE_ROOT . "/themes/" . SAINT_THEME;
+		if (file_exists($themedir))
+			return SAINT_BASE_URL . "/themes/" . SAINT_THEME;
+		else
+			return SAINT_BASE_URL . "/core";
+	}
+	
+	/**
 	 * Shortcut for Saint_Model_Block::includeRepeatingBlock($block, $arguments, $container, $view).
 	 */
 	public static function includeRepeatingBlock($block, $arguments = null, $container = true, $view = null) {
@@ -830,8 +854,8 @@ class Saint {
 	 */
 	public static function includeStyle($style) {
 		if ($style = Saint::sanitize($style,SAINT_REG_NAME)) {
-			if (file_exists(SAINT_SITE_ROOT .  "/styles/".$style.".css"))
-				echo '<link rel="stylesheet" type="text/css" href="/styles/'.$style.'.css" />';
+			if (file_exists(Saint::getThemeDir() .  "/styles/".$style.".css"))
+				echo '<link rel="stylesheet" type="text/css" href="'.Saint::getThemeUrl().'/styles/'.$style.'.css" />';
 			elseif (file_exists(SAINT_SITE_ROOT .  "/core/styles/".$style.".css"))
 				echo '<link rel="stylesheet" type="text/css" href="/core/styles/'.$style.'.css" />';
 			else
@@ -845,8 +869,8 @@ class Saint {
 	 */
 	public static function includeScript($script) {
 		if ($script = Saint::sanitize($script,SAINT_REG_NAME)) {
-			if (file_exists(SAINT_SITE_ROOT .  "/scripts/".$script.".js"))
-				echo '<script type="text/javascript" src="/scripts/'.$script.'.js"></script>';
+			if (file_exists(Saint::getThemeDir() . "/scripts/".$script.".js"))
+				echo '<script type="text/javascript" src="'.Saint::getThemeUrl().'/scripts/'.$script.'.js"></script>';
 			elseif (file_exists(SAINT_SITE_ROOT .  "/core/scripts/".$script.".js"))
 				echo '<script type="text/javascript" src="/core/scripts/'.$script.'.js"></script>';
 			else

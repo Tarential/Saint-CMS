@@ -3,6 +3,9 @@
  * Saint config file. See the manual for more information.
  */
 
+# Theme
+define('SAINT_THEME','saintcms');
+
 # Database connection info
 define('SAINT_DB_HOST','localhost');
 define('SAINT_DB_NAME','cms');

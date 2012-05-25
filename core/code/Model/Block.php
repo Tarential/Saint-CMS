@@ -72,7 +72,7 @@ class Saint_Model_Block {
 	 */
 	public static function inUse($block) {
 		if ($block = Saint::sanitize($block,SAINT_REG_NAME)) {
-			if (file_exists(SAINT_SITE_ROOT .  "/blocks/".$block.".php"))
+			if (file_exists(Saint::getThemeDir() .  "/blocks/".$block.".php"))
 				return 1;
 			elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$block.".php"))
 				return 1;
@@ -94,8 +94,8 @@ class Saint_Model_Block {
 			$id = $page->getBlockId();
 			if (!$view)
 				$view = $block;
-			if (file_exists(SAINT_SITE_ROOT .  "/blocks/".$view.".php"))
-				$incfile = SAINT_SITE_ROOT .  "/blocks/".$view.".php";
+			if (file_exists(Saint::getThemeDir() .  "/blocks/".$view.".php"))
+				$incfile = Saint::getThemeDir() .  "/blocks/".$view.".php";
 			elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$view.".php"))
 				$incfile = SAINT_SITE_ROOT .  "/core/blocks/".$view.".php";
 			else {
@@ -436,8 +436,10 @@ EOT;
 	public static function processSettings() {
 		# Scan files in user and system directories
 		$saintdir = SAINT_SITE_ROOT . "/core/blocks";
-		$userdir = SAINT_SITE_ROOT . "/blocks";
-		$allfiles = array_merge(Saint_Model_Block::recursiveScan($saintdir,"xml"),Saint_Model_Block::recursiveScan($userdir,"xml"));
+		$userdir = Saint::getThemeDir() . "/blocks";
+		$allfiles = Saint_Model_Block::recursiveScan($saintdir,"xml");
+		if ($userdir != $saintdir)
+			$allfiles = array_merge($allfiles,Saint_Model_Block::recursiveScan($userdir,"xml"));
 		
 		# Parse the xml files
 		foreach ($allfiles as $file) {
