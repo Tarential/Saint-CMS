@@ -1,5 +1,5 @@
 <?php /* Section for future integration of PayPal API
-<form method="post" action="<?php echo SAINT_BASE_URL; ?>shop/view.checkout">
+<form method="post" action="<?php echo SAINT_URL; ?>shop/view.checkout">
 	<ul>
 		<li>
 			<label for="saint-checkout[Method]">Payment Method</label>

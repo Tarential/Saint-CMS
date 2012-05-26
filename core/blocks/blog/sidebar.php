@@ -1,11 +1,11 @@
 <div id="sidebar">
 	<?php Saint::includeBlock("search/form"); ?>
 		<?php if (Saint::getCurrentPage()->getName() == "blog") { ?>
-		<a href="/feed" id="rss-feed-link">Subscribe via RSS</a>
+		<a href="<?php echo SAINT_URL; ?>/feed" id="rss-feed-link">Subscribe via RSS</a>
 		<div id="blog-by-cat-nav" class="nav">
 			<h3>Categories</h3>
 			<?php foreach (Saint::getAllCategories() as $category): ?>
-			<h4><a href="/<?php echo $page->getName(); ?>/category.<?php echo $category; ?>/"><?php echo $category; ?></a></h4>
+			<h4><a href="<?php echo SAINT_URL . "/" .$page->getName(); ?>/category.<?php echo $category; ?>/"><?php echo $category; ?></a></h4>
 			<?php endforeach; ?>
 		</div>
 		<div id="blog-by-month-nav" class="nav">

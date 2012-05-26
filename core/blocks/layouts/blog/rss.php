@@ -3,7 +3,7 @@ echo '<?xml version="1.0" encoding="ISO-8859-1"?>'; ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
 <title><?php echo Saint::getSiteTitle(); ?></title>
-<link><?php echo SAINT_BASE_URL; ?></link>
+<link><?php echo SAINT_URL; ?></link>
 <atom:link href="<?php echo Saint::getBlogRssUrl(); ?>" rel="self" type="application/rss+xml" />
 <description><?php echo Saint::getSiteDescription(); ?></description>
 <language><?php echo SAINT_BLOG_LANG; ?></language>

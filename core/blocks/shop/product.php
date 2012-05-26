@@ -16,8 +16,8 @@ if ($product->load($id)) {
 	<?php Saint::getBlockImage($block, $id, "main-image"); ?>
 	<?php echo Saint::getBlockLabel($block,$id,"description","Enter product description here..."); ?>
 	<div class="ssm meta-links">
-		<a href="<?php echo SAINT_BASE_URL; ?>shop/addtocart.<?php echo $product->getId(); ?>" class="link add-to-cart">Add to Cart</a>
-		<a href="<?php echo SAINT_BASE_URL; ?>shop/addtocart.<?php echo $product->getId(); ?>/buynow.1" class="link buy-now">Buy Now</a>
+		<a href="<?php echo SAINT_URL; ?>shop/addtocart.<?php echo $product->getId(); ?>" class="link add-to-cart">Add to Cart</a>
+		<a href="<?php echo SAINT_URL; ?>shop/addtocart.<?php echo $product->getId(); ?>/buynow.1" class="link buy-now">Buy Now</a>
 	</div>
 </div>
 <?php } else { ?>

@@ -6,7 +6,7 @@
 
 # Site location
 define('SAINT_BASE_URL',"http://" . $_SERVER['SERVER_NAME'] . "/");
-define('SAINT_SITE_ROOT',chop($_SERVER['DOCUMENT_ROOT'],'/'));
+define('SAINT_SITE_ROOT',chop(getcwd(),'/'));
 define('SAINT_CACHE_DIR',SAINT_SITE_ROOT."/cache");
 
 # Set this to true if you want Saint core media files to appear in the CMS file manager

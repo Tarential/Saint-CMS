@@ -10,16 +10,16 @@ if ($product->load($id)) {
 ?>
 <div class="saint-product list<?php if ($sale) echo " sale"; ?>" id="ssm-sku-<?php echo $product->getSku(); ?>">
 	<h4>
-		<a href="<?php echo SAINT_BASE_URL; ?>shop/pid.<?php echo $product->getId(); ?>/">
+		<a href="<?php echo SAINT_URL; ?>shop/pid.<?php echo $product->getId(); ?>/">
 			<?php echo $product->getName(); ?>
 			<span class="price">$<?php if ($sale) echo $discount_price; else echo $product->getPrice(); ?></span>
 		</a>
 	</h4>
 	<div class="ssm meta-links">
-		<a href="<?php echo SAINT_BASE_URL; ?>shop/addtocart.<?php echo $product->getId(); ?>" class="link add-to-cart">Add to Cart</a>
-		<a href="<?php echo SAINT_BASE_URL; ?>shop/addtocart.<?php echo $product->getId(); ?>/buynow.1" class="link buy-now">Buy Now</a>
+		<a href="<?php echo SAINT_URL; ?>shop/addtocart.<?php echo $product->getId(); ?>" class="link add-to-cart">Add to Cart</a>
+		<a href="<?php echo SAINT_URL; ?>shop/addtocart.<?php echo $product->getId(); ?>/buynow.1" class="link buy-now">Buy Now</a>
 	</div>
-	<a href="<?php echo SAINT_BASE_URL; ?>shop/pid.<?php echo $product->getId(); ?>/">
+	<a href="<?php echo SAINT_URL; ?>shop/pid.<?php echo $product->getId(); ?>/">
 		<?php Saint::getBlockImage($block, $id, "main-image",array('link'=>false,'max-width'=>180,'max-height'=>200)); ?>
 	</a>
 	<?php if ($sale): ?>

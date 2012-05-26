@@ -799,9 +799,9 @@ class Saint {
 	public static function getThemeUrl() {
 		$themedir = SAINT_SITE_ROOT . "/themes/" . SAINT_THEME;
 		if (file_exists($themedir))
-			return SAINT_BASE_URL . "/themes/" . SAINT_THEME;
+			return SAINT_URL . "/themes/" . SAINT_THEME;
 		else
-			return SAINT_BASE_URL . "/core";
+			return SAINT_URL . "/core";
 	}
 	
 	/**
@@ -838,7 +838,7 @@ class Saint {
 	 * @return string URL for the RSS feed.
 	 */
 	public static function getBlogRssUrl() {
-		return SAINT_BASE_URL . 'feed';
+		return SAINT_URL . 'feed';
 	}
 
 	/**
@@ -857,7 +857,7 @@ class Saint {
 			if (file_exists(Saint::getThemeDir() .  "/styles/".$style.".css"))
 				echo '<link rel="stylesheet" type="text/css" href="'.Saint::getThemeUrl().'/styles/'.$style.'.css" />';
 			elseif (file_exists(SAINT_SITE_ROOT .  "/core/styles/".$style.".css"))
-				echo '<link rel="stylesheet" type="text/css" href="/core/styles/'.$style.'.css" />';
+				echo '<link rel="stylesheet" type="text/css" href="'.SAINT_URL.'/core/styles/'.$style.'.css" />';
 			else
 				Saint::logWarning("Cannot find style $style.");
 		}
@@ -872,7 +872,7 @@ class Saint {
 			if (file_exists(Saint::getThemeDir() . "/scripts/".$script.".js"))
 				echo '<script type="text/javascript" src="'.Saint::getThemeUrl().'/scripts/'.$script.'.js"></script>';
 			elseif (file_exists(SAINT_SITE_ROOT .  "/core/scripts/".$script.".js"))
-				echo '<script type="text/javascript" src="/core/scripts/'.$script.'.js"></script>';
+				echo '<script type="text/javascript" src="'.SAINT_URL.'/core/scripts/'.$script.'.js"></script>';
 			else
 				Saint::logWarning("Cannot find script $script.");
 		}

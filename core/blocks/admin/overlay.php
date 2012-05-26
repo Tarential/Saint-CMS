@@ -48,7 +48,7 @@
 		</ul>
 		<ul id="saint_admin_page_list">
 			<?php foreach (Saint::getAllPages() as $ipage): ?>
-			<li><a href="/<?php echo $ipage->getName(); ?>" class="sublist"><?php echo $ipage->getTitle(); ?></a></li>
+			<li><a href="<?php echo SAINT_URL . "/" . $ipage->getName(); ?>" class="sublist"><?php echo $ipage->getTitle(); ?></a></li>
 			<?php endforeach; ?>
 		</ul>
 	</div>

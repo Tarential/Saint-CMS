@@ -39,7 +39,7 @@ a.disabled:hover {
 	border-bottom: 1px solid #000;
 	border-top: none;
 	box-shadow: 0px 0px 15px #000;
-	background: url('/core/images/logo.png') no-repeat 328px 0px #fff;
+	background: url('../images/logo.png') no-repeat 328px 0px #fff;
 	min-height: 400px;
 	padding: 150px 40px 25px;
 }
@@ -152,7 +152,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	top: 0px;
 	height: 20px;
 	width: 74px;
-	background: url('/core/images/saint-logo.png');
+	background: url('../images/saint-logo.png');
 }
 
 #saint_ajax_indicator {
@@ -161,14 +161,14 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	right: 0px;
 	width: 20px;
 	height: 20px;
-	background: url('/core/images/success.png') no-repeat; }
+	background: url('../images/success.png') no-repeat; }
 
 #saint_ajax_indicator.enabled {
-	background: url('/core/images/ajax-loader.gif') 2px 2px no-repeat;
+	background: url('../images/ajax-loader.gif') 2px 2px no-repeat;
 }
 
 #saint_ajax_indicator.error {
-	background: url('/core/images/error.png') no-repeat;
+	background: url('../images/error.png') no-repeat;
 }
 
 #saint_admin_menu {
@@ -277,7 +277,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	display: block;
 	height: 20px;
 	width: 20px;
-	background: url('/core/images/close.png');	
+	background: url('../images/close.png');	
 }
 
 .category-edit .close-button {
@@ -374,7 +374,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	width: 100%;
 	height: 100%;
 	display: none;
-	background: #eee url('/core/images/ajax-loader-large.gif') center center no-repeat;
+	background: #eee url('../images/ajax-loader-large.gif') center center no-repeat;
 	z-index: 90;
 	position: absolute;
 	left: 0;
@@ -615,7 +615,7 @@ span.match {
 	float: left; }
 
 .saint-left-arrow {
-	background: url('/core/images/left-arrow.png');
+	background: url('../images/left-arrow.png');
 	height: 64px;
 	width: 64px;
 	display: block;
@@ -627,7 +627,7 @@ span.match {
 	float: right; }
 
 .saint-right-arrow {
-	background: url('/core/images/right-arrow.png');
+	background: url('../images/right-arrow.png');
 	height: 64px;
 	width: 64px;
 	display: block;
@@ -676,7 +676,7 @@ span.match {
 }
 
 #saint_admin_overlay .loading {
-	background: url('/core/images/ajax-loader-large.gif') center center no-repeat;
+	background: url('../images/ajax-loader-large.gif') center center no-repeat;
 }
 
 .save_options {
@@ -793,7 +793,7 @@ span.match {
 	background: #ccc;
 	border-bottom: 1px solid #000;
 	background-repeat: no-repeat;
-	background-image: url('/core/images/down-arrows.png');
+	background-image: url('../images/down-arrows.png');
 	background-position: 0px -3px;
 	top: 0;
 	height: 17px;
@@ -804,7 +804,7 @@ span.match {
 }
 
 #saint-uploader.active {
-	background-image: url('/core/images/up-arrows.png');
+	background-image: url('../images/up-arrows.png');
 	background-position: 0px -1px;
 	height: 200px;
 }

@@ -112,9 +112,7 @@ if ($profiling) {
  */
 
 # Establish some basic runtime variables for use throughout the site
-$uri = rtrim(trim($_SERVER['REQUEST_URI'],'/'),'/');
-$rawargs = explode('/',$uri);
-$args = array();
+
 $included = true;
 $installed = true;
 
@@ -125,6 +123,10 @@ if (file_exists("config.php"))
 else
 	$installed = false;
 
+$subdir = substr(SAINT_SITE_ROOT,strlen($_SERVER['DOCUMENT_ROOT']));
+define('SAINT_URL',chop(SAINT_BASE_URL . $subdir,'/'));
+$uri = trim(substr(trim(rtrim($_SERVER['REQUEST_URI'],'/'),'/'),strlen($subdir)),'/');
+
 /**
  * Saint class autoload function.
  * @param string $class_name Name of class to load.
@@ -134,12 +136,13 @@ function st_autoload($class_name) {
 	if (preg_match('/^\w+$/',$class_name)) {
 		$class_name = preg_replace('/Saint_/','',$class_name);
 		$class_name = preg_replace('/_/','/',$class_name);
-		$user_class_name = SAINT_SITE_ROOT . '/code/' . $class_name . ".php";
 		$saint_class_name = SAINT_SITE_ROOT . '/core/code/' . $class_name . ".php";
+		/* $user_class_name = Saint::getThemeDir() . '/code/' . $class_name . ".php";
 		if (file_exists($user_class_name)) {
 			include_once($user_class_name);
 			return 1;
-		} elseif (file_exists($saint_class_name)) {
+		} else */
+		if (file_exists($saint_class_name)) {
 			include_once($saint_class_name);
 			return 1;
 		}
@@ -167,6 +170,7 @@ try {
 }
 
 $argument_pattern = '/[\/]*([^\/\.]+\.[^\/\.]+)\/*/';
+$args = array();
 
 if (preg_match_all($argument_pattern,$uri,$matches)) {
 	foreach ($matches[1] as $match) {

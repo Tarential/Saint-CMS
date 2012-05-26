@@ -10,10 +10,10 @@
 			google.load("jquery", "1");
 		</script>
 		<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
-			<script type="text/javascript" src="/core/scripts/tinymce/jquery.tinymce.js"></script>
+			<script type="text/javascript" src="<?php echo SAINT_URL; ?>/core/scripts/tinymce/jquery.tinymce.js"></script>
 			<!-- Third party scripts for BrowserPlus runtime, Plupload -->
 			<script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
-			<script type="text/javascript" src="/core/scripts/plupload/plupload.full.js"></script>
+			<script type="text/javascript" src="<?php echo SAINT_URL; ?>/core/scripts/plupload/plupload.full.js"></script>
 		<?php endif; ?>
 		<?php Saint::includeStyle("saint"); ?>
 		<?php Saint::includeScript("saint"); ?>
