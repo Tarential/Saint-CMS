@@ -6,6 +6,13 @@
 	</ul>
 	<span id="saint-contact-submit" class="link"><?php echo Saint::getPageLabel("submit","Submit Message"); ?></span>
 </form>
+<script type="text/javascript">
+$(document).on({
+	'click': function(event) {
+		$('#saint-contact-form').submit();
+	}
+},'#saint-contact-submit');
+</script>
 <?php
 /* To be enabled once problem with jquery-validate and Saint label system is resolved
 <script type="text/javascript">
