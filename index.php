@@ -98,7 +98,7 @@ loss of privacy, moral rights or the disclosure of confidential information.
  */
 session_start();
 
-$profiling = false;
+$profiling = true;
 
 if ($profiling) {
 	$mtime = microtime();
@@ -106,10 +106,6 @@ if ($profiling) {
 	$mtime = $mtime[1] + $mtime[0];
 	$starttime = $mtime;
 }
-
-/**
- * @todo Block all xml file and restricted folder downloads in .htaccess
- */
 
 # Establish some basic runtime variables for use throughout the site
 
@@ -187,16 +183,12 @@ if (Saint::getCurrentUsername() == "guest" && isset($_COOKIE['saintcookie'])) {
 	Saint_Model_User::loginViaCookie($_COOKIE['saintcookie']);
 }
 
-//unset($_SESSION['saint_scid']);
-//$transaction = new Saint_Model_Transaction();
-//$transaction->create(1, 891, '10', rand(0,10000), 'jones@gmail.com', "this:that;not:yet;");
-
 if ($installed)
 	Saint::callPage($pid,$args);
 else
 	Saint::runInstall();
 
-if ($profiling) {
+if ($profiling && Saint::getCurrentPage()->getLayout() != "system/json") {
 	$mtime = microtime();
 	$mtime = explode(" ",$mtime);
 	$mtime = $mtime[1] + $mtime[0];

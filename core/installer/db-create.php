@@ -123,10 +123,11 @@ CREATE TABLE IF NOT EXISTS `st_pages` (
 	`name` varchar(255) NOT NULL,
 	`title` varchar(255) NOT NULL DEFAULT '',
 	`layout` varchar(255) NOT NULL DEFAULT '',
-	`blocks` mediumtext DEFAULT '',
 	`meta_keywords` text DEFAULT '',
 	`meta_description` text DEFAULT '',
-	`allow_robots`boolean NOT NULL,
+	`allow_robots` boolean NOT NULL,
+	`created` TIMESTAMP,
+	`updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX(`name`)
 ) ENGINE=InnoDB;
@@ -288,69 +289,73 @@ EOT;
 
 # END SHOP SECTION
 
+# START CONTENT SECTION
+
 $sql[] = <<<EOT
-INSERT INTO st_languages (name,title) VALUES ('english','English');
+INSERT INTO st_languages (`name`,`title`) VALUES ('english','English');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('home','Home','blank');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('home','Home','blank','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('user','User','user/edit');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('user','User','user/edit','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('login','Login','user/login');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('login','Login','user/login','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('blog','Blog','blog/index');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('blog','Blog','blog/index','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('feed','RSS Feed','blog/rss');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('feed','RSS Feed','blog/rss','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('search','Search','search/form');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('search','Search','search/results','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('system','Saint','system/system');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('system','Saint','system/system','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('filemanager','Saint','file-manager/index');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('filemanager','Saint','file-manager/index','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('upload','Saint','file-manager/upload');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('upload','Saint','file-manager/upload','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('contact','Contact','contact');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('contact','Contact','contact','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('gallery','Gallery','gallery/gallery');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('gallery','Gallery','gallery/gallery','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('slideshow','Slideshow','gallery/slideshow');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('slideshow','Slideshow','gallery/slideshow','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('shop','Shop','shop/shop');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('shop','Shop','shop/shop','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('maintenance','Site Maintenance','system/maintenance');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('maintenance','Site Maintenance','system/maintenance','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (name,title,layout) VALUES ('404','Page Not Found','system/404');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('404','Page Not Found','system/404','NOW()');
 EOT;
+
+# END CONTENT SECTION
 
 ?>
 <div id="db-create" class="info-block">

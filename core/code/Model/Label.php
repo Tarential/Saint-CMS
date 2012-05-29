@@ -160,13 +160,36 @@ class Saint_Model_Label {
 			try {
 				foreach($this->_new_labels as $lang=>$label) {
 					if (Saint::sanitize($this->getLabel($lang)) != $label) {
-						Saint::logError("Adding new entry $label for $lang");
-						$this->newEntry($label,$lang); }
+						$this->newEntry($label,$lang);
+						Saint::logEvent("Added new label entry for '$this->_name'."); }
 				}
 				
-				$query = "UPDATE `st_labels` SET ".
-				"`owner`='$this->_owner' ".
-				"WHERE `name`='$this->_name'";
+				$query = "UPDATE `st_labels` SET `owner`='$this->_owner' WHERE `name`='$this->_name'";
+				Saint::query($query);
+				
+				if (preg_match('/^page\/([\d]+)\/n\//',$this->_name,$matches)) {
+					try {
+						Saint::query("UPDATE `st_pages` AS `p` SET `p`.`updated`=NOW() WHERE `p`.`id`='$matches[1]'");
+					} catch (Exception $f) {
+						if ($f->getCode()) {
+							Saint::logError("Unable to update page(s) associated with block '$this->_name': ".$f->getMessage(),__FILE__,__LINE__);
+						}
+					}
+				}
+				
+				// Strip the delimiters off the config name pattern to match block names within the label name.
+				$spn = trim(rtrim(SAINT_REG_NAME,'/'),'/');
+				$spn = trim(rtrim($spn,'$'),'^');
+				$block_pattern = '/^block\/[\d]+\/('.$spn.')\/n\//';
+				if (preg_match($block_pattern,$this->_name,$matches)) {
+					try {
+						Saint::query("UPDATE `st_pages` AS `p`,`st_pageblocks` AS `b` SET `p`.`updated`=NOW() WHERE `b`.`block`='$matches[1]' AND `b`.`pageid`=`p`.`id`");
+					} catch (Exception $g) {
+						if ($g->getCode()) {
+							Saint::logError("Unable to update page(s) associated with block '$this->_name': ".$f->getMessage(),__FILE__,__LINE__);
+						}
+					}
+				}
 				
 				return 1;
 			} catch (Exception $e) {

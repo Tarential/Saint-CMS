@@ -68,10 +68,12 @@ class Saint_Model_Page {
 	 * @param string $title Title for page.
 	 */
 	public static function addPage($name,$layout,$title = '') {
-		$sname = Saint::sanitize($name,SAINT_REG_NAME);
-		$slayout = Saint::sanitize($layout,SAINT_REG_NAME);
-		$stitle = Saint::sanitize($title);
-		if ($sname && $slayout) {
+		$page = new Saint_Model_Page();
+		$page->setLayout($layout);
+		$page->setName($name);
+		$page->setTitle($title);
+		return $page->save();
+			/*
 			try {
 				Saint::query("INSERT INTO st_pages (`name`,`layout`,`title`) VALUES ('$sname','$slayout','$stitle')");
 				Saint::logEvent("Added page '$stitle' with url '$sname' and layout '$slayout'.",__FILE__,__LINE__);
@@ -80,10 +82,7 @@ class Saint_Model_Page {
 				Saint::logError("Problem inserting page into database: ".$e->getMessage(),__FILE__,__LINE__);
 				return 0;
 			}
-		} else {
-			Saint::logError("Invalid page or layout name '$name' and '$layout'. Check the manual for allowed names.",__FILE__,__LINE__);
-			return 0;
-		}
+			*/
 	}
 	
 	/**
@@ -639,50 +638,63 @@ class Saint_Model_Page {
 	}
 	
 	/**
+	 * Save index of used blocks to DB.
+	 */
+	public function saveBlocks() {
+		if ($this->_id) {
+			# Add any new blocks
+			foreach ($this->_blocks as $block) {
+				try {
+					Saint::getAll("SELECT `id` FROM `st_pageblocks` WHERE `block`='$block'");
+				} catch (Exception $f) {
+					if ($f->getCode()) {
+						Saint::logError("Problem selecting page's block IDs: ".$f->getError());
+					}
+					try {
+						$url = Saint::sanitize($_SERVER['REQUEST_URI']);
+						Saint::query("INSERT INTO `st_pageblocks` (`pageid`,`block`,`url`) VALUES ('$this->_id','$block','$url')");
+					} catch (Exception $g) {
+						Saint::logError("Problem adding block '$block' to page '$this->_name': ".$g->getMessage(),__FILE__,__LINE__);
+					}
+				}
+			}
+			# Remove any obsolete blocks
+			try {
+				$dbblocks = Saint::getAll("SELECT `id`,`block` FROM `st_pageblocks` WHERE `pageid`='$this->_id'");
+				foreach ($dbblocks as $curblock) {
+					if (!in_array($curblock[1],$this->_blocks)) {
+						try {
+							Saint::query("DELETE FROM `st_pageblocks` WHERE `id`='$curblock[0]'");
+						} catch (Exception $g) {
+							Saint::logError("Problem deleting block with id '$curblock[0]': ".$g->getMessage(),__FILE__,__LINE__);
+						}
+					}
+				}
+			} catch (Exception $n) {
+				if ($n->getCode()) {
+					Saint::logError("Unable to select page block information: ".$n->getMessage(),__FILE__,__LINE__);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Save model details to database.
+	 * @param boolean Default true to log save event, false otherwise.
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function save($log = true) {
 		if ($this->_id) {
-			try {
-				# Add any new blocks
-				foreach ($this->_blocks as $block) {
-					try {
-						Saint::getAll("SELECT `id` FROM `st_pageblocks` WHERE `block`='$block'");
-					} catch (Exception $f) {
-						try {
-							$url = Saint::sanitize($_SERVER['REQUEST_URI']);
-							Saint::query("INSERT INTO `st_pageblocks` (`pageid`,`block`,`url`) VALUES ('$this->_id','$block','$url')");
-						} catch (Exception $g) {
-							Saint::logError("Problem adding block '$block' to page '$this->_name': ".$g->getMessage(),__FILE__,__LINE__);
-						}
-					}
-				}
-				# Remove any obsolete blocks
-				try {
-					$dbblocks = Saint::getAll("SELECT `id`,`block` FROM `st_pageblocks` WHERE `pageid`='$this->_id'");
-					foreach ($dbblocks as $curblock) {
-						if (!in_array($curblock[1],$this->_blocks)) {
-							try {
-								Saint::query("DELETE FROM `st_pageblocks` WHERE `id`='$curblock[0]'");
-							} catch (Exception $g) {
-								Saint::logError("Problem deleting block with id '$curblock[0]': ".$g->getMessage(),__FILE__,__LINE__);
-							}
-						}
-					}
-				} catch (Exception $n) {
-					# Happens under normal conditions
-				}
-				
-				$query = "UPDATE st_pages SET ".
-				"enabled='$this->_enabled',".
-				"name='$this->_name',".
-				"title='$this->_title',".
-				"layout='$this->_layout',".
-				"meta_keywords='".implode(',',$this->_meta_keywords)."',".
-				"meta_description='$this->_meta_description',".
-				"allow_robots='$this->_allow_robots' ".
-				"WHERE id=$this->_id";
+			try {	
+				$query = "UPDATE `st_pages` SET ".
+				"`enabled`='$this->_enabled',".
+				"`name`='$this->_name',".
+				"`title`='$this->_title',".
+				"`layout`='$this->_layout',".
+				"`meta_keywords`='".implode(',',$this->_meta_keywords)."',".
+				"`meta_description`='$this->_meta_description',".
+				"`allow_robots`='$this->_allow_robots' ".
+				"WHERE `id`=$this->_id";
 				Saint::query($query);
 				if ($log)
 					Saint::logEvent("Saved details for page '$this->_name'.");
@@ -693,32 +705,25 @@ class Saint_Model_Page {
 			}
 		} else {
 			try {
-				$query = "INSERT INTO st_pages (name,title,layout,meta_keywords,meta_title,allow_robots,blocks) ".
-				" VALUES ('$this->_name','$this->_title','$this->_layout','".implode(',',$this->_meta_keywords).
-				"','$this->_meta_title','$this->_allow_robots','".implode(' ',$this->_blocks)."')";
+				$query = "INSERT INTO `st_pages` (`name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots`,`created`) ".
+					" VALUES ('$this->_name','$this->_title','$this->_layout','".implode(',',$this->_meta_keywords).
+					"','$this->_meta_description','$this->_allow_robots',NOW())";
+				Saint::logError($query);
 				Saint::query($query);
 				return 1;
 			} catch (Exception $e) {
-				Saint::logError("Problem saving page $this->_name. ".$e->getMessage(),__FILE__,__LINE__);
+				Saint::logError("Problem creating page $this->_name. ".$e->getMessage(),__FILE__,__LINE__);
 				return 0;
 			}
 		}
 	}
 	
 	/**
-	 * Tell the controller to process the page options.
-	 * @return boolean True on success, false otherwise.
-	 */	
-	public function process() {
-		$controller = new Saint_Controller_Page($this);
-		return $controller->process();
-	}
-	
-	/**
 	 * Render the loaded page.
+	 * @param boolean Default true to reindex block usage, false to retain cached data.
 	 * @return boolean True on success, false otherwise.
 	 */
-	public function render() {
+	public function render($indexblocks = true) {
 		if (isset($this->_templayout))
 			$lname = $this->_templayout;
 		else
@@ -726,8 +731,10 @@ class Saint_Model_Page {
 		if ($layout = Saint::getLayout($lname)) {
 			try {
 				if ($layout->render($this)) {
-					$this->_blocks = $this->_newblocks;
-					$this->save(false);
+					if ($indexblocks) {
+						$this->_blocks = $this->_newblocks;
+						$this->saveBlocks();
+					}
 					return 1;
 				} else {
 					return 0;

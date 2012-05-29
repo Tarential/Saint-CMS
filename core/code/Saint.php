@@ -655,7 +655,7 @@ class Saint {
 	 * @return string Code for image label.
 	 */
 	public static function getBlockImage($block, $id, $name, $arguments = array()) {
-		$name = "b/" . $id . "/" . $block . "/n/" . $name;
+		$name = "block/" . $id . "/" . $block . "/n/" . $name;
 		return Saint_Model_ImageLabel::getImage($name, $arguments);
 	}
 	
@@ -666,7 +666,7 @@ class Saint {
 	 * @return string Code for image label.
 	 */
 	public static function getPageImage($name, $arguments = array()) {
-		$name = Saint::getCurrentPage()->getName()."/".$name;
+		$name = "page/" . Saint::getCurrentPage()->getName() . "/n/" . $name;
 		return Saint_Model_ImageLabel::getImage($name, $arguments);
 	}
 	
@@ -689,7 +689,7 @@ class Saint {
 	 * @return string Code for WYSIWYG block.
 	 */
 	public static function getBlockWysiwyg($block, $id, $name, $default = '') {
-		$name = "b/" . $id . "/" . $block . "/n/" . $name;
+		$name = "block/" . $id . "/" . $block . "/n/" . $name;
 		return Saint_Model_Wysiwyg::get($name,$default);
 	}
 	
@@ -700,7 +700,7 @@ class Saint {
 	 * @return string Code for WYSIWYG block.
 	 */
 	public static function getPageWysiwyg($name, $default = '') {
-		$name = Saint::getCurrentPage()->getName()."/".$name;
+		$name = "page/" . Saint::getCurrentPage()->getName() . "/n/" . $name;
 		return Saint_Model_Wysiwyg::get($name,$default);
 	}
 	
@@ -724,7 +724,7 @@ class Saint {
 	 * @return string Code for selected label.
 	 */
 	public static function getPageLabel($name, $default = '', $container = true, $lang = null, $wysiwyg = false) {
-		$name .= "/p" . Saint::getCurrentPage()->getId();
+		$name = "page/" . Saint::getCurrentPage()->getId() . "/n/" . $name;
 		return Saint::getLabel($name,$default,$container,$lang,$wysiwyg);
 	}
 	
@@ -978,15 +978,22 @@ class Saint {
 									$results[$rp[0]][1][] = $label[1];
 							}
 						} catch (Exception $t) {
-							Saint::logWarning("Problem selecting block URLs: ".$t->getMessage(),__FILE__,__LINE__);
+							if ($t->getCode()) {
+								Saint::logWarning("Problem selecting block URLs: ".$t->getMessage(),__FILE__,__LINE__);
+							}
 						}
 					}
 				} catch (Exception $f) {
-					Saint::logError("Problem getting max id for label '$label[1]': ".$f->getMessage());
+					if ($f->getCode()) {
+						Saint::logError("Problem getting max id for label '$label[1]': ".$f->getMessage());
+					}
 				}
 			}
 			return $results;
 		} catch (Exception $e) {
+			if ($e->getCode()) {
+				Saint::logError("Unable to select labels for search: ".$e->getMessage(),__FILE__,__LINE__);
+			}
 			return array();
 		}
 	}

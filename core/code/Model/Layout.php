@@ -56,12 +56,16 @@ class Saint_Model_Layout {
 	/**
 	 * Output selected page to the client.
 	 * @param string $page Name of page to render.
+	 * @return boolean True if page found, false otherwise.
 	 */
 	public function render($page) {
 		$this->_page = $page;
-		if ($this->_name == "")
+		if ($this->_name == "") {
 			Saint::includeBlock("layouts/system/404");
-		else
+			return 0;
+		} else {
 			Saint::includeBlock("layouts/".$this->_name);
+			return 1;
+		}
 	}
 }

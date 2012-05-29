@@ -884,6 +884,7 @@ $(document).ready(function() {
 	};
 	
 	Saint.addedPage = function(data) {
+		alert(data);
 		var success;
 		try {
 			realdata = JSON.parse(data);
