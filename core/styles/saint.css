@@ -1159,3 +1159,17 @@ span.match {
 	width: 100%;
 	height: auto;
 }
+
+.saint-label.editnow.editing .toolbar ul {
+	padding: 0;
+	margin: 0;
+}
+
+.saint-label.editnow.editing .toolbar ul li {
+	list-style: none;
+	display: inline;
+}
+
+body.editing .saint-label.editnow.editing .editor {
+	border: 1px dotted red;
+}

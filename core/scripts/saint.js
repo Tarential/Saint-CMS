@@ -427,6 +427,109 @@ $(document).ready(function() {
 		}
 	});
 	
+	/* START LABEL EDITOR */
+	
+	/**
+	 * Activate WYSIWYG editor.
+	 */
+	$(document).on({
+		'click': function(event) {
+			Saint.sleToggleWysiwyg();
+		}
+	},'.saint-label.editnow.editing .source .toolbar .link.switch');
+	
+	/**
+	 * Activate source editor.
+	 */
+	$(document).on({
+		'click': function(event) {
+			Saint.sleToggleSource();
+		}
+	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.switch');
+	
+	/**
+	 * Bold selected text.
+	 */
+	$(document).on({
+		'click': function(event) {
+			event.preventDefault();
+			Saint.sleExecute('bold',null);
+		}
+	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.bold');
+	
+	/**
+	 * Italicize selected text.
+	 */
+	$(document).on({
+		'click': function(event) {
+			event.preventDefault();
+			Saint.sleExecute('italic',null);
+		}
+	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.italic');
+	
+	/**
+	 * Underline selected text.
+	 */
+	$(document).on({
+		'click': function(event) {
+			event.preventDefault();
+			Saint.sleExecute('underline',null);
+		}
+	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.underline');
+	
+	$(document).on({
+		'keypress': function(event) {
+		    if (event.ctrlKey && (event.which == 98 || event.which == 66)) {
+			    Saint.sleExecute('bold',null);
+			    event.preventDefault();
+			    return false;
+		    }
+		    if (event.ctrlKey && (event.which == 105 || event.which == 73)) {
+			    Saint.sleExecute('italic',null);
+			    event.preventDefault();
+			    return false;
+		    }
+		    if (event.ctrlKey && (event.which == 117 || event.which == 85)) {
+			    Saint.sleExecute('underline',null);
+			    event.preventDefault();
+			    return false;
+		    }
+		    return true;
+		}
+	},'.saint-label.editnow.editing .wysiwyg');
+	
+	Saint.sleExecute = function(cmd,parm) {
+
+		if (cmd.indexOf('<')==0){
+			parm=cmd;
+			cmd="FormatBlock";
+		}
+		if (cmd == "InsertImage") parm = prompt("Filename or path to image","");
+		if (cmd == "CreateLink") {
+			parm = prompt("URL or address of link (leave blank to unlink)","http://");
+			if (parm=="" || parm=="http://"){cmd="Unlink"}
+		}
+		
+		try {document.execCommand(cmd,false,parm);} catch(e){alert(e)};
+	};
+
+	Saint.sleToggleSource = function () {
+		$('.saint-label.editnow.editing .source').show();
+		$('.saint-label.editnow.editing .wysiwyg').hide();
+		$('.saint-label.editnow.editing .html').val($('.saint-label.editnow.editing .editor').html());
+	};
+	
+	Saint.sleToggleWysiwyg = function () {
+		$('.saint-label.editnow.editing .editor').html($('.saint-label.editnow.editing .html').val())
+		$('.saint-label.editnow.editing .wysiwyg').show();
+		$('.saint-label.editnow.editing .source').hide();
+	};
+	
+	Saint.sleExecute('styleWithCSS',false);
+	Saint.sleToggleWysiwyg();
+	
+	/* END LABEL EDITOR */
+	
 	Saint.sfmReset = function() {
 		Saint.clearForm('#saint-file-info form');
 		$('#saint-file-mode').val("search");
@@ -847,8 +950,6 @@ $(document).ready(function() {
 			Saint.addError("There was a problem adding your page. Please check the server error log for further information.",0);
 		}	
 	};
-	
-
 
 	Saint.stripTags = function (input, allowed) {
 	    allowed = (((allowed || "") + "").toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join('');
