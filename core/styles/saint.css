@@ -1156,8 +1156,12 @@ span.match {
 }
 
 .saint-label.editable.editnow textarea {
-	width: 100%;
-	height: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 1px;
+	resize: none;
 }
 
 .saint-label.editnow.editing .toolbar ul {
@@ -1170,6 +1174,32 @@ span.match {
 	display: inline;
 }
 
-body.editing .saint-label.editnow.editing .editor {
+body.editing .saint-label.editing .editor {
 	border: 1px dotted red;
 }
+
+.saint-label.editable.editing {
+	position: relative;
+}
+
+.sle.active {
+	z-index: 90;
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 400px;
+	height: 200px;
+	margin-left: -200px;
+	background: #ccc;
+	border: 1px solid #000;
+	overflow: auto;
+	resize: both;
+}
+
+.sle .source {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	display: none; }

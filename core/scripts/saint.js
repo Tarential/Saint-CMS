@@ -409,25 +409,25 @@ $(document).ready(function() {
 	
 	/* START LABEL EDITOR */
 	
+	Saint.sleWysiwygActive = true;
+	
 	/**
 	 * Start/stop label editor.
 	 */
 	$(document).on({
 		'click': function(event) {
 			if (Saint.editing) {
-				if ($(this).hasClass('editing'))
+				if ($(this).hasClass('editing') || $('body').hasClass('sle-active')) {
 					event.stopPropagation();
-				else
+				} else {
 					Saint.sleStart($(this));
+				}
+				return false;
 			}
-		},/*
-		'focusout': function(event) {
-			Saint.saveLabel($(this));
-			Saint.stopEdit($(this));
-		},*/
+		},
 		'keyup': function(event) {
 			if (event.which == 27) {
-				Saint.stopEdit($(this));
+				Saint.sleStop($(this));
 				return false;
 			}
 		}
@@ -440,8 +440,9 @@ $(document).ready(function() {
 		'click': function(event) {
 			event.preventDefault();
 			Saint.sleToggleWysiwyg();
+			return false;
 		}
-	},'.saint-label.editnow.editing .source .toolbar .link.switch');
+	},'.saint-label.editing .source .toolbar .link.switch');
 	
 	/**
 	 * Activate source editor.
@@ -450,8 +451,31 @@ $(document).ready(function() {
 		'click': function(event) {
 			event.preventDefault();
 			Saint.sleToggleSource();
+			return false;
 		}
-	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.switch');
+	},'.saint-label.editing .wysiwyg .toolbar .link.switch');
+	
+	/**
+	 * Save active label.
+	 */
+	$(document).on({
+		'click': function(event) {
+			event.preventDefault();
+			Saint.sleSave($('.sle.active').parent());
+			return false;
+		}
+	},'.saint-label.editing .toolbar .link.save');
+	
+	/**
+	 * Close active label.
+	 */
+	$(document).on({
+		'click': function(event) {
+			event.preventDefault();
+			Saint.sleStop($('.sle.active').parent());
+			return false;
+		}
+	},'.saint-label.editing .toolbar .link.close');
 	
 	/**
 	 * Bold selected text.
@@ -460,8 +484,9 @@ $(document).ready(function() {
 		'click': function(event) {
 			event.preventDefault();
 			Saint.sleExecute('bold',null);
+			return false;
 		}
-	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.bold');
+	},'.saint-label.editing .wysiwyg .toolbar .link.bold');
 	
 	/**
 	 * Italicize selected text.
@@ -470,8 +495,9 @@ $(document).ready(function() {
 		'click': function(event) {
 			event.preventDefault();
 			Saint.sleExecute('italic',null);
+			return false;
 		}
-	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.italic');
+	},'.saint-label.editing .wysiwyg .toolbar .link.italic');
 	
 	/**
 	 * Underline selected text.
@@ -480,8 +506,9 @@ $(document).ready(function() {
 		'click': function(event) {
 			event.preventDefault();
 			Saint.sleExecute('underline',null);
+			return false;
 		}
-	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.underline');
+	},'.saint-label.editing .wysiwyg .toolbar .link.underline');
 	
 	/**
 	 * Insert unordered list.
@@ -490,8 +517,9 @@ $(document).ready(function() {
 		'click': function(event) {
 			event.preventDefault();
 			Saint.sleExecute('insertunorderedlist',null);
+			return false;
 		}
-	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.ul');
+	},'.saint-label.editing .wysiwyg .toolbar .link.ul');
 	
 	/**
 	 * Insert ordered list.
@@ -500,9 +528,13 @@ $(document).ready(function() {
 		'click': function(event) {
 			event.preventDefault();
 			Saint.sleExecute('insertorderedlist',null);
+			return false;
 		}
-	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.ol');
+	},'.saint-label.editing .wysiwyg .toolbar .link.ol');
 	
+	/**
+	 * Hotkeys for bold/italic/underline.
+	 */
 	$(document).on({
 		'keypress': function(event) {
 		    if (event.ctrlKey && (event.which == 98 || event.which == 66)) {
@@ -515,6 +547,11 @@ $(document).ready(function() {
 			    event.preventDefault();
 			    return false;
 		    }
+		    if (event.ctrlKey && (event.which == 115 || event.which == 83)) {
+			    Saint.sleSave($('.sle.active').parent());
+			    event.preventDefault();
+			    return false;
+		    }
 		    if (event.ctrlKey && (event.which == 117 || event.which == 85)) {
 			    Saint.sleExecute('underline',null);
 			    event.preventDefault();
@@ -522,7 +559,7 @@ $(document).ready(function() {
 		    }
 		    return true;
 		}
-	},'.saint-label.editnow.editing .wysiwyg');
+	},'.saint-label.editing .wysiwyg');
 	
 	Saint.sleExecute = function(cmd,parm) {
 
@@ -540,23 +577,27 @@ $(document).ready(function() {
 	};
 
 	Saint.sleToggleSource = function () {
-		$('.saint-label.editnow.editing .source').show();
-		$('.saint-label.editnow.editing .wysiwyg').hide();
-		$('.saint-label.editnow.editing .source .label-value').val($('.saint-label.editnow.editing .wysiwyg .label-value').html());
+		$('.saint-label.editing .source .label-value').val($('.saint-label.editnow.editing .wysiwyg .label-value').html());
+		$('.saint-label.editing .source').show();
+		$('.saint-label.editing .wysiwyg').hide();
+		Saint.sleWysiwygActive = false;
 	};
 	
 	Saint.sleToggleWysiwyg = function () {
-		$('.saint-label.editnow.editing .wysiwyg .label-value').html($('.saint-label.editnow.editing .source .label-value').val())
-		$('.saint-label.editnow.editing .wysiwyg').show();
-		$('.saint-label.editnow.editing .source').hide();
+		$('.saint-label.editing .wysiwyg .label-value').html($('.saint-label.editnow.editing .source .label-value').val())
+		$('.saint-label.editing .wysiwyg').show();
+		$('.saint-label.editing .source').hide();
+		Saint.sleWysiwygActive = true;
 	};
 	
-	Saint.sleStart = function(label) { 
+	Saint.sleStart = function(label) {
+		$('body').addClass('sle-active');
 		label.addClass('editing');
-		var labelForm = $('#saint_ajax_templates > .label-form').clone().removeClass('template').removeClass('hidden');
+		var labelForm = $('#saint_ajax_templates > .sle.template.hidden').clone().removeClass('template').removeClass('hidden').addClass('active');
 		labelForm.find('.cache').html(label.html());
 		labelForm.find('input[name=label-name]').val(label.attr('id'));
-		labelForm.find('textarea[name=label-value]').val(label.html().replace(/<br\s*\/?>/mg,""));
+		labelForm.find('div.label-value').html(label.html());
+		labelForm.find('textarea[name=label-value]').val(label.html());
 		label.html(labelForm);
 		labelForm.find('textarea[name=label-value]').focus();
 		lines = labelForm.find('textarea[name=label-value]').val().split("\n");
@@ -569,14 +610,39 @@ $(document).ready(function() {
 	};
 	
 	Saint.sleStop = function(label) {
-		if (label.hasClass('editing')) {
-			label.removeClass('editing');
-			label.html(label.find('.cache').html());
+		$('body').removeClass('sle-active');
+		label.removeClass('editing');
+		label.html(label.find('.cache').html());
+	};
+	
+	Saint.sleSave = function(label) {
+		var stripped;
+		var allowed_tags = '<a><i><b><p><ul><li><img><h1><h2><h3><h4><h5><h6>';
+		if (Saint.sleWysiwygActive) {
+			stripped = Saint.stripTags(label.find('div.label-value').html(),allowed_tags);
+		} else {
+			stripped = Saint.stripTags(label.find('textarea[name=label-value]').val(),allowed_tags);
+		}
+		label.find('textarea[name=label-value]').val(stripped);
+		label.find('.cache').html(stripped);
+		var sdata = label.find('form').serialize();
+		Saint.callHome("/",sdata,Saint.sleSaved);
+	};
+	
+	Saint.sleSaved = function(data) {
+		try {
+			realdata = JSON.parse(data);
+			if (!realdata['success'])
+				$('#saint_ajax_indicator').addClass("error");
+			Saint.setActionLog(realdata.actionlog);
+		} catch (e) {
+			$('#saint_ajax_indicator').addClass("error");
+			Saint.addError("Error saving label. Please check the server error log for further information.");
 		}
 	};
 	
-	Saint.sleExecute('styleWithCSS',false);
-	Saint.sleToggleWysiwyg();
+	//Saint.sleExecute('styleWithCSS',false);
+	//Saint.sleToggleWysiwyg();
 	
 	/* END LABEL EDITOR */
 	
@@ -1008,26 +1074,6 @@ $(document).ready(function() {
 	    return input.replace(commentsAndPhpTags, '').replace(tags, function ($0, $1) {        return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
 	    });
 	}
-	
-	Saint.saveLabel = function(label) {
-		var stripped = Saint.stripTags(label.find('textarea[name=label-value]').val(),'<a><i><b><p><ul><li><img><h1><h2><h3><h4><h5><h6>');
-		//stripped = (stripped + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + '<br />' + '$2');
-		label.find('.cache').html(stripped);
-		var sdata = label.find('form').serialize();
-		Saint.callHome("/",sdata,Saint.savedLabel);
-	};
-	
-	Saint.savedLabel = function(data) {
-		try {
-			realdata = JSON.parse(data);
-			if (!realdata['success'])
-				$('#saint_ajax_indicator').addClass("error");
-			Saint.setActionLog(realdata.actionlog);
-		} catch (e) {
-			$('#saint_ajax_indicator').addClass("error");
-			Saint.addError("Error saving label. Please check the server error log for further information.");
-		}
-	};
 	
 	Saint.addPage = function() {
 		postdata = $('#saint_admin_page_add form').serialize();
