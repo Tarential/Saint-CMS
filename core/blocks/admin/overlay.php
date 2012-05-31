@@ -136,6 +136,32 @@
 	</div>
 	<?php endif; ?>
 	
+	<div class="sle template hidden">
+		<span class="cache hidden"></span>
+		<div class="wysiwyg">
+			<div class="toolbar">
+				<button class="link save">Save</button>
+				<button class="link switch">Source</button>
+				<button class="link bold">B</button>
+				<button class="link italic">I</button>
+				<button class="link underline">U</button>
+				<button class="link ul">UL</button>
+				<button class="link ol">OL</button>
+				</div>
+			<div class="label-value" contenteditable="true"></div>
+		</div>
+		<div class="source">
+			<div class="toolbar">
+				<button class="link save">Save</button>
+				<button class="link switch">Visual</button>
+			</div>
+			<form>
+				<input type="hidden" name="label-name" value="" />
+				<textarea class="label-value" name="label-value"></textarea>
+			</form>
+		</div>
+	</div>
+		
 	<div class="template label-form hidden">
 		<span class="cache hidden"></span>
 		<form method="post" action="/post">

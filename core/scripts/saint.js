@@ -13,14 +13,18 @@ $(document).ready(function() {
 		cache: false
 	});
 	
+	/**
+	 * Disable all links when the page is in edit mode.
+	 */
 	$(document).on({
 		'click': function(event) {
-			if (Saint.editing)
+			if ($('body').hasClass("editing")) {
+				event.stopPropagation();
 				return false;
-			else
+			} else
 				return true;
 		}
-	},'a');
+	},'a, a *');
 	
 	$(document).on({
 		'click': function(event) {
@@ -50,30 +54,6 @@ $(document).ready(function() {
 			Saint.loadWysiwyg(event.currentTarget.id);
 		}
 	},'.editing .saint-wysiwyg');
-	
-	/**
-	 * Actions to take place on editable labels.
-	 */
-	$(document).on({
-		'click': function(event) {
-			if (Saint.editing) {
-				if ($(this).hasClass('editing'))
-					event.stopPropagation();
-				else
-					Saint.startEdit($(this));
-			}
-		},
-		'focusout': function(event) {
-			Saint.saveLabel($(this));
-			Saint.stopEdit($(this));
-		},
-		'keyup': function(event) {
-			if (event.which == 27) {
-				Saint.stopEdit($(this));
-				return false;
-			}
-		}
-	},'span.editable');
 	
 	/**
 	 * Expand admin overlay when mouse enters,
@@ -430,10 +410,35 @@ $(document).ready(function() {
 	/* START LABEL EDITOR */
 	
 	/**
+	 * Start/stop label editor.
+	 */
+	$(document).on({
+		'click': function(event) {
+			if (Saint.editing) {
+				if ($(this).hasClass('editing'))
+					event.stopPropagation();
+				else
+					Saint.sleStart($(this));
+			}
+		},/*
+		'focusout': function(event) {
+			Saint.saveLabel($(this));
+			Saint.stopEdit($(this));
+		},*/
+		'keyup': function(event) {
+			if (event.which == 27) {
+				Saint.stopEdit($(this));
+				return false;
+			}
+		}
+	},'span.editable');
+	
+	/**
 	 * Activate WYSIWYG editor.
 	 */
 	$(document).on({
 		'click': function(event) {
+			event.preventDefault();
 			Saint.sleToggleWysiwyg();
 		}
 	},'.saint-label.editnow.editing .source .toolbar .link.switch');
@@ -443,6 +448,7 @@ $(document).ready(function() {
 	 */
 	$(document).on({
 		'click': function(event) {
+			event.preventDefault();
 			Saint.sleToggleSource();
 		}
 	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.switch');
@@ -476,6 +482,26 @@ $(document).ready(function() {
 			Saint.sleExecute('underline',null);
 		}
 	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.underline');
+	
+	/**
+	 * Insert unordered list.
+	 */
+	$(document).on({
+		'click': function(event) {
+			event.preventDefault();
+			Saint.sleExecute('insertunorderedlist',null);
+		}
+	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.ul');
+	
+	/**
+	 * Insert ordered list.
+	 */
+	$(document).on({
+		'click': function(event) {
+			event.preventDefault();
+			Saint.sleExecute('insertorderedlist',null);
+		}
+	},'.saint-label.editnow.editing .wysiwyg .toolbar .link.ol');
 	
 	$(document).on({
 		'keypress': function(event) {
@@ -516,13 +542,37 @@ $(document).ready(function() {
 	Saint.sleToggleSource = function () {
 		$('.saint-label.editnow.editing .source').show();
 		$('.saint-label.editnow.editing .wysiwyg').hide();
-		$('.saint-label.editnow.editing .html').val($('.saint-label.editnow.editing .editor').html());
+		$('.saint-label.editnow.editing .source .label-value').val($('.saint-label.editnow.editing .wysiwyg .label-value').html());
 	};
 	
 	Saint.sleToggleWysiwyg = function () {
-		$('.saint-label.editnow.editing .editor').html($('.saint-label.editnow.editing .html').val())
+		$('.saint-label.editnow.editing .wysiwyg .label-value').html($('.saint-label.editnow.editing .source .label-value').val())
 		$('.saint-label.editnow.editing .wysiwyg').show();
 		$('.saint-label.editnow.editing .source').hide();
+	};
+	
+	Saint.sleStart = function(label) { 
+		label.addClass('editing');
+		var labelForm = $('#saint_ajax_templates > .label-form').clone().removeClass('template').removeClass('hidden');
+		labelForm.find('.cache').html(label.html());
+		labelForm.find('input[name=label-name]').val(label.attr('id'));
+		labelForm.find('textarea[name=label-value]').val(label.html().replace(/<br\s*\/?>/mg,""));
+		label.html(labelForm);
+		labelForm.find('textarea[name=label-value]').focus();
+		lines = labelForm.find('textarea[name=label-value]').val().split("\n");
+		if (lines.length > 1) {
+			multiplier = lines.length * 2;
+		} else {
+			multiplier = 1;
+		}
+		labelForm.find('textarea[name=label-value]').attr('rows',multiplier);
+	};
+	
+	Saint.sleStop = function(label) {
+		if (label.hasClass('editing')) {
+			label.removeClass('editing');
+			label.html(label.find('.cache').html());
+		}
 	};
 	
 	Saint.sleExecute('styleWithCSS',false);
@@ -863,7 +913,7 @@ $(document).ready(function() {
 	Saint.refreshPage = function() {
 		location.reload(true);
 	};
-	
+	/*
 	Saint.startEdit = function(label) { 
 		label.addClass('editing');
 		var labelForm = $('#saint_ajax_templates > .label-form').clone().removeClass('template').removeClass('hidden');
@@ -886,7 +936,7 @@ $(document).ready(function() {
 			label.removeClass('editing');
 			label.html(label.find('.cache').html());
 		}
-	};
+	};*/
 	
 	Saint.expandOverlay = function() {
 		if ($('#saint_admin_overlay').hasClass("contracted")) {
