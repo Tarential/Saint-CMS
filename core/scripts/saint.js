@@ -412,26 +412,38 @@ $(document).ready(function() {
 	Saint.sleWysiwygActive = true;
 	
 	/**
-	 * Start/stop label editor.
+	 * Start label editor.
 	 */
 	$(document).on({
 		'click': function(event) {
 			if (Saint.editing) {
-				if ($(this).hasClass('editing') || $('body').hasClass('sle-active')) {
+				target = this;
+				while (!$(target).hasClass('saint-label')) {
+					target = $(target).parent();
+				}
+				if ($(this).hasClass('editing')) {
 					event.stopPropagation();
 				} else {
-					Saint.sleStart($(this));
+					Saint.sleStart($(target));
 				}
 				return false;
+			} else {
+				return true;
 			}
-		},
+		}
+	},'body:not(body.sle-active) span.editable, body:not(body.sle-active) span.editable *');
+	
+	/**
+	 * Stop label editor.
+	 */
+	$(document).on({
 		'keyup': function(event) {
 			if (event.which == 27) {
 				Saint.sleStop($(this));
 				return false;
 			}
 		}
-	},'span.editable');
+	},'body.sle-active span.editable');
 	
 	/**
 	 * Activate WYSIWYG editor.
@@ -591,6 +603,8 @@ $(document).ready(function() {
 	};
 	
 	Saint.sleStart = function(label) {
+		var offset = label.offset();
+		offset.left = offset.left + (label.width()/2);
 		$('body').addClass('sle-active');
 		label.addClass('editing');
 		var labelForm = $('#saint_ajax_templates > .sle.template.hidden').clone().removeClass('template').removeClass('hidden').addClass('active');
@@ -599,14 +613,35 @@ $(document).ready(function() {
 		labelForm.find('div.label-value').html(label.html());
 		labelForm.find('textarea[name=label-value]').val(label.html());
 		label.html(labelForm);
-		labelForm.find('textarea[name=label-value]').focus();
+		labelForm.find('div.label-value').focus();
+		//var offset = labelForm.offset();
+		//alert("It is offset "+(offset.top-$(window).scrollTop())+" by "+offset.left+".");
+		offset.left = offset.left - (labelForm.width()/2);
+		labelForm.css("position","fixed");
+		if (offset.top-$(window).scrollTop() < 10) {
+			labelForm.css("top","10px");
+		} else if ( (offset.top-$(window).scrollTop() + labelForm.height() + 10) > $(window).height()) {
+			labelForm.css("top",($(window).height()-labelForm.height()-10)+"px");
+		} else {
+			labelForm.css("top",offset.top-$(window).scrollTop()+"px");
+		}
+		if (offset.left < 10) {
+			labelForm.css("left","10px");
+		} else if ( (offset.left + labelForm.width() + 10) > $(window).width()) {
+			labelForm.css("left",($(window).width()-labelForm.width()-10)+"px");
+		} else {
+			labelForm.css("left",offset.left+"px");
+		}
+		labelForm.css("margin-left","0");
+		
+		/*
 		lines = labelForm.find('textarea[name=label-value]').val().split("\n");
 		if (lines.length > 1) {
 			multiplier = lines.length * 2;
 		} else {
 			multiplier = 1;
 		}
-		labelForm.find('textarea[name=label-value]').attr('rows',multiplier);
+		labelForm.find('textarea[name=label-value]').attr('rows',multiplier);*/
 	};
 	
 	Saint.sleStop = function(label) {
