@@ -439,11 +439,11 @@ $(document).ready(function() {
 	$(document).on({
 		'keyup': function(event) {
 			if (event.which == 27) {
-				Saint.sleStop($(this));
+				Saint.sleStop();
 				return false;
 			}
 		}
-	},'body.sle-active span.editable');
+	},'body.sle-active');
 	
 	/**
 	 * Activate WYSIWYG editor.
@@ -454,7 +454,7 @@ $(document).ready(function() {
 			Saint.sleToggleWysiwyg();
 			return false;
 		}
-	},'.saint-label.editing .source .toolbar .link.switch');
+	},'.sle.active .source .toolbar .link.switch');
 	
 	/**
 	 * Activate source editor.
@@ -465,7 +465,7 @@ $(document).ready(function() {
 			Saint.sleToggleSource();
 			return false;
 		}
-	},'.saint-label.editing .wysiwyg .toolbar .link.switch');
+	},'.sle.active .wysiwyg .toolbar .link.switch');
 	
 	/**
 	 * Save active label.
@@ -476,7 +476,7 @@ $(document).ready(function() {
 			Saint.sleSave($('.sle.active').parent());
 			return false;
 		}
-	},'.saint-label.editing .toolbar .link.save');
+	},'.sle.active .toolbar .link.save');
 	
 	/**
 	 * Close active label.
@@ -487,7 +487,7 @@ $(document).ready(function() {
 			Saint.sleStop($('.sle.active').parent());
 			return false;
 		}
-	},'.saint-label.editing .toolbar .link.close');
+	},'.sle.active .toolbar .link.close');
 	
 	/**
 	 * Bold selected text.
@@ -498,7 +498,7 @@ $(document).ready(function() {
 			Saint.sleExecute('bold',null);
 			return false;
 		}
-	},'.saint-label.editing .wysiwyg .toolbar .link.bold');
+	},'.sle.active .wysiwyg .toolbar .link.bold');
 	
 	/**
 	 * Italicize selected text.
@@ -509,7 +509,7 @@ $(document).ready(function() {
 			Saint.sleExecute('italic',null);
 			return false;
 		}
-	},'.saint-label.editing .wysiwyg .toolbar .link.italic');
+	},'.sle.active .wysiwyg .toolbar .link.italic');
 	
 	/**
 	 * Underline selected text.
@@ -520,7 +520,7 @@ $(document).ready(function() {
 			Saint.sleExecute('underline',null);
 			return false;
 		}
-	},'.saint-label.editing .wysiwyg .toolbar .link.underline');
+	},'.sle.active .wysiwyg .toolbar .link.underline');
 	
 	/**
 	 * Insert unordered list.
@@ -531,7 +531,7 @@ $(document).ready(function() {
 			Saint.sleExecute('insertunorderedlist',null);
 			return false;
 		}
-	},'.saint-label.editing .wysiwyg .toolbar .link.ul');
+	},'.sle.active .wysiwyg .toolbar .link.ul');
 	
 	/**
 	 * Insert ordered list.
@@ -542,7 +542,7 @@ $(document).ready(function() {
 			Saint.sleExecute('insertorderedlist',null);
 			return false;
 		}
-	},'.saint-label.editing .wysiwyg .toolbar .link.ol');
+	},'.sle.active .wysiwyg .toolbar .link.ol');
 	
 	/**
 	 * Hotkeys for bold/italic/underline.
@@ -571,7 +571,38 @@ $(document).ready(function() {
 		    }
 		    return true;
 		}
-	},'.saint-label.editing .wysiwyg');
+	},'.sle.active .wysiwyg');
+	
+	Saint.sleResizeTimer = 0;
+	
+	/**
+	 * Automatically resize editor frame when textarea size is changed.
+	 */
+	$(document).on({
+		'mousedown': function(event) {
+			Saint.sleResizeTimer = self.setInterval(function() { Saint.sleResizeSourceFrame() },200);
+			return true;
+		},
+		'mouseup': function(event) {
+			clearInterval(Saint.sleResizeTimer);
+			Saint.sleResizeSourceFrame();
+			return true;
+		}
+	},'.sle.active .source textarea');
+	
+	Saint.sleResizeSourceFrame = function() {
+		var textarea = $('.sle.active .source textarea');
+		var width = textarea.width();
+		var height = textarea.height();
+		$('.sle.active').width(width+4).height(height+24);
+	}
+	
+	Saint.sleResizeSourceEditor = function() {
+		var frame = $('.sle.active');
+		var width = frame.width();
+		var height = frame.height();
+		$('.sle.active .source textarea').width(width-4).height(height-24);
+	}
 	
 	Saint.sleExecute = function(cmd,parm) {
 
@@ -589,33 +620,46 @@ $(document).ready(function() {
 	};
 
 	Saint.sleToggleSource = function () {
-		$('.saint-label.editing .source .label-value').val($('.saint-label.editnow.editing .wysiwyg .label-value').html());
-		$('.saint-label.editing .source').show();
-		$('.saint-label.editing .wysiwyg').hide();
+		$('.sle.active .source .label-value').val($('.sle.active .wysiwyg .label-value').html());
+		$('.sle.active .source').show();
+		Saint.sleResizeSourceEditor();
+		$('.sle.active .wysiwyg').hide();
 		Saint.sleWysiwygActive = false;
 	};
 	
 	Saint.sleToggleWysiwyg = function () {
-		$('.saint-label.editing .wysiwyg .label-value').html($('.saint-label.editnow.editing .source .label-value').val())
-		$('.saint-label.editing .wysiwyg').show();
-		$('.saint-label.editing .source').hide();
+		$('.sle.active .wysiwyg .label-value').html($('.sle.active .source .label-value').val())
+		$('.sle.active .wysiwyg').show();
+		$('.sle.active .source').hide();
 		Saint.sleWysiwygActive = true;
 	};
 	
 	Saint.sleStart = function(label) {
-		var offset = label.offset();
-		offset.left = offset.left + (label.width()/2);
 		$('body').addClass('sle-active');
-		label.addClass('editing');
+		label.addClass('sle-editing');
 		var labelForm = $('#saint_ajax_templates > .sle.template.hidden').clone().removeClass('template').removeClass('hidden').addClass('active');
 		labelForm.find('.cache').html(label.html());
 		labelForm.find('input[name=label-name]').val(label.attr('id'));
 		labelForm.find('div.label-value').html(label.html());
 		labelForm.find('textarea[name=label-value]').val(label.html());
-		label.html(labelForm);
-		labelForm.find('div.label-value').focus();
+		//label.html(labelForm);
+		$('body').prepend(labelForm);
 		//var offset = labelForm.offset();
 		//alert("It is offset "+(offset.top-$(window).scrollTop())+" by "+offset.left+".");
+		var offset = label.offset();
+		offset.left = offset.left + (label.width()/2);
+		if (label.width() > labelForm.width()) {
+			labelForm.width(label.width()-1);
+			if (labelForm.width() > $(window).width()-20) {
+				labelForm.width($(window).width()-20);
+			}
+		}
+		if (label.height() > labelForm.height()) {
+			labelForm.height(label.height()-2);
+			if (labelForm.height() > $(window).height()-20) {
+				labelForm.height($(window).height()-20);
+			}
+		}
 		offset.left = offset.left - (labelForm.width()/2);
 		labelForm.css("position","fixed");
 		if (offset.top-$(window).scrollTop() < 10) {
@@ -630,10 +674,9 @@ $(document).ready(function() {
 		} else if ( (offset.left + labelForm.width() + 10) > $(window).width()) {
 			labelForm.css("left",($(window).width()-labelForm.width()-10)+"px");
 		} else {
-			labelForm.css("left",offset.left+"px");
+			labelForm.css("left",(offset.left-2)+"px");
 		}
-		labelForm.css("margin-left","0");
-		
+		labelForm.find('div.label-value').focus();
 		/*
 		lines = labelForm.find('textarea[name=label-value]').val().split("\n");
 		if (lines.length > 1) {
@@ -644,23 +687,23 @@ $(document).ready(function() {
 		labelForm.find('textarea[name=label-value]').attr('rows',multiplier);*/
 	};
 	
-	Saint.sleStop = function(label) {
+	Saint.sleStop = function() {
 		$('body').removeClass('sle-active');
-		label.removeClass('editing');
-		label.html(label.find('.cache').html());
+		$('.sle-editing').html($('.sle.active .cache').html()).removeClass('sle-editing');
+		$('.sle.active').remove();
 	};
 	
-	Saint.sleSave = function(label) {
+	Saint.sleSave = function() {
 		var stripped;
 		var allowed_tags = '<a><i><b><p><ul><li><img><h1><h2><h3><h4><h5><h6>';
 		if (Saint.sleWysiwygActive) {
-			stripped = Saint.stripTags(label.find('div.label-value').html(),allowed_tags);
+			stripped = Saint.stripTags($('.sle.active div.label-value').html(),allowed_tags);
 		} else {
-			stripped = Saint.stripTags(label.find('textarea[name=label-value]').val(),allowed_tags);
+			stripped = Saint.stripTags($('.sle.active textarea[name=label-value]').val(),allowed_tags);
 		}
-		label.find('textarea[name=label-value]').val(stripped);
-		label.find('.cache').html(stripped);
-		var sdata = label.find('form').serialize();
+		$('.sle.active textarea[name=label-value]').val(stripped);
+		$('.sle.active .cache').html(stripped);
+		var sdata = $('.sle.active form').serialize();
 		Saint.callHome("/",sdata,Saint.sleSaved);
 	};
 	
@@ -980,6 +1023,7 @@ $(document).ready(function() {
 	
 	Saint.stopPageEdit = function() {
 		$(document.body).removeClass("editing");
+		Saint.sleStop();
 		Saint.editing = false;
 		if ($('#saint-admin-add-block').hasClass("active")) {
 			Saint.saveAddBox();

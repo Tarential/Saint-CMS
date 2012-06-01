@@ -1,4 +1,5 @@
 <?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
+<div id="saint_blackout">&nbsp;</div>
 <div id="saint_admin_overlay">
 	<div id="saint_ajax_indicator">&nbsp;</div>
 	<div id="saint-logo">&nbsp;</div>

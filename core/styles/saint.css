@@ -1181,18 +1181,46 @@ body.editing .saint-label.editing .editor {
 	position: relative;
 }
 
+.sle.active .wysiwyg {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	overflow: auto;
+}
+
 .sle.active {
 	z-index: 90;
 	position: absolute;
-	top: 0;
-	left: 50%;
 	width: 400px;
 	height: 200px;
-	margin-left: -200px;
 	background: #ccc;
 	border: 1px solid #000;
-	overflow: auto;
+	overflow: hidden;
 	resize: both;
+}
+
+#saint_blackout {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 89;
+	background: #000;
+	filter: alpha(opacity=70);
+	-khtml-opacity: 0.7;
+	-moz-opacity: 0.7;
+	opacity: 0.7;
+	display: none;
+}
+
+body.sle-active {
+	overflow: hidden; }
+
+body.sle-active #saint_blackout {
+	display: block;
 }
 
 #saint-admin-add-block .sle.active {
