@@ -523,6 +523,17 @@ $(document).ready(function() {
 	},'.sle.active .wysiwyg .toolbar .link.underline');
 	
 	/**
+	 * Insert link.
+	 */
+	$(document).on({
+		'click': function(event) {
+			event.preventDefault();
+			Saint.sleExecute('createlink',null);
+			return false;
+		}
+	},'.sle.active .wysiwyg .toolbar .link.a');
+	
+	/**
 	 * Insert unordered list.
 	 */
 	$(document).on({
@@ -624,9 +635,9 @@ $(document).ready(function() {
 			parm=cmd;
 			cmd="FormatBlock";
 		}
-		if (cmd == "InsertImage") parm = prompt("Filename or path to image","");
-		if (cmd == "CreateLink") {
-			parm = prompt("URL or address of link (leave blank to unlink)","http://");
+		//if (cmd == "insertimage") parm = prompt("Filename or path to image","");
+		if (cmd == "createlink") {
+			parm = prompt("URL address of link (leave blank to remove link)","http://");
 			if (parm=="" || parm=="http://"){cmd="Unlink"}
 		}
 		
@@ -662,8 +673,8 @@ $(document).ready(function() {
 		$('body').prepend(labelForm);
 		// Calculate size and position for editor based on label.
 		var margin = 10;
-		var paddingX = 10;
-		var paddingY = 60;
+		var paddingX = 16;
+		var paddingY = 50;
 		var offset = label.offset();
 		var initX = offset.left + (label.width()/2);
 		var initY = offset.top-$(window).scrollTop();
@@ -706,7 +717,7 @@ $(document).ready(function() {
 	
 	Saint.sleSave = function() {
 		var stripped;
-		var allowed_tags = '<a><i><b><p><ul><li><img><h1><h2><h3><h4><h5><h6>';
+		var allowed_tags = '<a><i><b><u><p><ul><ol><li><img><h1><h2><h3><h4><h5><h6>';
 		if (Saint.sleWysiwygActive) {
 			stripped = Saint.stripTags($('.sle.active div.label-value').html(),allowed_tags);
 		} else {

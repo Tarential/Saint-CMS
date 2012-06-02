@@ -146,6 +146,7 @@
 				<button class="link bold" title="Bold">B</button>
 				<button class="link italic" title="Italic">I</button>
 				<button class="link underline" title="Save">U</button>
+				<button class="link a" title="Link">&nbsp;</button>
 				<button class="link ul" title="Unordered List">&nbsp;</button>
 				<button class="link ol" title="Ordered List">&nbsp;</button>
 				<select name="heading" class="link heading">

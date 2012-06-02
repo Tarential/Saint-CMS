@@ -1166,6 +1166,7 @@ span.match {
 	width: 396px;
 	height: 176px;
 }
+
 /*
 .sle.active .toolbar ul {
 	padding: 0;
@@ -1187,6 +1188,15 @@ span.match {
 	right: 0;
 	left: 0;
 	overflow: auto;
+}
+
+.sle.active .wysiwyg a {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.sle.active .wysiwyg a:hover {
+	cursor: pointer;
 }
 
 .sle.active {
@@ -1280,8 +1290,14 @@ body.sle-active #saint_blackout {
 .sle .toolbar .italic {
 	font-style: italic; }
 
-.sle .toolbar .underline, .sle .toolbar .underline:hover {
+.sle .toolbar .underline, .sle .toolbar button.underline:hover {
 	text-decoration: underline; }
+
+.sle .toolbar .a {
+	width: 20px;
+	height: 20px;
+	background: url('../images/link.png');
+}
 
 .sle .toolbar .ul {
 	width: 20px;
