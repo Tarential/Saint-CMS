@@ -138,6 +138,7 @@
 	<?php endif; ?>
 	
 	<div class="sle template hidden">
+		<div class="blackout">&nbsp;</div>
 		<span class="cache hidden" style="display:none;"></span>
 		<div class="wysiwyg">
 			<div class="toolbar">
@@ -160,16 +161,17 @@
 					<option value="h6">H6</option>
 				</select>
 				<select name="revision" class="link revision">
-					<option selected="selected" value="r0">Revision</option>
-					<option value="r1">Current -1</option>
-					<option value="r2">Current -2</option>
-					<option value="r3">Current -3</option>
-					<option value="r4">Current -4</option>
-					<option value="r5">Current -5</option>
-					<option value="r6">Current -6</option>
-					<option value="r7">Current -7</option>
-					<option value="r8">Current -8</option>
-					<option value="r9">Current -9</option>
+					<option selected="selected" value="load">Load...</option>
+					<option value="0">Current</option>
+					<option value="1">Current -1</option>
+					<option value="2">Current -2</option>
+					<option value="3">Current -3</option>
+					<option value="4">Current -4</option>
+					<option value="5">Current -5</option>
+					<option value="6">Current -6</option>
+					<option value="7">Current -7</option>
+					<option value="8">Current -8</option>
+					<option value="9">Current -9</option>
 				</select>
 				<div class="link close-button" title="Close">&nbsp;</div>
 			</div>
@@ -178,7 +180,7 @@
 		<div class="source">
 			<div class="toolbar">
 				<button class="link save">&nbsp;</button>
-				<button class="link switch source">&nbsp;</button>
+				<button class="link switch visual">&nbsp;</button>
 				<div class="link close-button">&nbsp;</div>
 			</div>
 			<form>

@@ -723,9 +723,9 @@ class Saint {
 	 * @param boolean $wysiwyg True to make label editor WYSIWYG, false by default.
 	 * @return string Code for selected label.
 	 */
-	public static function getPageLabel($name, $default = '', $container = true, $lang = null, $wysiwyg = false) {
+	public static function getPageLabel($name, $default = '', $container = true, $lang = null, $wysiwyg = false, $revision = 0) {
 		$name = "page/" . Saint::getCurrentPage()->getId() . "/n/" . $name;
-		return Saint::getLabel($name,$default,$container,$lang,$wysiwyg);
+		return Saint::getLabel($name,$default,$container,$lang,$wysiwyg,$revision);
 	}
 	
 	/**
@@ -739,9 +739,9 @@ class Saint {
 	 * @param boolean $wysiwyg True to make label editor WYSIWYG, false by default.
 	 * @return string Code for selected label.
 	 */
-	public static function getBlockLabel($block, $id, $name, $default = '', $container = true, $lang = null, $wysiwyg = false) {
+	public static function getBlockLabel($block, $id, $name, $default = '', $container = true, $lang = null, $wysiwyg = false, $revision = 0) {
 		$name = "block/" . $id . "/" . $block . "/n/" . $name;
-		return Saint::getLabel($name,$default,$container,$lang,$wysiwyg);
+		return Saint::getLabel($name,$default,$container,$lang,$wysiwyg,$revision);
 	}
 	
 	/**
@@ -752,11 +752,11 @@ class Saint {
 	 * @param Saint_Model_Page $page Page label is being called from
 	 * @param string $lang Request label in this language
 	 */
-	public static function getLabel($name, $default = '', $container = true, $lang = null, $wysiwyg = false) {
+	public static function getLabel($name, $default = '', $container = true, $lang = null, $wysiwyg = false, $revision = 0) {
 		$page = Saint::getCurrentPage();
 		$label = new Saint_Model_Label();
 		if ($label->loadByName($name)) {
-			return $label->getLabel($container,$default, $lang);
+			return $label->getLabel($container,$default, $lang, $revision);
 		} else {
 			$label->setLabel($default, $lang);
 			$label->save();

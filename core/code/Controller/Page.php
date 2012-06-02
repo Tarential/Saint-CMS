@@ -159,6 +159,29 @@ class Saint_Controller_Page {
 			Saint_Controller_Label::editLabel($_POST['label-name'],$_POST['label-value']);
 		}
 		
+		if (isset($args['getlabel']) && $args['getlabel'] != "") {
+			if (Saint::getCurrentUser()->hasPermissionTo("edit-label")) {
+				$this->_page->setTempLayout("system/json");
+				if (isset($args['revision']) && $args['revision'] != "") {
+					$revision = $args['revision'];
+				} else {
+					$revision = 0;
+				}
+				$this->_page->jsondata = array(
+					'success' => true,
+					'revision' => $revision,
+					'label' => Saint::getLabel(
+						Saint::convertNameFromWeb(preg_replace('/^saint_/','',$args['getlabel'])),
+						'',
+						false,
+						null,
+						false,
+						$revision
+					)
+				);
+			}
+		}
+		
 		/*
 		 * User controls
 		 */

@@ -409,7 +409,14 @@ $(document).ready(function() {
 	
 	/* START LABEL EDITOR */
 	
+	// Flag which editor view is active.
 	Saint.sleWysiwygActive = true;
+	
+	// Interval ID for resizing editor to match textarea while being dragged.
+	Saint.sleResizeTimer = 0;
+	
+	// Currently loaded revision.
+	Saint.sleActiveRevision = 0;
 	
 	/**
 	 * Start label editor.
@@ -570,6 +577,19 @@ $(document).ready(function() {
 	},'.sle.active .wysiwyg .toolbar .link.heading');
 	
 	/**
+	 * Change active revision.
+	 */
+	$(document).on({
+		'change': function(event) {
+			event.preventDefault();
+			if ($(this).attr('value') != Saint.sleActiveRevision && $(this).attr('value') != "load") {
+				Saint.sleGetRevision($(this).attr('value'));
+			}
+			return false;
+		}
+	},'.sle.active .wysiwyg .toolbar .link.revision');
+		
+	/**
 	 * Hotkeys for bold/italic/underline.
 	 */
 	$(document).on({
@@ -597,8 +617,6 @@ $(document).ready(function() {
 		    return true;
 		}
 	},'.sle.active .wysiwyg');
-	
-	Saint.sleResizeTimer = 0;
 	
 	/**
 	 * Automatically resize editor frame when textarea size is changed.
@@ -674,7 +692,7 @@ $(document).ready(function() {
 		// Calculate size and position for editor based on label.
 		var margin = 10;
 		var paddingX = 16;
-		var paddingY = 50;
+		var paddingY = 54;
 		var offset = label.offset();
 		var initX = offset.left + (label.width()/2);
 		var initY = offset.top-$(window).scrollTop();
@@ -715,6 +733,29 @@ $(document).ready(function() {
 		$('.sle.active').remove();
 	};
 	
+	Saint.sleGetRevision = function(revision) {
+		Saint.callHome("/system/getlabel."+$('.sle.active form input[name=label-name]').val()+"/revision."+revision,null,Saint.sleGotRevision);
+		$('.sle.active').addClass("loading");
+	};
+	
+	Saint.sleGotRevision = function(data) {
+		try {
+			realdata = JSON.parse(data);
+			if (realdata['success']) {
+				$('.sle.active div.label-value').html(realdata['label']);
+				$('.sle.active textarea[name=label-value]').val(realdata['label']);
+				Saint.sleActiveRevision = realdata['revision'];
+			} else {
+				$('#saint_ajax_indicator').addClass("error");
+			}
+			Saint.setActionLog(realdata.actionlog);
+		} catch (e) {
+			$('#saint_ajax_indicator').addClass("error");
+			Saint.addError("Error loading label. Please check the server error log for further information.");
+		}
+		$('.sle.active').removeClass("loading");
+	};
+	
 	Saint.sleSave = function() {
 		var stripped;
 		var allowed_tags = '<a><i><b><u><p><ul><ol><li><img><h1><h2><h3><h4><h5><h6>';
@@ -726,7 +767,7 @@ $(document).ready(function() {
 		$('.sle.active textarea[name=label-value]').val(stripped);
 		$('.sle.active .cache').html(stripped);
 		var sdata = $('.sle.active form').serialize();
-		Saint.callHome("/",sdata,Saint.sleSaved);
+		Saint.callHome("/system",sdata,Saint.sleSaved);
 	};
 	
 	Saint.sleSaved = function(data) {

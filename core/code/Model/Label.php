@@ -95,7 +95,7 @@ class Saint_Model_Label {
 	/**
 	 * Get the label contents. Creates label with default content if not found.
 	 * @param string $lang Optional name of language to retrieve (null uses default).
-	 * @param int $revision Optional revision number to retrieve (null uses highest revision).
+	 * @param int $revision Optional previous revision to use (null/0 uses highest revision, 1 is previous, 2 is 2 back, etc).
 	 * @return string Label code.
 	 */
 	public function getLabel($container = true, $default = '', $lang = null, $revision = null) {
@@ -105,10 +105,19 @@ class Saint_Model_Label {
 		else
 			$lang = Saint::sanitize($lang,SAINT_REG_NAME);
 		$revision = Saint::sanitize($revision,SAINT_REG_ID);
-		if ($revision)
-			$revcode = " AND `revision`='$revision'";
-		else
-			$revcode = " ORDER BY `revision` DESC";
+		$revcode = " ORDER BY `revision` DESC";
+		if ($revision) {
+			try {
+				$maxrev = Saint::getOne("SELECT MAX(`revision`) FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'");
+				$revision = $maxrev - $revision;
+				$revcode = " AND `revision`='$revision'";
+			} catch (Exception $f) {
+				if ($f->getCode()){
+					Saint::logError("Unable to select max revision for label '$this->_name': ".$e->getMessage());
+				}
+			}
+		}
+		
 		if ($lang && $revcode) {
 			try {
 				$label = Saint::getOne("SELECT `label` FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'" . $revcode);

@@ -1345,3 +1345,17 @@ body.sle-active #saint_blackout {
 .sle div.label-value * {
 	color #000;
 }
+
+.sle.active .blackout {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #fff url('../images/ajax-loader-large.gif') center center no-repeat;
+	z-index: 91;
+	display: none;
+}
+
+.sle.active.loading .blackout {
+	display: block; }
