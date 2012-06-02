@@ -2,6 +2,6 @@
 
 <?php Saint::includeBlock("middle",false); ?>
 
-<?php echo Saint::getPageWysiwyg("content","This is a blank content panel. Select 'edit page' in the Saint menu then click this text to change it."); ?>
+<?php echo Saint::getPageLabel("content","<p>This is a blank content panel. Select 'edit page' in the Saint menu then click this text to change it.</p>"); ?>
 
 <?php Saint::includeBlock("bottom",false); ?>

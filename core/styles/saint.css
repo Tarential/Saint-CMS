@@ -280,6 +280,10 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	background: url('../images/close.png');	
 }
 
+.close-button:hover {
+	text-decoration: none;
+}
+
 .category-edit .close-button {
 	float: left;
 	margin-top: 2px;
@@ -568,10 +572,10 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	display: block;
 }
 
-span.editnow {
+span.editnow, span.editnow * {
 	border-bottom: 1px dotted red; }
 
-span.editnow:hover {
+span.editnow:hover, span.editnow *:hover {
 	border-bottom: 1px solid red; }
 
 div.editnow > .block-item {
@@ -1155,31 +1159,26 @@ span.match {
 	clear: both;
 }
 
-.saint-label.editable.editnow textarea {
+.sle.active textarea {
 	position: absolute;
 	top: 20px;
 	left: 1px;
 	width: 396px;
 	height: 176px;
 }
-
-.saint-label.editnow.editing .toolbar ul {
+/*
+.sle.active .toolbar ul {
 	padding: 0;
-	margin: 0;
+	margin: 1px 0 0;
 }
 
-.saint-label.editnow.editing .toolbar ul li {
+.sle.active .toolbar ul li {
 	list-style: none;
-	display: inline;
-}
-
-body.editing .saint-label.editing .editor {
-	border: 1px dotted red;
-}
-
-.saint-label.editable.editing {
-	position: relative;
-}
+	display: block;
+	float: left;
+	min-width: 20px;
+	margin: 0 20px 0 0;
+}*/
 
 .sle.active .wysiwyg {
 	position: absolute;
@@ -1192,9 +1191,9 @@ body.editing .saint-label.editing .editor {
 
 .sle.active {
 	z-index: 90;
-	position: absolute;
+	position: fixed;
 	width: 400px;
-	height: 200px;
+	height: 50px;
 	background: #ccc;
 	border: 1px solid #000;
 	overflow: hidden;
@@ -1223,16 +1222,110 @@ body.sle-active #saint_blackout {
 	display: block;
 }
 
-#saint-admin-add-block .sle.active {
-	position: fixed;
-	margin-left: -400px;
-	top: 10%;
-}
-
-.sle .source {
+.sle div.source {
 	position: absolute;
 	left: 0;
 	right: 0;
 	top: 0;
 	bottom: 0;
 	display: none; }
+
+.sle .toolbar {
+	position: relative;
+	margin: 0;
+	width: 100%;
+	height: 20px;
+}
+
+.sle .toolbar button {
+	padding: 0;
+	background: transparent;
+	border: none;
+	font-weight: normal;
+	display: block;
+	min-width: 16px;
+	min-height: 20px;
+	float: left;
+}
+
+.sle .toolbar button:hover {
+	text-decoration: none; }
+
+.sle .toolbar select {
+	margin: 1px 2px 0;
+	display: block;
+	float: left; }
+
+.sle .toolbar .save {
+	width: 20px;
+	height: 20px;
+	background: url('../images/save.png');
+}
+
+.sle .toolbar .switch.source {
+	width: 20px;
+	height: 20px;
+	background: url('../images/source-small.png');
+}
+
+.sle .toolbar .switch.visual {
+	width: 20px;
+	height: 20px;
+	background: url('../images/image-small.png');
+}
+
+.sle .toolbar .bold {
+	font-weight: bold; }
+
+.sle .toolbar .italic {
+	font-style: italic; }
+
+.sle .toolbar .underline, .sle .toolbar .underline:hover {
+	text-decoration: underline; }
+
+.sle .toolbar .ul {
+	width: 20px;
+	height: 20px;
+	background: url('../images/ul.png');
+}
+
+.sle .toolbar .ol {
+	width: 20px;
+	height: 20px;
+	background: url('../images/ol.png');
+}
+
+.sle .toolbar .heading {
+	width: 90px;
+}
+
+.sle .toolbar .revision {
+	width: 90px;
+}
+
+.sle .toolbar .close-button {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.sle .toolbar .link:hover {
+	text-decoration: none;
+}
+
+.sle div.label-value {
+	position: absolute;
+	top: 22px;
+	left: 2px;
+	right: 2px;
+	bottom: 2px;
+	overflow: auto;
+	background: #fff;
+	color: #000;
+	border: 1px solid #000;
+	padding: 2px 5px;
+}
+
+.sle div.label-value * {
+	color #000;
+}

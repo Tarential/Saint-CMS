@@ -487,7 +487,7 @@ $(document).ready(function() {
 			Saint.sleStop($('.sle.active').parent());
 			return false;
 		}
-	},'.sle.active .toolbar .link.close');
+	},'.sle.active .toolbar .link.close-button');
 	
 	/**
 	 * Bold selected text.
@@ -543,6 +543,20 @@ $(document).ready(function() {
 			return false;
 		}
 	},'.sle.active .wysiwyg .toolbar .link.ol');
+	
+	/**
+	 * Change heading size.
+	 */
+	$(document).on({
+		'change': function(event) {
+			event.preventDefault();
+			if ($(this).attr('value') != "none") {
+				Saint.sleExecute('formatBlock','<'+$(this).attr('value')+'>');
+				$(this).parent().find('option[value=none]').attr('selected','selected');
+			}
+			return false;
+		}
+	},'.sle.active .wysiwyg .toolbar .link.heading');
 	
 	/**
 	 * Hotkeys for bold/italic/underline.
@@ -620,71 +634,68 @@ $(document).ready(function() {
 	};
 
 	Saint.sleToggleSource = function () {
-		$('.sle.active .source .label-value').val($('.sle.active .wysiwyg .label-value').html());
-		$('.sle.active .source').show();
+		$('.sle.active div.source .label-value').val($('.sle.active .wysiwyg .label-value').html());
+		$('.sle.active div.source').show();
 		Saint.sleResizeSourceEditor();
 		$('.sle.active .wysiwyg').hide();
 		Saint.sleWysiwygActive = false;
 	};
 	
 	Saint.sleToggleWysiwyg = function () {
-		$('.sle.active .wysiwyg .label-value').html($('.sle.active .source .label-value').val())
+		$('.sle.active .wysiwyg .label-value').html($('.sle.active div.source .label-value').val())
 		$('.sle.active .wysiwyg').show();
-		$('.sle.active .source').hide();
+		$('.sle.active div.source').hide();
 		Saint.sleWysiwygActive = true;
 	};
 	
 	Saint.sleStart = function(label) {
+		// Flag editor as running.
 		$('body').addClass('sle-active');
 		label.addClass('sle-editing');
+		// Create a label editor and fill it with data.
 		var labelForm = $('#saint_ajax_templates > .sle.template.hidden').clone().removeClass('template').removeClass('hidden').addClass('active');
 		labelForm.find('.cache').html(label.html());
 		labelForm.find('input[name=label-name]').val(label.attr('id'));
 		labelForm.find('div.label-value').html(label.html());
 		labelForm.find('textarea[name=label-value]').val(label.html());
-		//label.html(labelForm);
+		// Add our new label editor to the dom.
 		$('body').prepend(labelForm);
-		//var offset = labelForm.offset();
-		//alert("It is offset "+(offset.top-$(window).scrollTop())+" by "+offset.left+".");
+		// Calculate size and position for editor based on label.
+		var margin = 10;
+		var paddingX = 10;
+		var paddingY = 60;
 		var offset = label.offset();
-		offset.left = offset.left + (label.width()/2);
-		if (label.width() > labelForm.width()) {
-			labelForm.width(label.width()-1);
-			if (labelForm.width() > $(window).width()-20) {
-				labelForm.width($(window).width()-20);
+		var initX = offset.left + (label.width()/2);
+		var initY = offset.top-$(window).scrollTop();
+		if (label.width()+paddingX > labelForm.width()) {
+			labelForm.width(label.width()-1+paddingX);
+			if (labelForm.width() > $(window).width()-(margin*2)) {
+				labelForm.width($(window).width()-(margin*2));
 			}
 		}
-		if (label.height() > labelForm.height()) {
-			labelForm.height(label.height()-2);
-			if (labelForm.height() > $(window).height()-20) {
-				labelForm.height($(window).height()-20);
+		if (label.height()+paddingY > labelForm.height()) {
+			labelForm.height(label.height()+paddingY);
+			if (labelForm.height() > $(window).height()-(margin*2)) {
+				labelForm.height($(window).height()-(margin*2));
 			}
 		}
-		offset.left = offset.left - (labelForm.width()/2);
-		labelForm.css("position","fixed");
-		if (offset.top-$(window).scrollTop() < 10) {
+		initX = initX - (labelForm.width()/2);
+		if (initY-(paddingY/2) < 10) {
 			labelForm.css("top","10px");
-		} else if ( (offset.top-$(window).scrollTop() + labelForm.height() + 10) > $(window).height()) {
-			labelForm.css("top",($(window).height()-labelForm.height()-10)+"px");
+		} else if ( (initY-(paddingX/2) + labelForm.height() + margin) > $(window).height()) {
+			labelForm.css("top",($(window).height()-labelForm.height()-margin)+"px");
 		} else {
-			labelForm.css("top",offset.top-$(window).scrollTop()+"px");
+			labelForm.css("top",(initY-(paddingY/2))+"px");
 		}
-		if (offset.left < 10) {
+		if (initX < margin) {
 			labelForm.css("left","10px");
-		} else if ( (offset.left + labelForm.width() + 10) > $(window).width()) {
-			labelForm.css("left",($(window).width()-labelForm.width()-10)+"px");
+		} else if ( (initX + labelForm.width() + margin) > $(window).width()) {
+			labelForm.css("left",($(window).width()-labelForm.width()-margin)+"px");
 		} else {
-			labelForm.css("left",(offset.left-2)+"px");
+			labelForm.css("left",(initX-2)+"px");
 		}
+		// Finally, focus on the editor.
 		labelForm.find('div.label-value').focus();
-		/*
-		lines = labelForm.find('textarea[name=label-value]').val().split("\n");
-		if (lines.length > 1) {
-			multiplier = lines.length * 2;
-		} else {
-			multiplier = 1;
-		}
-		labelForm.find('textarea[name=label-value]').attr('rows',multiplier);*/
 	};
 	
 	Saint.sleStop = function() {

@@ -141,22 +141,44 @@
 		<span class="cache hidden" style="display:none;"></span>
 		<div class="wysiwyg">
 			<div class="toolbar">
-				<button class="link save">Save</button>
-				<button class="link close">Close</button>
-				<button class="link switch">Source</button>
-				<button class="link bold">B</button>
-				<button class="link italic">I</button>
-				<button class="link underline">U</button>
-				<button class="link ul">UL</button>
-				<button class="link ol">OL</button>
+				<button class="link save" title="Save">&nbsp;</button>
+				<button class="link switch source" title="View Source">&nbsp;</button>
+				<button class="link bold" title="Bold">B</button>
+				<button class="link italic" title="Italic">I</button>
+				<button class="link underline" title="Save">U</button>
+				<button class="link ul" title="Unordered List">&nbsp;</button>
+				<button class="link ol" title="Ordered List">&nbsp;</button>
+				<select name="heading" class="link heading">
+					<option selected="selected" value="none">Heading</option>
+					<option value="p">P</option>
+					<option value="h1">H1</option>
+					<option value="h2">H2</option>
+					<option value="h3">H3</option>
+					<option value="h4">H4</option>
+					<option value="h5">H5</option>
+					<option value="h6">H6</option>
+				</select>
+				<select name="revision" class="link revision">
+					<option selected="selected" value="r0">Revision</option>
+					<option value="r1">Current -1</option>
+					<option value="r2">Current -2</option>
+					<option value="r3">Current -3</option>
+					<option value="r4">Current -4</option>
+					<option value="r5">Current -5</option>
+					<option value="r6">Current -6</option>
+					<option value="r7">Current -7</option>
+					<option value="r8">Current -8</option>
+					<option value="r9">Current -9</option>
+				</select>
+				<div class="link close-button" title="Close">&nbsp;</div>
 			</div>
-			<div class="label-value" contenteditable="true">aoeu</div>
+			<div class="label-value" contenteditable="true">&nbsp;</div>
 		</div>
 		<div class="source">
 			<div class="toolbar">
-				<button class="link save">Save</button>
-				<button class="link close">Close</button>
-				<button class="link switch">Visual</button>
+				<button class="link save">&nbsp;</button>
+				<button class="link switch source">&nbsp;</button>
+				<div class="link close-button">&nbsp;</div>
 			</div>
 			<form>
 				<input type="hidden" name="label-name" value="" />
