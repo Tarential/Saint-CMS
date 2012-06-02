@@ -418,6 +418,9 @@ $(document).ready(function() {
 	// Currently loaded revision.
 	Saint.sleActiveRevision = 0;
 	
+	// Number of saved revisions.
+	Saint.sleNumRevisions = 0;
+	
 	/**
 	 * Start label editor.
 	 */
@@ -723,6 +726,9 @@ $(document).ready(function() {
 		} else {
 			labelForm.css("left",(initX-2)+"px");
 		}
+		// Load the number of saved revisions for this label from the server.
+		Saint.sleGetNumRevs();
+		
 		// Finally, focus on the editor.
 		labelForm.find('div.label-value').focus();
 	};
@@ -731,6 +737,37 @@ $(document).ready(function() {
 		$('body').removeClass('sle-active');
 		$('.sle-editing').html($('.sle.active .cache').html()).removeClass('sle-editing');
 		$('.sle.active').remove();
+	};
+	
+	Saint.sleGetNumRevs = function() {
+		Saint.callHome("/system/getlabelnumrevs."+$('.sle.active form input[name=label-name]').val(),null,Saint.sleGotNumRevs);
+	};
+	
+	Saint.sleGotNumRevs = function(data) {
+		try {
+			realdata = JSON.parse(data);
+			if (realdata['success']) {
+				Saint.sleNumRevisions = realdata['revisions'];
+				Saint.sleRepopulateRevisions();
+			} else {
+				$('#saint_ajax_indicator').addClass("error");
+			}
+			Saint.setActionLog(realdata.actionlog);
+		} catch (e) {
+			$('#saint_ajax_indicator').addClass("error");
+			Saint.addError("Error requesting number of saved revisions. Please check the server error log for further information.");
+		}
+	};
+	
+	Saint.sleRepopulateRevisions = function() {
+		if (Saint.sleNumRevisions > 0) {
+			$('.sle.active .toolbar select[name=revision]').show();
+			$('.sle.active .toolbar select[name=revision] option:not(.null)').remove();
+			for (i = 0; i < Saint.sleNumRevisions; i++) {
+				$('.sle.active .toolbar select[name=revision]').append($("<option>Revision "+i+"</option>").attr("value", i)); }
+		} else {
+			$('.sle.active .toolbar select[name=revision]').hide();
+		}
 	};
 	
 	Saint.sleGetRevision = function(revision) {
@@ -773,8 +810,13 @@ $(document).ready(function() {
 	Saint.sleSaved = function(data) {
 		try {
 			realdata = JSON.parse(data);
-			if (!realdata['success'])
+			if (realdata['success']) {
+				$('.sle.active .toolbar select[name=revision] option.null').attr('selected','selected');
+				Saint.sleActiveRevision = 0;
+				Saint.sleGetNumRevs();
+			} else {
 				$('#saint_ajax_indicator').addClass("error");
+			}
 			Saint.setActionLog(realdata.actionlog);
 		} catch (e) {
 			$('#saint_ajax_indicator').addClass("error");
@@ -1273,6 +1315,9 @@ $(document).ready(function() {
 	};
 	
 	Saint.callHome = function(url, postdata, complete, timeout, retries, tcid, errorno) {
+		if (url.match(/^http/) == null) {
+			url = SAINT_URL + url;
+		}
 		if (retries <= 0) {
 			$('#saint_ajax_indicator').addClass("error");
 			if (errorno == null)

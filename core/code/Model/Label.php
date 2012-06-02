@@ -86,10 +86,30 @@ class Saint_Model_Label {
 			try {
 				return Saint::getOne("SELECT MAX(`revision`) FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'");
 			} catch (Exception $e) {
+				if ($e->getCode()) {
+					Saint::logError("Unable to get the highest revision for current label: ".$e->getMessage(),__FILE__,__LINE__);
+				}
 				return 0;
 			}
 		} else
 			return 0;
+	}
+	
+	/**
+	 * Get the number of saved revisions for the loaded label.
+	 * @return int Number of saved revisions for the loaded label.
+	 */
+	public function getNumRevisions($lang = null) {
+		if ($lang == null)
+			$lang = Saint::getDefaultLanguage();
+		try {
+			return Saint::getNumRows("SELECT `revision` FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'");
+		} catch (Exception $e) {
+			if ($e->getCode()) {
+				Saint::logError("Unable to get number of revisions for current label: ".$e->getMessage(),__FILE__,__LINE__);
+			}
+			return 0;
+		}
 	}
 	
 	/**
@@ -107,15 +127,10 @@ class Saint_Model_Label {
 		$revision = Saint::sanitize($revision,SAINT_REG_ID);
 		$revcode = " ORDER BY `revision` DESC";
 		if ($revision) {
-			try {
-				$maxrev = Saint::getOne("SELECT MAX(`revision`) FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'");
-				$revision = $maxrev - $revision;
-				$revcode = " AND `revision`='$revision'";
-			} catch (Exception $f) {
-				if ($f->getCode()){
-					Saint::logError("Unable to select max revision for label '$this->_name': ".$e->getMessage());
-				}
-			}
+			$revision = $this->getNumRevisions() - $revision;
+			if ($revision < 1)
+				$revision = 1;
+			$revcode = " AND `revision`='$revision'";
 		}
 		
 		if ($lang && $revcode) {

@@ -182,6 +182,18 @@ class Saint_Controller_Page {
 			}
 		}
 		
+		if (isset($args['getlabelnumrevs']) && $args['getlabelnumrevs'] != "") {
+			if (Saint::getCurrentUser()->hasPermissionTo("edit-label")) {
+				$this->_page->setTempLayout("system/json");
+				$label = new Saint_Model_Label();
+				$label->loadByName(Saint::convertNameFromWeb(preg_replace('/^saint_/','',$args['getlabelnumrevs'])));
+				$this->_page->jsondata = array(
+					'success' => true,
+					'revisions' => $label->getNumRevisions(),
+				);
+			}
+		}
+		
 		/*
 		 * User controls
 		 */

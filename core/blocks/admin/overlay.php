@@ -1,4 +1,7 @@
 <?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
+<script type="text/javascript">
+	var SAINT_URL = "<?php echo SAINT_URL; ?>";
+</script>
 <div id="saint_blackout">&nbsp;</div>
 <div id="saint_admin_overlay">
 	<div id="saint_ajax_indicator">&nbsp;</div>
@@ -161,7 +164,7 @@
 					<option value="h6">H6</option>
 				</select>
 				<select name="revision" class="link revision">
-					<option selected="selected" value="load">Load...</option>
+					<option selected="selected" value="load" class="null">Load...</option>
 					<option value="0">Current</option>
 					<option value="1">Current -1</option>
 					<option value="2">Current -2</option>
