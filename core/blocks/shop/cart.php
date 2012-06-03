@@ -17,9 +17,9 @@ foreach ($items as $id=>$number) {
 	<form action="https://<?php echo SAINT_PAYPAL_URL; ?>/cgi-bin/webscr" method="post"<?php if (isset($args['buynow']) && $args['buynow'] == 1): ?> class="buynow"<?php endif; ?>>
 	<input type="hidden" name="cmd" value="_cart" />
 	<input type="hidden" name="upload" value="1" />
-	<input type="hidden" name="return" value="<?php echo SAINT_URL . "shop/view.thanks"; ?>" />
-	<input type="hidden" name="cancel_return" value="<?php echo SAINT_URL . "shop/view.cart"; ?>" />
-	<input type="hidden" name="notify_url" value="<?php echo SAINT_URL . "shop/view.ipn"; ?>" />
+	<input type="hidden" name="return" value="<?php echo SAINT_URL . "/shop/view.thanks"; ?>" />
+	<input type="hidden" name="cancel_return" value="<?php echo SAINT_URL . "/shop/view.cart"; ?>" />
+	<input type="hidden" name="notify_url" value="<?php echo SAINT_URL . "/shop/view.ipn"; ?>" />
 	<input type="hidden" name="custom" value="<?php echo $cart->getId(); ?>" />
 	<?php $i = 1; foreach ($products as $product): ?>
 	<input type="hidden" name="amount_<?php echo $i; ?>" value="<?php echo $product[0]->getDiscountPrice(); ?>" />
@@ -54,7 +54,7 @@ if ($discount_price < $product[0]->getPrice()) {
 		<span class="product-price">$<?php echo number_format(round($discount_price,2),2); ?></span>
 		<span class="product-number">(x<?php echo $product[1]; ?>)</span>
 		<span class="remove-from-cart">
-			<a href="<?php echo SAINT_URL; ?>shop/remfromcart.<?php echo $product[0]->getId(); ?>/num.1/" class="link">(X)</a>
+			<a href="<?php echo SAINT_URL; ?>/shop/remfromcart.<?php echo $product[0]->getId(); ?>/num.1/" class="link">(X)</a>
 		</span>
 	</span>
 </li>

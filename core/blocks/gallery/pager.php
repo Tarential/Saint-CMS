@@ -1,7 +1,7 @@
 <?php
 $page = Saint::getCurrentPage();
 $args = $page->getArgs();
-$url = SAINT_URL . $page->getName(); 
+$url = SAINT_URL . "/" . $page->getName(); 
 if (isset($args['r']))
 	$url .= "/r.".$args['r'];
 ?>

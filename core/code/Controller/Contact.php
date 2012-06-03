@@ -92,7 +92,7 @@ EOT;
 				);
 			if (Saint::getBlockSetting("shop/product",$itemid,"File") != '') {
 					$linkid = Saint_Model_Shop::createDownload($itemid);
-					$item_vars[$itemid]['link'] = SAINT_BASE_URL . "shop/view.download/id.$itemid/linkid.$linkid";
+					$item_vars[$itemid]['link'] = SAINT_URL . "/shop/view.download/id.$itemid/linkid.$linkid";
 				}
 			}
 			

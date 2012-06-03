@@ -838,7 +838,7 @@ class Saint {
 	 * @return string URL for the RSS feed.
 	 */
 	public static function getBlogRssUrl() {
-		return SAINT_URL . 'feed';
+		return SAINT_URL . '/feed';
 	}
 
 	/**
