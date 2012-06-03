@@ -13,14 +13,16 @@
 			foreach (Saint::getAllCategories() as $category)
 				$options[$category] = $category;
 		?>
-		<div><?php echo Saint::genField("saint_edit_block_categories[]","select","Categories: ",
+		<div>
+		<label for="saint_edit_block_categories[]">Categories:</label>
+		<?php echo Saint::genField("saint_edit_block_categories[]","select","Categories: ",
 			array('options'=>$options,'selected'=>$page->addblock->getCategories(),'multiple'=>true)); ?></div>
 		<?php foreach ($page->addblock->getAllSettings() as $key=>$val): ?>
 			<?php if ($key == "id"): ?>
 				<input type="hidden" name="saint-block-setting-id" id="saint-block-setting-id" value="<?php echo $val; ?>" />
 			<?php elseif ($key != "enabled"): ?>
 				<?php $name = "saint-block-setting-$key";?>
-				<div><label for="<?php echo $name; ?>"><?php echo $key; ?></label><input type="text" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="<?php echo $val; ?>" /></div>
+				<div><label for="<?php echo $name; ?>"><?php echo ucfirst($key); ?>:</label><input type="text" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="<?php echo $val; ?>" /></div>
 			<?php endif; ?>
 		<?php endforeach; ?>
 	</form>

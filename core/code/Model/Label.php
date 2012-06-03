@@ -210,7 +210,7 @@ class Saint_Model_Label {
 						Saint::query("UPDATE `st_pages` AS `p`,`st_pageblocks` AS `b` SET `p`.`updated`=NOW() WHERE `b`.`block`='$matches[1]' AND `b`.`pageid`=`p`.`id`");
 					} catch (Exception $g) {
 						if ($g->getCode()) {
-							Saint::logError("Unable to update page(s) associated with block '$this->_name': ".$f->getMessage(),__FILE__,__LINE__);
+							Saint::logError("Unable to update page(s) associated with block '$this->_name': ".$g->getMessage(),__FILE__,__LINE__);
 						}
 					}
 				}

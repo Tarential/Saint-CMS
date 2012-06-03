@@ -172,9 +172,9 @@
 		</div>
 		<div class="source">
 			<div class="toolbar">
-				<button class="link save">&nbsp;</button>
-				<button class="link switch visual">&nbsp;</button>
-				<div class="link close-button">&nbsp;</div>
+				<button class="link save" title="Save">&nbsp;</button>
+				<button class="link switch visual" title="View Rich Text">&nbsp;</button>
+				<div class="link close-button" title="Close">&nbsp;</div>
 			</div>
 			<form>
 				<input type="hidden" name="label-name" value="" />

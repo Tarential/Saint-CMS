@@ -731,6 +731,9 @@ $(document).ready(function() {
 		// Load the number of saved revisions for this label from the server.
 		Saint.sleGetNumRevs();
 		
+		// Tell the browser to use traditional tags (b, i, u) instead of styles.
+		Saint.sleExecute('styleWithCSS',false);
+		
 		// Finally, focus on the editor.
 		labelForm.find('div.label-value').focus();
 	};
@@ -793,7 +796,6 @@ $(document).ready(function() {
 				$('.sle.active div.label-value').html(realdata['label']);
 				$('.sle.active textarea[name=label-value]').val(realdata['label']);
 				Saint.sleActiveRevision = realdata['revision'];
-				Saint.sleRepopulateRevisions();
 			} else {
 				$('#saint_ajax_indicator').addClass("error");
 			}
@@ -835,7 +837,6 @@ $(document).ready(function() {
 		}
 	};
 	
-	//Saint.sleExecute('styleWithCSS',false);
 	//Saint.sleToggleWysiwyg();
 	
 	/* END LABEL EDITOR */
@@ -1276,7 +1277,6 @@ $(document).ready(function() {
 	};
 	
 	Saint.addedPage = function(data) {
-		alert(data);
 		var success;
 		try {
 			realdata = JSON.parse(data);
@@ -1329,17 +1329,18 @@ $(document).ready(function() {
 		if (url.match(/^http/) == null) {
 			url = SAINT_URL + url;
 		}
-		if (retries <= 0) {
-			$('#saint_ajax_indicator').addClass("error");
-			if (errorno == null)
-				errorno = Saint.addError("There has been a problem communicating with the server. Please check your network connections before continuing. Any changes you make at this time will not be saved.",0);
-		}
 		if (timeout == null)
 			timeout = 10000;
 		if (retries == null)
 			retries = 3;
 		if (tcid == null)
 			tcid = Saint.pushConnection(url, postdata);
+		if (retries <= 0) {
+			$('#saint_ajax_indicator').addClass("error");
+			if (errorno == null)
+				errorno = Saint.addError("There has been a problem communicating with the server. Please check your network connections before continuing. Any changes you make at this time will not be saved.",0);
+			return 0;
+		}
 		$.ajax({
 			type : 'POST',
 			url : url,

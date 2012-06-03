@@ -432,6 +432,7 @@ EOT;
 	/**
 	 * Processes all XML files in block directories then updates the associated block tables if necessary.
 	 * @return boolean True for success, false otherwise.
+	 * @todo Implement theme-preference block loading.
 	 */
 	public static function processSettings() {
 		# Scan files in user and system directories
@@ -468,11 +469,21 @@ EOT;
 						if (!$done) {
 							try {
 								$att = $setting->attributes();
-								if(isset($att['datatype']))
+								if(isset($att['datatype'])) {
 									$datatype = $att['datatype'];
-								else
+								} else {
 									$datatype = "varchar(255)";
-								Saint::query("ALTER TABLE `st_blocks_$name` ADD COLUMN `$setting[0]` $datatype NOT NULL");
+								}
+								if (isset($att['default'])) {
+									if ($att['default'] == "now") {
+										$default = "CURRENT_TIMESTAMP";
+									} else {
+										$default = "'$att[default]'";
+									}
+								} else {
+									$default = "''";
+								}
+								Saint::query("ALTER TABLE `st_blocks_$name` ADD COLUMN `$setting[0]` $datatype NOT NULL DEFAULT $default");
 							} catch (Exception $r) {
 								Saint::logError("Couldn't add column $setting to st_blocks_$name:".$r->getMessage(),__FILE__,__LINE__);
 							}
@@ -495,8 +506,18 @@ EOT;
 								$datatype = $att['datatype'];
 							else
 								$datatype = "varchar(255)";
+					
+							if (isset($att['default'])) {
+								if ($att['default'] == "CURRENT_TIME") {
+									$default = $att['default'];
+								} else {
+									$default = "'$att[default]'";
+								}
+							} else {
+								$default = "''";
+							}
 						if ($safe = Saint::sanitize($setting,SAINT_REG_NAME)) {
-							$ctq .= "\t`$safe` $datatype,\n";
+							$ctq .= "\t`$safe` $datatype NOT NULL DEFAULT $default,\n";
 						} else
 							Saint::logError("$setting is not a valid block name.",__FILE__,__LINE__);
 					}
