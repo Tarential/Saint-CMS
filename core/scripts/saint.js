@@ -662,7 +662,9 @@ $(document).ready(function() {
 			if (parm=="" || parm=="http://"){cmd="Unlink"}
 		}
 		
-		try {document.execCommand(cmd,false,parm);} catch(e){alert(e)};
+		try {document.execCommand(cmd,false,parm);} catch(e){
+			Saint.addError("SLE: Error executing formatting command: "+e);
+		};
 	};
 
 	Saint.sleToggleSource = function () {
@@ -752,7 +754,6 @@ $(document).ready(function() {
 			} else {
 				$('#saint_ajax_indicator').addClass("error");
 			}
-			Saint.setActionLog(realdata.actionlog);
 		} catch (e) {
 			$('#saint_ajax_indicator').addClass("error");
 			Saint.addError("Error requesting number of saved revisions. Please check the server error log for further information.");
@@ -760,11 +761,21 @@ $(document).ready(function() {
 	};
 	
 	Saint.sleRepopulateRevisions = function() {
-		if (Saint.sleNumRevisions > 0) {
+		if (Saint.sleNumRevisions > 1) {
 			$('.sle.active .toolbar select[name=revision]').show();
-			$('.sle.active .toolbar select[name=revision] option:not(.null)').remove();
+			$('.sle.active .toolbar select[name=revision] option').remove();
 			for (i = 0; i < Saint.sleNumRevisions; i++) {
-				$('.sle.active .toolbar select[name=revision]').append($("<option>Revision "+i+"</option>").attr("value", i)); }
+				if (i == 0) {
+					label = "Current";
+				} else {
+					label = "Revision "+(Saint.sleNumRevisions-i);
+				}
+				if (i == Saint.sleActiveRevision) {
+					$('.sle.active .toolbar select[name=revision]').append($("<option>"+label+"</option>").attr("value", i).attr("selected","selected"));
+				} else {
+					$('.sle.active .toolbar select[name=revision]').append($("<option>"+label+"</option>").attr("value", i));
+				}
+			}
 		} else {
 			$('.sle.active .toolbar select[name=revision]').hide();
 		}
@@ -782,10 +793,10 @@ $(document).ready(function() {
 				$('.sle.active div.label-value').html(realdata['label']);
 				$('.sle.active textarea[name=label-value]').val(realdata['label']);
 				Saint.sleActiveRevision = realdata['revision'];
+				Saint.sleRepopulateRevisions();
 			} else {
 				$('#saint_ajax_indicator').addClass("error");
 			}
-			Saint.setActionLog(realdata.actionlog);
 		} catch (e) {
 			$('#saint_ajax_indicator').addClass("error");
 			Saint.addError("Error loading label. Please check the server error log for further information.");

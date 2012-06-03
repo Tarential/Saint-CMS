@@ -164,17 +164,7 @@
 					<option value="h6">H6</option>
 				</select>
 				<select name="revision" class="link revision">
-					<option selected="selected" value="load" class="null">Load...</option>
-					<option value="0">Current</option>
-					<option value="1">Current -1</option>
-					<option value="2">Current -2</option>
-					<option value="3">Current -3</option>
-					<option value="4">Current -4</option>
-					<option value="5">Current -5</option>
-					<option value="6">Current -6</option>
-					<option value="7">Current -7</option>
-					<option value="8">Current -8</option>
-					<option value="9">Current -9</option>
+					<option selected="selected" value="load" class="null">Loading...</option>
 				</select>
 				<div class="link close-button" title="Close">&nbsp;</div>
 			</div>
