@@ -92,12 +92,16 @@ class Saint_Model_FileManager {
 		global $saint_filetypes;
 		$return = 1;
 		$saintdir = SAINT_SITE_ROOT . "/core/images";
-		$userdir = SAINT_SITE_ROOT . "/images";
+		$userdir = Saint::getThemeDir() . "/images";
 		$uploaddir = SAINT_SITE_ROOT . "/media";
-		$userfiles = array_merge(
-			Saint_Model_Block::recursiveScan($userdir),
-			Saint_Model_Block::recursiveScan($uploaddir)
-		);
+		if (file_exists($userdir)) {
+			$userfiles = array_merge(
+				Saint_Model_Block::recursiveScan($userdir),
+				Saint_Model_Block::recursiveScan($uploaddir)
+			);
+		} else {
+			$userfiles = Saint_Model_Block::recursiveScan($uploaddir); 
+		}
 		
 		$corefiles = Saint_Model_Block::recursiveScan($saintdir);
 		
