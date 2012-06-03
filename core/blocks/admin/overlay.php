@@ -184,7 +184,7 @@
 	</div>
 
 	<div class="template wysiwyg-form hidden">
-		<form method="post" action="/post">
+		<form>
 			<input type="hidden" name="saint-wysiwyg-name" value="" />
 			<textarea name="saint-wysiwyg-content" class="wysiwyg-editable"></textarea>
 		</form>

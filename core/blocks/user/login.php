@@ -1,6 +1,6 @@
 <?php if (isset($page->error)) echo "<p class=\"error\">".$page->error."</p>"; ?>
 <?php echo Saint::getPageLabel("login-intro","Enter your username/password to log in:"); ?>
-<form id="saint-login-form" method="post" action="/">
+<form id="saint-login-form" method="post" action="<?php echo SAINT_URL; ?>/">
 	<label for="username">Username:</label>
 	<input name="username" id="slf-username" class="focus" type="text" value="" />
 	<label for="password">Password:</label>

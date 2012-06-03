@@ -15,16 +15,16 @@ function setInstalled($owner) {
 				Saint::logError($e->getMessage(),__FILE__,__LINE__);
 			}
 		}
-		include chop($_SERVER['DOCUMENT_ROOT'],'/') . "/core/installer/complete.php";
+		include SAINT_SITE_ROOT . "/core/installer/complete.php";
 	} catch (Exception $e) {
 		$error = "Couldn't complete installation: " . $e->getMessage();
-		include chop($_SERVER['DOCUMENT_ROOT'],'/') . "/core/installer/error.php";
+		include SAINT_SITE_ROOT . "/core/installer/error.php";
 	}
 }
 
 $installing = true;
 
-include chop($_SERVER['DOCUMENT_ROOT'],'/') . "/core/installer/header.php";
+include SAINT_SITE_ROOT . "/core/installer/header.php";
 
 if (phpversion() < 5) {
 	echo "Sorry, Saint requires PHP version 5.0 or greater and we detected PHP version ".phpversion().".";
@@ -76,5 +76,5 @@ if (phpversion() < 5) {
 		}
 	}
 }
-include chop($_SERVER['DOCUMENT_ROOT'],'/') . "/core/installer/footer.php";
+include SAINT_SITE_ROOT . "/core/installer/footer.php";
 

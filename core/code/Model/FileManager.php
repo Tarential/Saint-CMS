@@ -100,7 +100,7 @@ class Saint_Model_FileManager {
 				Saint_Model_Block::recursiveScan($uploaddir)
 			);
 		} else {
-			$userfiles = Saint_Model_Block::recursiveScan($uploaddir); 
+			$userfiles = Saint_Model_Block::recursiveScan($uploaddir);
 		}
 		
 		$corefiles = Saint_Model_Block::recursiveScan($saintdir);
