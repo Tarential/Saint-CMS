@@ -98,7 +98,7 @@ loss of privacy, moral rights or the disclosure of confidential information.
  */
 session_start();
 
-$profiling = true;
+$profiling = false;
 
 if ($profiling) {
 	$mtime = microtime();

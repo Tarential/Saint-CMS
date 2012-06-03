@@ -4,7 +4,7 @@
  */
 
 # Theme
-define('SAINT_THEME','saintcms');
+define('SAINT_THEME','test');
 
 # Database connection info
 define('SAINT_DB_HOST','localhost');

@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS `st_pages` (
 	`meta_keywords` text DEFAULT '',
 	`meta_description` text DEFAULT '',
 	`allow_robots` boolean NOT NULL,
-	`created` TIMESTAMP,
+	`created` DATETIME,
 	`updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX(`name`)
