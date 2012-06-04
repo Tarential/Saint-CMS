@@ -185,10 +185,6 @@ class Saint_Model_FileManager {
 	}
 	
 	/**
-	 * @todo Update icon functions to be CMS-editable.
-	 */
-	
-	/**
 	 * Get URL of audio icon.
 	 * @return string URL of icon to represent audio files.
 	 */

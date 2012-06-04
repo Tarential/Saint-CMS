@@ -72,7 +72,7 @@ class Saint_Controller_Page {
 		 */
 		
 		/**
-		 * @todo Add blank field testing with javascript to avoid problems when posting.
+		 * @todo Fix problem with blank fields when saving.
 		 */
 		
 		if(isset($_POST['saint_add_page_name']) && isset($_POST['saint_add_page_layout']) && isset($_POST['saint_add_page_title'])) {

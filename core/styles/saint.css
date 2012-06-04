@@ -16,6 +16,10 @@ a:hover {
 a.disabled:hover {
 	cursor: default; }
 
+p {
+	margin-top: 0;
+}
+
 .hidden {
 	display: none; }
 
@@ -28,7 +32,6 @@ a.disabled:hover {
 .link:hover {
 	cursor: pointer;
 	text-decoration: underline; }
-
 
 #container {
 	width: 880px;
