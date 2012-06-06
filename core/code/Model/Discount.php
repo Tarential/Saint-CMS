@@ -72,7 +72,8 @@ class Saint_Model_Discount {
 					$whitelist_discount_applies = false;
 					foreach ($categories as $cat) {
 						if (in_array($cat,$dc['cat'])) {
-							$cat_discount_applies = true; }
+							$cat_discount_applies = true;
+						}
 					}
 				}
 				

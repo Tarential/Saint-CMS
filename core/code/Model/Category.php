@@ -92,6 +92,7 @@ class Saint_Model_Category {
 		if ($sid) {
 			try {
 				Saint::query("DELETE FROM `st_categories` WHERE `id`='$sid'");
+				Saint::logEvent("Removed category with ID '$sid'.",__FILE__,__LINE__);
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Unable to remove category id '$sid': ".$e->getMessage(),__FILE__,__LINE__);
@@ -109,18 +110,24 @@ class Saint_Model_Category {
 	 * @param string $newname New name for category.
 	 */
 	public static function setCategory($id,$newname) {
-		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		$scategory = Saint::sanitize($newname,SAINT_REG_NAME);
 		$sid = Saint::sanitize($id,SAINT_REG_ID);
-		if ($sid && $scategory) {
-			try {
-				Saint::query("UPDATE `st_categories` SET `name`='$scategory' WHERE `id`='$sid'");
-				return 1;
-			} catch (Exception $e) {
-				Saint::logError("Unable to update category '$scategory': ".$e->getMessage(),__FILE__,__LINE__);
+		if ($sid) {
+			if ($scategory) {
+				try {
+					Saint::query("UPDATE `st_categories` SET `name`='$scategory' WHERE `id`='$sid'");
+					Saint::logEvent("Changed category with ID '$sid' to name '$scategory'.");
+					return 1;
+				} catch (Exception $e) {
+					Saint::logError("Unable to update category '$scategory': ".$e->getMessage(),__FILE__,__LINE__);
+					return 0;
+				}
+			} else {
+				Saint::logError("Invalid category name '$newname'",__FILE__,__LINE__);
 				return 0;
 			}
 		} else {
-			Saint::logError("Invalid category name '$category'",__FILE__,__LINE__);
+			Saint::logError("Invalid category ID '$id'",__FILE__,__LINE__);
 			return 0;
 		}
 	}

@@ -19,7 +19,7 @@ class Saint_Controller_Contact {
 		else
 			$mailfrom = Saint::getCurrentUser()->getEmail();
 		$mailsub = "Website Contact Form Submission";
-		$mailcon = 'A user has submitted the following information to your contact form:';
+		$mailcon = "A user from IP ".$_SERVER['REMOTE_ADDR']." has submitted the following information to your contact form:\n\n";
 		foreach ($details as $key=>$val) {
 			$mailcon .= "$key: $val\n";
 		}

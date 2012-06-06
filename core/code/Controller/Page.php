@@ -75,9 +75,9 @@ class Saint_Controller_Page {
 		 * @todo Fix problem with blank fields when saving.
 		 */
 		
-		if(isset($_POST['saint_add_page_name']) && isset($_POST['saint_add_page_layout']) && isset($_POST['saint_add_page_title'])) {
+		if(isset($_POST['saint-add-page-name']) && isset($_POST['saint-add-page-layout']) && isset($_POST['saint-add-page-title'])) {
 			$this->_page->setTempLayout("system/json");
-			if (Saint::addPage($_POST['saint_add_page_name'],$_POST['saint_add_page_layout'],$_POST['saint_add_page_title']))
+			if (Saint::addPage($_POST['saint-add-page-name'],$_POST['saint-add-page-layout'],$_POST['saint-add-page-title']))
 				$success = true;
 			else
 				$success = false;
@@ -88,31 +88,32 @@ class Saint_Controller_Page {
 			);
 		}
 				
-		if(isset($_POST['saint_edit_page_id']) && isset($_POST['saint_edit_page_title']) 
-			&& isset($_POST['saint_edit_page_name']) && isset($_POST['saint_edit_page_layout'])) {
+		if(isset($_POST['saint-edit-page-id']) && isset($_POST['saint-edit-page-title']) 
+			&& isset($_POST['saint-edit-page-name'])) {
 			$this->_page->setTempLayout("system/json");
 			
 			$spage = new Saint_Model_Page();
 			
-			if (isset($_POST['saint_edit_page_categories']))
-				$cats = $_POST['saint_edit_page_categories'];
+			if (isset($_POST['saint-edit-page-categories']))
+				$cats = $_POST['saint-edit-page-categories'];
 			else
 				$cats = array();
 			
-			if (isset($_POST['saint_edit_page_keywords']))
-				$keywords = $_POST['saint_edit_page_keywords'];
+			if (isset($_POST['saint-edit-page-keywords']))
+				$keywords = $_POST['saint-edit-page-keywords'];
 			else
 				$keywords = '';
 			
-			if (isset($_POST['saint_edit_page_description']))
-				$description = $_POST['saint_edit_page_description'];
+			if (isset($_POST['saint-edit-page-description']))
+				$description = $_POST['saint-edit-page-description'];
 			else
 				$description = '';
 			
-			if ($spage->loadById($_POST['saint_edit_page_id'])) {
-				$spage->setName($_POST['saint_edit_page_name']);
-				$spage->setTitle($_POST['saint_edit_page_title']);
-				$spage->setLayout($_POST['saint_edit_page_layout']);
+			if ($spage->loadById($_POST['saint-edit-page-id'])) {
+				$spage->setName($_POST['saint-edit-page-name']);
+				$spage->setTitle($_POST['saint-edit-page-title']);
+				if (isset($_POST['saint-edit-page-layout'])) {
+					$spage->setLayout($_POST['saint-edit-page-layout']); }
 				$spage->setKeywords($keywords);
 				$spage->setDescription($description);
 				$spage->setCategories($cats);
@@ -222,7 +223,7 @@ class Saint_Controller_Page {
 		 * Category controls
 		 */
 		
-		if (isset($_POST['saint-add-category'])) {
+		if (isset($_POST['saint-add-category']) && (!isset($_POST['saint-set-category-id']) || $_POST['saint-set-category-id'] == "0")) {
 			Saint_Controller_Category::addCategory($_POST['saint-add-category']);
 		}
 		
@@ -230,8 +231,9 @@ class Saint_Controller_Page {
 			Saint_Controller_Category::removeCategory($_POST['saint-set-category-id']);
 		}
 		
-		if (isset($_POST['saint-set-category-id']) && isset($_POST['saint-set-category-name'])) {
-			Saint_Controller_Category::removeCategory($_POST['saint-set-category-id'],$_POST['saint-set-category-name']);
+		if (isset($_POST['saint-set-category-id']) && isset($_POST['saint-add-category']) && $_POST['saint-set-category-id'] != "0"
+			&& !$_POST['saint-delete-category']) {
+			Saint_Controller_Category::setCategory($_POST['saint-set-category-id'],$_POST['saint-add-category']);
 		}
 		
 		/*

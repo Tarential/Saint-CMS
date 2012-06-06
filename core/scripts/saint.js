@@ -1011,7 +1011,6 @@ $(document).ready(function() {
 			}
 			Saint.setActionLog(realdata.actionlog);
 		} catch (e) {
-			alert(e);
 			$('#saint_ajax_indicator').addClass("error");
 			Saint.addError("There was a problem saving the selected category. Please check the server error log for further information.",0);
 		}

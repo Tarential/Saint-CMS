@@ -19,22 +19,22 @@
 	<div id="saint_admin_page_add" class="saint_admin_options hidden">
 		<form>
 			<ul>
-				<li><?php echo Saint::genField("saint_add_page_title","text","Name: "); ?></li>
-				<li><?php echo Saint::genField("saint_add_page_name","text","Identifier: "); ?></li>
+				<li><?php echo Saint::genField("saint-add-page-title","text","Name: "); ?></li>
+				<li><?php echo Saint::genField("saint-add-page-name","text","Identifier: "); ?></li>
 				<?php
 					$options = array();
 					foreach (Saint::getLayoutNames() as $layout)
 						$options[$layout] = ucfirst($layout);
 				?>
-				<li><?php echo Saint::genField("saint_add_page_layout","select","Layout: ",array('options'=>$options)); ?></li>
-				<li><?php echo Saint::genField("saint_edit_page_keywords","text","Keywords: ",array('value'=> implode(',',$page->getMetaKeywords()))); ?></li>
-				<li><?php echo Saint::genField("saint_edit_page_description","textarea","Description: ",array('value'=> $page->getMetaDescription())); ?></li>
+				<li><?php echo Saint::genField("saint-add-page-layout","select","Layout: ",array('options'=>$options)); ?></li>
+				<li><?php echo Saint::genField("saint-edit-page-keywords","text","Keywords: "); ?></li>
+				<li><?php echo Saint::genField("saint-edit-page-description","textarea","Description: "); ?></li>
 				<?php
 					$options = array();
 					foreach (Saint::getAllCategories() as $key=>$category)
 						$options[$key] = $category;
 				?>
-				<li><?php echo Saint::genField("saint_edit_page_categories[]","select","Categories: ",
+				<li><?php echo Saint::genField("saint-edit-page-categories[]","select","Categories: ",
 					array('options'=>$options,'selected'=>array(),'multiple'=>true)); ?></li>
 			</ul>
 		</form>
@@ -72,7 +72,7 @@
 		<form>
 			<input type="hidden" value="0" name="saint-set-category-id" id="saint-set-category-id" />
 			<input type="hidden" value="0" name="saint-delete-category" id="saint-delete-category" />
-			<input type="text" value="" name="saint-add-category" id="saint-add-category" />
+			<?php echo Saint::genField("saint-add-category","text","Name:")?>
 			<span id="saint-add-category-submit" class="link">Add</span>
 			<span id="saint-add-category-cancel" class="link hidden">Cancel</span>
 		</form>
@@ -97,24 +97,26 @@
 	<div id="saint-admin-page-options" class="hidden">
 		<span id="saint-page-options-close" class="close-button">&nbsp;</span>
 		<form>
-			<input type="hidden" name="saint_edit_page_id" value="<?php echo $page->getId(); ?>" />
+			<input type="hidden" name="saint-edit-page-id" value="<?php echo $page->getId(); ?>" />
 			<ul>
-				<li><?php echo Saint::genField("saint_edit_page_title","text","Name: ",array('value'=> $page->getTitle())); ?></li>
-				<li><?php echo Saint::genField("saint_edit_page_name","text","Identifier: ",array('value'=> $page->getName())); ?></li>
+				<li><?php echo Saint::genField("saint-edit-page-title","text","Name: ",array('value'=> $page->getTitle())); ?></li>
+				<li><?php echo Saint::genField("saint-edit-page-name","text","Identifier (URI): ",array('value'=> $page->getName())); ?></li>
 				<?php
+					if (!preg_match('/^.*\/.*$/',$page->getLayout())) {
 					$options = array();
 					foreach (Saint::getLayoutNames() as $layout)
 						$options[$layout] = ucfirst($layout);
 				?>
-				<li><?php echo Saint::genField("saint_edit_page_layout","select","Layout: ",array('options'=>$options,'selected' => $page->getLayout())); ?></li>
-				<li><?php echo Saint::genField("saint_edit_page_keywords","text","Keywords: ",array('value'=> implode(',',$page->getMetaKeywords()))); ?></li>
-				<li><?php echo Saint::genField("saint_edit_page_description","textarea","Description: ",array('value'=> $page->getMetaDescription())); ?></li>
+				<li><?php echo Saint::genField("saint-edit-page-layout","select","Layout: ",array('options'=>$options,'selected' => $page->getLayout())); ?></li>
+				<?php } ?>
+				<li><?php echo Saint::genField("saint-edit-page-keywords","text","Keywords: ",array('value'=> implode(',',$page->getMetaKeywords()))); ?></li>
+				<li><?php echo Saint::genField("saint-edit-page-description","textarea","Description: ",array('value'=> $page->getMetaDescription())); ?></li>
 				<?php
 					$options = array();
 					foreach (Saint::getAllCategories() as $category)
 						$options[$category] = $category;
 				?>
-				<li><?php echo Saint::genField("saint_edit_page_categories[]","select","Categories: ",
+				<li><?php echo Saint::genField("saint-edit-page-categories[]","select","Categories: ",
 					array('options'=>$options,'selected'=>$page->getCategories(),'multiple'=>true)); ?></li>
 			</ul>
 			<span id="saint-page-options-save" class="link">Save</span>

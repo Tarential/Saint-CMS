@@ -43,7 +43,8 @@ class Saint_Model_Product {
 				$this->_price = $info[3];
 				$this->_file = $info[4];
 				try {
-					$this->_categories = Saint::getAll("SELECT `cat`.`id` FROM `st_categories` as `cat`, `st_blockcats` as `bc`, `st_blocks` as `block` WHERE `bc`.`catid`=`cat`.`id` AND `bc`.`blockid`=`block`.`id` AND `block`.`blockid`='$sid'");
+					$this->_categories = Saint::getAll("SELECT `cat`.`id` FROM `st_categories` as `cat`, `st_blockcats` as `bc`, `st_blocks` as `block`, `st_blocktypes` as `bt`".
+						" WHERE `bc`.`catid`=`cat`.`id` AND `bc`.`blockid`=`block`.`id` AND `block`.`blockid`='$sid' AND `block`.`blocktypeid`=`bt`.`id` AND `bt`.`name`='shop/product'");
 				} catch (Exception $f) {
 					if ($f->getCode()) {
 						Saint::logError("Unable to load product categories: ".$f->getMessage(),__FILE__,__LINE__);

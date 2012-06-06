@@ -129,7 +129,7 @@ class Saint_Model_Page {
 		if ($id = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {
 				$language = Saint::getCurrentUser()->getLanguage();
-				$info = Saint::getRow("SELECT name,title,layout,meta_keywords,meta_description,allow_robots FROM st_pages WHERE id='$id'");
+				$info = Saint::getRow("SELECT `name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots` FROM `st_pages` WHERE `id`='$id'");
 				$this->_id = $id;
 				$this->_name=$info[0];
 				$this->_title=$info[1];
@@ -436,7 +436,7 @@ class Saint_Model_Page {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function setDescription($description) {
-		if ($description = Saint::sanitize($description)) {
+		if ($description == "" || $description = Saint::sanitize($description)) {
 			$this->_meta_description = $description;
 			return 1;
 		} else
@@ -708,7 +708,6 @@ class Saint_Model_Page {
 				$query = "INSERT INTO `st_pages` (`name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots`,`created`) ".
 					" VALUES ('$this->_name','$this->_title','$this->_layout','".implode(',',$this->_meta_keywords).
 					"','$this->_meta_description','$this->_allow_robots',NOW())";
-				Saint::logError($query);
 				Saint::query($query);
 				return 1;
 			} catch (Exception $e) {
