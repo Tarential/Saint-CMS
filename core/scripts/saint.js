@@ -13,379 +13,7 @@ $(document).ready(function() {
 		cache: false
 	});
 	
-	/**
-	 * Disable all links when the page is in edit mode.
-	 */
-	$(document).on({
-		'click': function(event) {
-			if ($('body').hasClass("editing")) {
-				event.stopPropagation();
-				return false;
-			} else
-				return true;
-		}
-	},'a, a *');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.saveAddBox();
-			Saint.closeAddBox();
-		}
-	},'#saint-add-block-save');
-	
-	$(document).on({
-		'click': function(event) {
-			if (confirm("Are you sure you wish to delete this block? Any changes made will be lost.")) {
-				$('#saint-block-setting-enabled').val('0');
-				Saint.saveAddBox();
-				Saint.closeAddBox();
-			}
-		}
-	},'#saint-add-block-delete');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.closeAddBox();
-		}
-	},'#saint-add-block-cancel');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.loadWysiwyg(event.currentTarget.id);
-		}
-	},'.editing .saint-wysiwyg');
-	
-	/**
-	 * Expand admin overlay when mouse enters,
-	 * contract when mouse leaves.
-	 */
-	$(document).on({
-		'mouseenter': function(event) {
-			Saint.expandOverlay();
-		},
-		'mouseleave': function(event) {
-			Saint.contractOverlay();
-		}
-	},'#saint_admin_overlay');
-	
-	/**
-	 * Stops the admin overlay from being contracted while an input field has focus.
-	 */
-	$(document).on({
-		'focusin': function(event) {
-			$('#saint_admin_overlay').removeClass("expanded");
-		},
-		'focusout': function(event) {
-			$('#saint_admin_overlay').addClass("expanded");
-		}
-	},'#saint_admin_overlay form');
-	
-	$(document).on({
-		'click': function(event) {
-			if (Saint.fileManagerIsOpen) {
-				Saint.stopEditFile();
-				Saint.closeFileManager();
-			} else {
-				Saint.openFileManager();
-			}
-		}
-	},'#saint_menu_link_files');
-	
-	$(document).on({
-		'click': function(event) {
-			window.location.replace("/action.logout");
-		}
-	},'#saint_menu_link_logout');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.stopEditFile();
-			Saint.closeFileManager();
-		}
-	},'#sfm-close-button');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.closeShopManager();
-		}
-	},'#ssm-close-button');
-	
-	$(document).on({
-		'click': function(event) {
-			if (Saint.shopManagerIsOpen) {
-				Saint.closeShopManager();
-			} else {
-				if (Saint.editing) {
-					Saint.stopPageEdit(); }
-				Saint.openShopManager();
-			}
-		}
-	},'#saint_menu_link_shop');
-	
-	$(document).on({
-		'click': function(event) {
-			$('#saint-admin-shop-manager').addClass("loading").addClass("active");
-			Saint.callHome('/shop/view.transactions','',Saint.loadedShopManager);
-		}
-	},'#ssm-link-transactions');
-	
-	$(document).on({
-		'click': function(event) {
-			$('#saint-admin-shop-manager').addClass("loading").addClass("active");
-			Saint.callHome('/shop/view.discounts','',Saint.loadedShopManager);
-		}
-	},'#ssm-link-discounts');
-	
-	$(document).on({
-		'click': function(event) {
-			if (event.currentTarget.parentNode.tagName == "DIV")
-				var filelabel = event.currentTarget.parentNode;
-			else
-				var filelabel = event.currentTarget.parentNode.parentNode;
-			if (Saint.fileManagerIsOpen) {
-				Saint.stopEditFile();
-				Saint.closeFileManager();
-			} else {
-				Saint.openFileManager(filelabel);
-			}
-		}
-	},'.saint-image.editable.editnow img');
-	
-	/**
-	 * Start editing the dynamic items on the current page.
-	 * This will also disable links so that editable text
-	 * which is part of a link can be clicked safely.
-	 */
-	$(document).on({
-		'click': function(event) {
-			if (Saint.editing) {
-				Saint.stopPageEdit();
-			} else {
-				Saint.startPageEdit();
-			}
-		}
-	},'#saint_admin_po_edit');
 
-	$(document).on({
-		'click': function(event) {
-			Saint.stopPageEdit();
-			Saint.showOptions("#saint_admin_page_add");
-		}
-	},'#saint_admin_po_add');
-
-	$(document).on({
-		'click': function(event) {
-			if (confirm("Are you sure you wish to delete the current page?")) {
-				Saint.deleteCurrentPage();
-			}
-		}
-	},'#saint_admin_po_delete');
-	
-	$(document).on({
-		'click': function(event) {
-			$('#saint-admin-page-options').removeClass("visible");
-		}
-	},'#saint-page-options-close');
-
-	$(document).on({
-		'click': function(event) {
-			Saint.savePageOptions();
-			Saint.stopPageEdit();
-		}
-	},'#saint-page-options-save');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.addPage();
-		}
-	},'#saint_admin_page_add_submit');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.showOptions("#saint_admin_page_options");
-		}
-	},'.saint_menu_link_pages');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.showOptions("#saint_admin_user_options");
-		}
-	},'#saint_menu_link_users');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.showOptions("#saint_admin_category_options");
-		}
-	},'#saint_menu_link_categories');
-
-	$(document).on({
-		'click': function(event) {
-			Saint.editUser(event.target.id.replace('user-',''));
-		}
-	},'#saint_admin_user_list li');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.editUser(0);
-		}
-	},'#saint_admin_uo_add');
-	
-	$(document).on({
-		'click': function(event) {
-			var postdata = $('#saint_user_edit > form').serialize();
-			Saint.callHome('/',postdata,Saint.savedUser);
-		}
-	},'#saint_edit_user_submit');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.showOptions("#saint_admin_user_options");
-		}
-	},'#saint_edit_user_cancel');
-	
-	$(document).on({
-		'click': function(event) {
-			id = event.target.parentNode.id;
-			if (id == "")
-				id = event.target.parentNode.parentNode.id;
-			id = id.replace("saint_","");
-			postdata = 'block='+id;
-			url = '/system/';
-			Saint.addBlockId = id;
-			Saint.callHome(url, postdata, Saint.loadAddBox);
-			Saint.openAddBox();
-		}
-	},'.repeating > .add-button');
-
-	$(document).on({
-		'click': function(event) {
-			bname = event.target.parentNode.parentNode.id;
-			bname = bname.replace("saint_","");
-			id = event.target.id;
-			postdata = 'block='+bname+'&blockid='+id;
-			url = '/system/';
-			Saint.addBlockId = id;
-			Saint.callHome(url, postdata, Saint.loadAddBox);
-			Saint.openAddBox();
-		}
-	},'.block-item > .edit-button');
-	
-	$(document).on({
-		'click': function(event) {
-			$(event.target.parentNode).removeClass("saint-list-contracted");
-			$(event.target.parentNode).addClass("saint-list-expanded");
-		}
-	},'.saint-list-contracted > .trigger');
-
-	$(document).on({
-		'click': function(event) {
-			$(event.target.parentNode).removeClass("saint-list-expanded");
-			$(event.target.parentNode).addClass("saint-list-contracted");
-		}
-	},'.saint-list-expanded > .trigger');
-	
-	$(document).on({
-		'click': function(event) {
-			var postdata = $('#saint_admin_category_options form').serialize();
-			var url = '/system/';
-			Saint.callHome(url, postdata, Saint.savedCategory);
-		}
-	},'#saint-add-category-submit');
-
-	$(document).on({
-		'click': function(event) {
-			if ($(event.target).hasClass("delete")) {
-				var editid = $(event.target.parentNode).attr('id').replace(/cat-/mg,"");
-				var editname = $(event.target).text();
-				$('#saint-set-category-id').val(editid);
-				$('#saint-add-category').val(editname);
-				$('#saint-delete-category').val(1);
-				var postdata = $('#saint_admin_category_options form').serialize();
-				var url = '/system/';
-				Saint.callHome(url, postdata, Saint.savedCategory);
-			} else {
-				var editid = $(event.target).attr('id').replace(/cat-/mg,"");
-				var editname = $(event.target).text();
-				$('#saint-set-category-id').val(editid);
-				$('#saint-add-category').val(editname);
-				$('#saint-add-category-submit').html("Save");
-				$('#saint-add-category-cancel').removeClass("hidden");
-			}
-		}
-	},'.category-edit');
-	
-	$(document).on({
-		'click': function(event) {
-			$('#saint-set-category-id').val(0);
-			$('#saint-add-category').val('');
-			$('#saint-add-category-submit').html("Add");
-			$('#saint-add-category-cancel').addClass("hidden");
-		}
-	},'#saint-add-category-cancel');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.saveWysiwyg();
-		}
-	},'#saint-save-wysiwyg');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.startEditFile(event.currentTarget.parentNode);
-		}
-	},'#saint-file-manager-data img.link');
-	
-	$(document).on({
-		'click': function(event) {
-			if ($('#saint-uploader').hasClass("active")) {
-				$('#saint-uploader').removeClass("active");
-			} else {
-				$('#saint-uploader').addClass("active");
-			}
-		}
-	},'#saint-uploader h3');
-
-	$(document).on({
-		'click': function(event) {
-			var selpage = event.currentTarget.id.replace(/sfm-page-/,'');
-			Saint.sfmSelectPage(selpage);
-		}
-	},'#saint-admin-file-manager .sfm-pager span.link');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.sfmSubmit();
-		}
-	},'#saint-file-info .form-submit');
-
-	$(document).on({
-		'click': function(event) {
-			Saint.sfmReset();
-		}
-	},'#saint-file-info .form-cancel');
-	
-	$(document).on({
-		'keyup': function(event) {
-			if (event.which == 13) {
-				Saint.sfmSubmit();
-			}
-		}
-	},'#saint-file-info form input');
-	
-	$(document).on({
-		'keyup': function(event) {
-			if (event.which == 27) {
-				Saint.sfmReset();
-			}
-		}
-	},'#saint-file-info form');
-	
-	$(document).on({
-		'click': function(event) {
-			$('#saint-paypal-buynow form').submit();
-		}
-	},'.saint-cart-title.link');
-	
 	var Saint = {};
 	Saint.connections = new Array();
 	Saint.errors = new Array();
@@ -407,7 +35,7 @@ $(document).ready(function() {
 		}
 	});
 	
-	/* START LABEL EDITOR */
+	/* START Label Editor */
 	
 	// Flag which editor view is active.
 	Saint.sleWysiwygActive = true;
@@ -837,9 +465,585 @@ $(document).ready(function() {
 		}
 	};
 	
-	//Saint.sleToggleWysiwyg();
+	/* END Label Editor */
 	
-	/* END LABEL EDITOR */
+	/* START User Administration */
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.editUser(event.target.id.replace('user-',''));
+		}
+	},'#saint_admin_user_list li');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.editUser(0);
+		}
+	},'#saint_admin_uo_add');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.saveUser();
+		}
+	},'#saint_edit_user_submit');
+	
+	$(document).on({
+		'keypress': function(event) {
+			if (event.which == "13") {
+				event.stopPropagation();
+				Saint.saveUser();
+				return false;
+			}
+		}
+	},'#saint_user_edit form input');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.showOptions("#saint_admin_user_options");
+		}
+	},'#saint_edit_user_cancel');
+	
+	Saint.editUser = function(uid) {
+		$('#saint_admin_dynamic_options').html('');
+		$('#saint_admin_dynamic_options').addClass("loading");
+		Saint.showOptions("#saint_admin_dynamic_options");
+		var url = '/user/view.edit/id.'+uid;
+		Saint.callHome(url,null, Saint.loadDynamicOptionsBox);
+	};
+	
+	Saint.saveUser = function() {
+		var postdata = $('#saint_user_edit > form').serialize();
+		Saint.callHome('/',postdata,Saint.savedUser);
+	};
+	
+	Saint.savedUser = function(data) {
+		try {
+			realdata = JSON.parse(data);
+			if (realdata['success']) {
+				Saint.showOptions("#saint_admin_user_options");
+				$('#saint_admin_user_list li').remove();
+				
+				for (i in realdata['users']) {
+					$('#saint_admin_user_list').append($('<li id="'+realdata['users'][i][0]+'" class="link">'+realdata['users'][i][1]+'</li>'));
+				}
+			} else {
+				alert(realdata['error']);
+				$('#saint_ajax_indicator').addClass("error");
+			}
+			Saint.setActionLog(realdata.actionlog);
+		} catch (e) {
+			$('#saint_ajax_indicator').addClass("error");
+			Saint.addError("There was a problem editing selected user. Please check the server error log for further information.",0);
+		}
+	};
+	
+	/* END User Administration */
+	
+	/* START Category Management */
+
+	$(document).on({
+		'click': function(event) {
+			Saint.saveCategory();
+		}
+	},'#saint-add-category-submit');
+	
+	$(document).on({
+		'keypress': function(event) {
+			if (event.which == "13") {
+				event.stopPropagation();
+				Saint.saveCategory();
+				return false;
+			}
+		}
+	},'#saint-add-category');
+
+	$(document).on({
+		'click': function(event) {
+			if ($(event.target).hasClass("delete")) {
+				var editid = $(event.target.parentNode).attr('id').replace(/cat-/mg,"");
+				var editname = $(event.target).text();
+				$('#saint-set-category-id').val(editid);
+				$('#saint-add-category').val(editname);
+				$('#saint-delete-category').val(1);
+				var postdata = $('#saint_admin_category_options form').serialize();
+				var url = '/system/';
+				Saint.callHome(url, postdata, Saint.savedCategory);
+			} else {
+				var editid = $(event.target).attr('id').replace(/cat-/mg,"");
+				var editname = $(event.target).text().replace(/\s+$/g,"");
+				$('#saint-set-category-id').val(editid);
+				$('#saint-add-category').val(editname);
+				$('#saint-add-category-submit').html("Save");
+				$('#saint-add-category-cancel').removeClass("hidden");
+			}
+		}
+	},'.category-edit');
+	
+	$(document).on({
+		'click': function(event) {
+			$('#saint-set-category-id').val(0);
+			$('#saint-add-category').val('');
+			$('#saint-add-category-submit').html("Add");
+			$('#saint-add-category-cancel').addClass("hidden");
+		}
+	},'#saint-add-category-cancel');
+	
+	
+	Saint.saveCategory = function() {
+		var postdata = $('#saint_admin_category_options form').serialize();
+		var url = '/system/';
+		Saint.callHome(url, postdata, Saint.savedCategory);
+	};
+	
+	Saint.savedCategory = function(data) {
+		try {
+			realdata = JSON.parse(data);
+			if (realdata['success']) {
+				$("#saint-delete-category").val('0');
+				$("#saint-set-category-id").val('0');
+				$("#saint-add-category").val('');
+				$('#saint_categories li').remove();
+				for (i in realdata['categories']) {
+					$('#saint_categories').append($('<li id="cat-'+realdata['categories'][i][0]+'" class="link category-edit">'
+						+realdata['categories'][i][1]+'<span class="delete close-button">&nbsp;</span></li>'));
+				}
+			} else {
+				Saint.addError("There was a problem saving the selected category.");
+				$('#saint_ajax_indicator').addClass("error");
+			}
+			Saint.setActionLog(realdata.actionlog);
+		} catch (e) {
+			$('#saint_ajax_indicator').addClass("error");
+			Saint.addError("There was a problem saving the selected category. Please check the server error log for further information.",0);
+		}
+	};
+	
+	/* END Category Management */
+	
+	/* START Page Management */
+	
+	/**
+	 * Start editing the dynamic items on the current page.
+	 */
+	$(document).on({
+		'click': function(event) {
+			if (Saint.editing) {
+				Saint.stopPageEdit();
+			} else {
+				Saint.startPageEdit();
+			}
+		}
+	},'#saint_admin_po_edit');
+
+	$(document).on({
+		'click': function(event) {
+			Saint.stopPageEdit();
+			Saint.showOptions("#saint_admin_page_add");
+		}
+	},'#saint_admin_po_add');
+
+	$(document).on({
+		'click': function(event) {
+			if (confirm("Are you sure you wish to delete the current page?")) {
+				Saint.deleteCurrentPage();
+			}
+		}
+	},'#saint_admin_po_delete');
+	
+	$(document).on({
+		'click': function(event) {
+			$('#saint-admin-page-options').removeClass("visible");
+		}
+	},'#saint-page-options-close');
+
+	$(document).on({
+		'click': function(event) {
+			Saint.savePageOptions();
+			Saint.stopPageEdit();
+		}
+	},'#saint-page-options-save');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.addPage();
+		}
+	},'#saint_admin_page_add_submit');
+	
+	$(document).on({
+		'keyup': function(event) {
+			if (event.which == "13") {
+				event.stopPropagation();
+				Saint.addPage();
+				return false;
+			}
+		}
+	},'#saint_admin_page_add form input');
+	
+	/**
+	 * Disable all links when the page is in edit mode.
+	 */
+	$(document).on({
+		'click': function(event) {
+			if ($('body').hasClass("editing")) {
+				event.stopPropagation();
+				return false;
+			} else
+				return true;
+		}
+	},'a, a *');
+	
+	Saint.addPage = function() {
+		postdata = $('#saint_admin_page_add form').serialize();
+		Saint.callHome('/',postdata,Saint.addedPage);
+	};
+	
+	Saint.addedPage = function(data) {
+		var success;
+		try {
+			realdata = JSON.parse(data);
+			success = realdata['success'];
+			Saint.setActionLog(realdata['actionlog']);
+		} catch (e) {
+			success = false;
+		}
+		if (success) {
+			Saint.showOptions("#saint_admin_page_options");
+			$(':input','#saint_admin_page_add')
+			 .not(':button, :submit, :reset, :hidden')
+			 .val('')
+			 .removeAttr('checked')
+			 .removeAttr('selected');
+			$('#saint_admin_page_list li').remove();
+			
+			for (i in realdata['pages']) {
+				$('#saint_admin_page_list').append($('<li><a class="sublist" href="'+SAINT_URL+'/'+realdata['pages'][i][0]+'">'+realdata['pages'][i][1]+'</a></li>'));
+			}
+		} else {
+			$('#saint_ajax_indicator').addClass("error");
+			Saint.addError("There was a problem adding your page. Please check the error log for further information.",0);
+		}
+	};
+	
+	Saint.savePageOptions = function() {
+		postdata = $('#saint-admin-page-options form').serialize();
+		Saint.callHome('/system',postdata,Saint.savedPageOptions);
+	};
+	
+	Saint.savedPageOptions = function(data) {
+		var success;
+		try {
+			realdata = JSON.parse(data);
+			success = realdata['success'];
+			Saint.setActionLog(realdata['actionlog']);
+		} catch (e) {
+			success = false;
+		}
+		if (success) {
+			Saint.showOptions("#saint_admin_page_options");
+			$(':input','#saint_admin_page_add')
+			 .not(':button, :submit, :reset, :hidden')
+			 .val('')
+			 .removeAttr('checked')
+			 .removeAttr('selected');
+		} else {
+			$('#saint_ajax_indicator').addClass("error");
+			Saint.addError("There was a problem saving your page options. Please check the error log for further information.",0);
+		}
+	};
+	
+	Saint.startPageEdit = function() {
+		$(document.body).addClass("editing");
+		Saint.editing = true;
+		$('#saint_admin_po_edit').html("Stop Editing");
+		$('#saint-admin-page-options').addClass("visible");
+		$('.editable').addClass("editnow");
+		$('.repeating').addClass("editnow");
+		Saint.contractOverlay();
+	};
+	
+	Saint.stopPageEdit = function() {
+		$(document.body).removeClass("editing");
+		Saint.sleStop();
+		Saint.editing = false;
+		if ($('#saint-admin-add-block').hasClass("active")) {
+			Saint.saveAddBox();
+			Saint.closeAddBox();
+		}
+		$('#saint_admin_po_edit').html("Edit This Page");
+		$('#saint-admin-page-options').removeClass("visible");
+		$('.editable').removeClass("editnow");
+		$('.repeating').removeClass("editnow");
+	};
+
+	Saint.deleteCurrentPage = function() {
+		var cpid = $('#saint-admin-page-options').find('input[name=saint-edit-page-id]').val();
+		Saint.callHome("/system/delpage."+cpid,null,Saint.deletedCurrentPage);
+	};
+	
+	Saint.deletedCurrentPage = function(data) {
+		try {
+			realdata = JSON.parse(data);
+			if (realdata['success']) {
+				window.location.replace(SAINT_URL+'/');
+			} else {
+				$('#saint_ajax_indicator').addClass("error");
+			}
+			Saint.setActionLog(realdata.actionlog);
+		} catch (e) {
+			$('#saint_ajax_indicator').addClass("error");
+			Saint.addError("There was a problem deleting your page. Please check the server error log for further information.",0);
+		}
+	};
+	
+	/* END Page Management */
+
+	$(document).on({
+		'click': function(event) {
+			Saint.saveAddBox();
+			Saint.closeAddBox();
+		}
+	},'#saint-add-block-save');
+	
+	$(document).on({
+		'click': function(event) {
+			if (confirm("Are you sure you wish to delete this block? Any changes made will be lost.")) {
+				$('#saint-block-setting-enabled').val('0');
+				Saint.saveAddBox();
+				Saint.closeAddBox();
+			}
+		}
+	},'#saint-add-block-delete');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.closeAddBox();
+		}
+	},'#saint-add-block-cancel');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.loadWysiwyg(event.currentTarget.id);
+		}
+	},'.editing .saint-wysiwyg');
+	
+	/**
+	 * Expand admin overlay when mouse enters,
+	 * contract when mouse leaves.
+	 */
+	$(document).on({
+		'mouseenter': function(event) {
+			Saint.expandOverlay();
+		},
+		'mouseleave': function(event) {
+			Saint.contractOverlay();
+		}
+	},'#saint_admin_overlay');
+	
+	/**
+	 * Stops the admin overlay from being contracted while an input field has focus.
+	 */
+	$(document).on({
+		'focusin': function(event) {
+			$('#saint_admin_overlay').removeClass("expanded");
+		},
+		'focusout': function(event) {
+			$('#saint_admin_overlay').addClass("expanded");
+		}
+	},'#saint_admin_overlay form');
+	
+	$(document).on({
+		'click': function(event) {
+			if (Saint.fileManagerIsOpen) {
+				Saint.stopEditFile();
+				Saint.closeFileManager();
+			} else {
+				Saint.openFileManager();
+			}
+		}
+	},'#saint_menu_link_files');
+	
+	$(document).on({
+		'click': function(event) {
+			window.location.replace("/action.logout");
+		}
+	},'#saint_menu_link_logout');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.stopEditFile();
+			Saint.closeFileManager();
+		}
+	},'#sfm-close-button');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.closeShopManager();
+		}
+	},'#ssm-close-button');
+	
+	$(document).on({
+		'click': function(event) {
+			if (Saint.shopManagerIsOpen) {
+				Saint.closeShopManager();
+			} else {
+				if (Saint.editing) {
+					Saint.stopPageEdit(); }
+				Saint.openShopManager();
+			}
+		}
+	},'#saint_menu_link_shop');
+	
+	$(document).on({
+		'click': function(event) {
+			$('#saint-admin-shop-manager').addClass("loading").addClass("active");
+			Saint.callHome('/shop/view.transactions','',Saint.loadedShopManager);
+		}
+	},'#ssm-link-transactions');
+	
+	$(document).on({
+		'click': function(event) {
+			$('#saint-admin-shop-manager').addClass("loading").addClass("active");
+			Saint.callHome('/shop/view.discounts','',Saint.loadedShopManager);
+		}
+	},'#ssm-link-discounts');
+	
+	$(document).on({
+		'click': function(event) {
+			if (event.currentTarget.parentNode.tagName == "DIV")
+				var filelabel = event.currentTarget.parentNode;
+			else
+				var filelabel = event.currentTarget.parentNode.parentNode;
+			if (Saint.fileManagerIsOpen) {
+				Saint.stopEditFile();
+				Saint.closeFileManager();
+			} else {
+				Saint.openFileManager(filelabel);
+			}
+		}
+	},'.saint-image.editable.editnow img');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.showOptions("#saint_admin_page_options");
+		}
+	},'.saint_menu_link_pages');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.showOptions("#saint_admin_user_options");
+		}
+	},'#saint_menu_link_users');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.showOptions("#saint_admin_category_options");
+		}
+	},'#saint_menu_link_categories');
+	
+	$(document).on({
+		'click': function(event) {
+			id = event.target.parentNode.id;
+			if (id == "")
+				id = event.target.parentNode.parentNode.id;
+			id = id.replace("saint_","");
+			postdata = 'block='+id;
+			url = '/system/';
+			Saint.addBlockId = id;
+			Saint.callHome(url, postdata, Saint.loadAddBox);
+			Saint.openAddBox();
+		}
+	},'.repeating > .add-button');
+
+	$(document).on({
+		'click': function(event) {
+			bname = event.target.parentNode.parentNode.id;
+			bname = bname.replace("saint_","");
+			id = event.target.id;
+			postdata = 'block='+bname+'&blockid='+id;
+			url = '/system/';
+			Saint.addBlockId = id;
+			Saint.callHome(url, postdata, Saint.loadAddBox);
+			Saint.openAddBox();
+		}
+	},'.block-item > .edit-button');
+	
+	$(document).on({
+		'click': function(event) {
+			$(event.target.parentNode).removeClass("saint-list-contracted");
+			$(event.target.parentNode).addClass("saint-list-expanded");
+		}
+	},'.saint-list-contracted > .trigger');
+
+	$(document).on({
+		'click': function(event) {
+			$(event.target.parentNode).removeClass("saint-list-expanded");
+			$(event.target.parentNode).addClass("saint-list-contracted");
+		}
+	},'.saint-list-expanded > .trigger');
+
+	$(document).on({
+		'click': function(event) {
+			Saint.saveWysiwyg();
+		}
+	},'#saint-save-wysiwyg');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.startEditFile(event.currentTarget.parentNode);
+		}
+	},'#saint-file-manager-data img.link');
+	
+	$(document).on({
+		'click': function(event) {
+			if ($('#saint-uploader').hasClass("active")) {
+				$('#saint-uploader').removeClass("active");
+			} else {
+				$('#saint-uploader').addClass("active");
+			}
+		}
+	},'#saint-uploader h3');
+
+	$(document).on({
+		'click': function(event) {
+			var selpage = event.currentTarget.id.replace(/sfm-page-/,'');
+			Saint.sfmSelectPage(selpage);
+		}
+	},'#saint-admin-file-manager .sfm-pager span.link');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.sfmSubmit();
+		}
+	},'#saint-file-info .form-submit');
+
+	$(document).on({
+		'click': function(event) {
+			Saint.sfmReset();
+		}
+	},'#saint-file-info .form-cancel');
+	
+	$(document).on({
+		'keyup': function(event) {
+			if (event.which == 13) {
+				Saint.sfmSubmit();
+			}
+		}
+	},'#saint-file-info form input');
+	
+	$(document).on({
+		'keyup': function(event) {
+			if (event.which == 27) {
+				Saint.sfmReset();
+			}
+		}
+	},'#saint-file-info form');
+	
+	$(document).on({
+		'click': function(event) {
+			$('#saint-paypal-buynow form').submit();
+		}
+	},'.saint-cart-title.link');
+	
 	
 	Saint.sfmReset = function() {
 		Saint.clearForm('#saint-file-info form');
@@ -893,29 +1097,6 @@ $(document).ready(function() {
 			$('#saint-file-info .form-cancel').html('Cancel');
 		}
 	};
-	
-	/*
-	Saint.saveEditFile = function() {
-		var postdata = $('#saint-file-info form').serialize();
-		Saint.callHome('/system/',postdata,Saint.savedEditFile);
-	};
-	
-	Saint.savedEditFile = function(data) {
-		try {
-			realdata = JSON.parse(data);
-			if (realdata['success']) {
-				Saint.stopEditFile();
-				Saint.sfmSelectPage(Saint.sfmcurpage);
-			} else {
-				Saint.addError("There was a problem saving your changes. Please check the error log for further information.",0);
-				$('#saint_ajax_indicator').addClass("error");
-			}
-			Saint.setActionLog(realdata.actionlog);
-		} catch (e) {
-			$('#saint_ajax_indicator').addClass("error");
-			Saint.addError("There was a problem saving your changes. Please check the error log for further information.",0);
-		}
-	}*/
 	
 	Saint.stopEditFile = function() {
 		Saint.sfmCurrentlyEditing = 0;
@@ -996,49 +1177,6 @@ $(document).ready(function() {
 				staffid : "991234"
 			}*/
 		});
-	};
-	
-	Saint.savedCategory = function(data) {
-		try {
-			realdata = JSON.parse(data);
-			if (realdata['success']) {
-				$("#saint-delete-category").val('0');
-				$("#saint-set-category-id").val('0');
-				$("#saint-add-category").val('');
-			} else {
-				Saint.addError("There was a problem saving the selected category.");
-				$('#saint_ajax_indicator').addClass("error");
-			}
-			Saint.setActionLog(realdata.actionlog);
-		} catch (e) {
-			$('#saint_ajax_indicator').addClass("error");
-			Saint.addError("There was a problem saving the selected category. Please check the server error log for further information.",0);
-		}
-	};
-	
-	Saint.editUser = function(uid) {
-		$('#saint_admin_dynamic_options').html('');
-		$('#saint_admin_dynamic_options').addClass("loading");
-		Saint.showOptions("#saint_admin_dynamic_options");
-		var url = '/user/view.edit/id.'+uid;
-		Saint.callHome(url,null, Saint.loadDynamicOptionsBox);
-	};
-	
-	Saint.savedUser = function(data) {
-		try {
-			realdata = JSON.parse(data);
-			if (realdata['success']) {
-				Saint.showOptions("#saint_admin_user_options");
-			} else {
-				var err = "There was a problem editing selected user.";
-				Saint.addError("There was a problem editing selected user.");
-				$('#saint_ajax_indicator').addClass("error");
-			}
-			Saint.setActionLog(realdata.actionlog);
-		} catch (e) {
-			$('#saint_ajax_indicator').addClass("error");
-			Saint.addError("There was a problem editing selected user. Please check the server error log for further information.",0);
-		}
 	};
 	
 	Saint.loadDynamicOptionsBox = function(data) {
@@ -1126,78 +1264,10 @@ $(document).ready(function() {
 		}
 		$('#saint-file-manager-data .saint-admin-block-overlay').removeClass("loading");
 	};
-	
-	Saint.startPageEdit = function() {
-		$(document.body).addClass("editing");
-		Saint.editing = true;
-		$('#saint_admin_po_edit').html("Stop Editing");
-		$('#saint-admin-page-options').addClass("visible");
-		$('.editable').addClass("editnow");
-		$('.repeating').addClass("editnow");
-		Saint.contractOverlay();
-	};
-	
-	Saint.stopPageEdit = function() {
-		$(document.body).removeClass("editing");
-		Saint.sleStop();
-		Saint.editing = false;
-		if ($('#saint-admin-add-block').hasClass("active")) {
-			Saint.saveAddBox();
-			Saint.closeAddBox();
-		}
-		$('#saint_admin_po_edit').html("Edit This Page");
-		$('#saint-admin-page-options').removeClass("visible");
-		$('.editable').removeClass("editnow");
-		$('.repeating').removeClass("editnow");
-	};
 
-	Saint.deleteCurrentPage = function() {
-		var cpid = $('#saint-admin-page-options').find('input[name=saint_edit_page_id]').val();
-		Saint.callHome("/system/delpage/"+cpid,'',Saint.deletedCurrentPage);
-	};
-	
-	Saint.deletedCurrentPage = function(data) {
-		try {
-			realdata = JSON.parse(data);
-			if (realdata['success']) {
-				window.location.replace('/');
-			} else {
-				$('#saint_ajax_indicator').addClass("error");
-			}
-			Saint.setActionLog(realdata.actionlog);
-		} catch (e) {
-			$('#saint_ajax_indicator').addClass("error");
-			Saint.addError("There was a problem deleting your page. Please check the server error log for further information.",0);
-		}
-	};
-	
 	Saint.refreshPage = function() {
 		location.reload(true);
 	};
-	/*
-	Saint.startEdit = function(label) { 
-		label.addClass('editing');
-		var labelForm = $('#saint_ajax_templates > .label-form').clone().removeClass('template').removeClass('hidden');
-		labelForm.find('.cache').html(label.html());
-		labelForm.find('input[name=label-name]').val(label.attr('id'));
-		labelForm.find('textarea[name=label-value]').val(label.html().replace(/<br\s*\/?>/mg,""));
-		label.html(labelForm);
-		labelForm.find('textarea[name=label-value]').focus();
-		lines = labelForm.find('textarea[name=label-value]').val().split("\n");
-		if (lines.length > 1) {
-			multiplier = lines.length * 2;
-		} else {
-			multiplier = 1;
-		}
-		labelForm.find('textarea[name=label-value]').attr('rows',multiplier);
-	};
-	
-	Saint.stopEdit = function(label) {
-		if (label.hasClass('editing')) {
-			label.removeClass('editing');
-			label.html(label.find('.cache').html());
-		}
-	};*/
 	
 	Saint.expandOverlay = function() {
 		if ($('#saint_admin_overlay').hasClass("contracted")) {
@@ -1253,9 +1323,12 @@ $(document).ready(function() {
 		$('#saint-admin-add-block').removeClass("loading");
 		try {
 			realdata = JSON.parse(data);
-			if (!realdata['success'])
+			if (realdata['success']) {
+				Saint.refreshPage();
+			} else {
 				$('#saint_ajax_indicator').addClass("error");
-			Saint.setActionLog(realdata.actionlog);
+				Saint.setActionLog(realdata.actionlog);
+			}
 		} catch (e) {
 			$('#saint_ajax_indicator').addClass("error");
 			Saint.addError("There was a problem adding your page. Please check the server error log for further information.",0);
@@ -1269,60 +1342,7 @@ $(document).ready(function() {
 	    return input.replace(commentsAndPhpTags, '').replace(tags, function ($0, $1) {        return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
 	    });
 	}
-	
-	Saint.addPage = function() {
-		postdata = $('#saint_admin_page_add form').serialize();
-		Saint.callHome('/',postdata,Saint.addedPage);
-	};
-	
-	Saint.addedPage = function(data) {
-		var success;
-		try {
-			realdata = JSON.parse(data);
-			success = realdata['success'];
-			Saint.setActionLog(realdata['actionlog']);
-		} catch (e) {
-			success = false;
-		}
-		if (success) {
-			Saint.showOptions("#saint_admin_page_options");
-			$(':input','#saint_admin_page_add')
-			 .not(':button, :submit, :reset, :hidden')
-			 .val('')
-			 .removeAttr('checked')
-			 .removeAttr('selected');
-		} else {
-			$('#saint_ajax_indicator').addClass("error");
-			Saint.addError("There was a problem adding your page. Please check the error log for further information.",0);
-		}
-	};
-	
-	Saint.savePageOptions = function() {
-		postdata = $('#saint-admin-page-options form').serialize();
-		Saint.callHome('/system',postdata,Saint.savedPageOptions);
-	};
-	
-	Saint.savedPageOptions = function(data) {
-		var success;
-		try {
-			realdata = JSON.parse(data);
-			success = realdata['success'];
-			Saint.setActionLog(realdata['actionlog']);
-		} catch (e) {
-			success = false;
-		}
-		if (success) {
-			Saint.showOptions("#saint_admin_page_options");
-			$(':input','#saint_admin_page_add')
-			 .not(':button, :submit, :reset, :hidden')
-			 .val('')
-			 .removeAttr('checked')
-			 .removeAttr('selected');
-		} else {
-			$('#saint_ajax_indicator').addClass("error");
-			Saint.addError("There was a problem saving your page options. Please check the error log for further information.",0);
-		}
-	};
+
 	
 	Saint.callHome = function(url, postdata, complete, timeout, retries, tcid, errorno) {
 		if (url.match(/^http/) == null) {

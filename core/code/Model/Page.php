@@ -66,23 +66,20 @@ class Saint_Model_Page {
 	 * @param string $name URL-friendly identifier for new page.
 	 * @param string $layout Name of layout to use for page.
 	 * @param string $title Title for page.
+	 * @param string $keywords Keywords for page.
+	 * @param string $description Description for page.
+	 * @return boolean True on success, false otherwise.
 	 */
-	public static function addPage($name,$layout,$title = '') {
+	public static function addPage($name,$layout,$title='',$keywords='',$description='',$cats=array()) {
 		$page = new Saint_Model_Page();
 		$page->setLayout($layout);
 		$page->setName($name);
 		$page->setTitle($title);
-		return $page->save();
-			/*
-			try {
-				Saint::query("INSERT INTO st_pages (`name`,`layout`,`title`) VALUES ('$sname','$slayout','$stitle')");
-				Saint::logEvent("Added page '$stitle' with url '$sname' and layout '$slayout'.",__FILE__,__LINE__);
-				return 1;
-			} catch (Exception $e) {
-				Saint::logError("Problem inserting page into database: ".$e->getMessage(),__FILE__,__LINE__);
-				return 0;
-			}
-			*/
+		$page->setKeywords($keywords);
+		$page->setDescription($description);
+		$success = $page->save();
+		$page->setCategories($cats);
+		return $success;
 	}
 	
 	/**
@@ -709,6 +706,7 @@ class Saint_Model_Page {
 					" VALUES ('$this->_name','$this->_title','$this->_layout','".implode(',',$this->_meta_keywords).
 					"','$this->_meta_description','$this->_allow_robots',NOW())";
 				Saint::query($query);
+				$this->_id = Saint::getLastInsertId();
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Problem creating page $this->_name. ".$e->getMessage(),__FILE__,__LINE__);

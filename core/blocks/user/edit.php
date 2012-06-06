@@ -39,10 +39,13 @@ else
 		</ul>
 	</div>
 	<?php endif;?>
-	<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
+	<?php if ($user->getId()): ?>
 	<?php echo Saint::genField("saint-edit-user-delete","select","Delete User: ",
 			array('options'=>array(0=>'No',1=>'Yes'),'selected'=>'No','multiple'=>false)); ?>
 	<input type="hidden" name="saint-edit-user-ajax" value="true" />
+	<?php endif; ?>
+	<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
+	<input type="hidden" name="saint-edit-user-ajax" value="1" />
 	<div class="save_options">
 		<span id="saint_edit_user_submit" class="link">Save</span> &nbsp;&nbsp;&nbsp;
 		<span id="saint_edit_user_cancel" class="link">Cancel</span>

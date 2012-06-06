@@ -432,7 +432,6 @@ EOT;
 	/**
 	 * Processes all XML files in block directories then updates the associated block tables if necessary.
 	 * @return boolean True for success, false otherwise.
-	 * @todo Implement theme-preference block loading.
 	 */
 	public static function processSettings() {
 		# Scan files in user and system directories
@@ -508,8 +507,8 @@ EOT;
 								$datatype = "varchar(255)";
 					
 							if (isset($att['default'])) {
-								if ($att['default'] == "CURRENT_TIME") {
-									$default = $att['default'];
+								if ($att['default'] == "now") {
+									$default = "CURRENT_TIMESTAMP";
 								} else {
 									$default = "'$att[default]'";
 								}

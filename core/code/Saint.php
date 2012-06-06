@@ -343,10 +343,12 @@ class Saint {
 	 * @param string $name Name for new page.
 	 * @param string $layout Name of layout to use for new page.
 	 * @param string $title Title for new page.
+	 * @param string $keywords Keywords for page.
+	 * @param string $description Description for page.
 	 * @return boolean True for success, false for failure.
 	 */
-	public static function addPage($name,$layout,$title = '') {
-		return Saint_Model_Page::addPage($name,$layout,$title);
+	public static function addPage($name,$layout,$title='',$keywords='',$description='',$cats=array()) {
+		return Saint_Model_Page::addPage($name,$layout,$title,$keywords,$description,$cats);
 	}
 	
 	/**

@@ -71,19 +71,37 @@ class Saint_Controller_Page {
 		 * Page controls
 		 */
 		
-		/**
-		 * @todo Fix problem with blank fields when saving.
-		 */
-		
 		if(isset($_POST['saint-add-page-name']) && isset($_POST['saint-add-page-layout']) && isset($_POST['saint-add-page-title'])) {
+			if (isset($_POST['saint-add-page-keywords']))
+				$keywords = $_POST['saint-add-page-keywords'];
+			else
+				$keywords = '';
+			
+			if (isset($_POST['saint-add-page-description']))
+				$description = $_POST['saint-add-page-description'];
+			else
+				$description = '';
+			
+			if (isset($_POST['saint-add-page-categories']))
+				$cats = $_POST['saint-add-page-categories'];
+			else
+				$cats = array();
 			$this->_page->setTempLayout("system/json");
-			if (Saint::addPage($_POST['saint-add-page-name'],$_POST['saint-add-page-layout'],$_POST['saint-add-page-title']))
+			if (Saint::addPage($_POST['saint-add-page-name'],$_POST['saint-add-page-layout'],$_POST['saint-add-page-title'],
+				$keywords,$description,$cats))
 				$success = true;
 			else
 				$success = false;
 			
+			$pages = Saint::getAllPages();
+			$sp = array();
+			foreach ($pages as $page) {
+				$sp[] = array($page->getName(),$page->getTitle());
+			}
+			
 			$this->_page->jsondata = array(
 				'success' => $success,
+				'pages' => $sp,
 				'actionlog' => Saint::getActionLog(),
 			);
 		}

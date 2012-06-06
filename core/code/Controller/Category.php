@@ -3,7 +3,6 @@
  * Controller handling user interaction with Saint categories.
  * @author Preston St. Pierre
  * @package Saint
- * @todo Changing category name results in new category addition; needs fixing.
  */
 class Saint_Controller_Category {
 	/**
@@ -24,10 +23,7 @@ class Saint_Controller_Category {
 		}
 		$page = Saint::getCurrentPage();
 		$page->setTempLayout("system/json");
-		$page->jsondata = array(
-			'success' => $success,
-			'actionlog' => Saint::getActionLog(),
-		);
+		$page->jsondata = Saint_Controller_Category::prepareReply($success);
 		return $success;
 	}
 
@@ -49,10 +45,7 @@ class Saint_Controller_Category {
 		}
 		$page = Saint::getCurrentPage();
 		$page->setTempLayout("system/json");
-		$page->jsondata = array(
-			'success' => $success,
-			'actionlog' => Saint::getActionLog(),
-		);
+		$page->jsondata = Saint_Controller_Category::prepareReply($success);
 		return $success;
 	}
 	
@@ -75,11 +68,22 @@ class Saint_Controller_Category {
 		}
 		$page = Saint::getCurrentPage();
 		$page->setTempLayout("system/json");
-		$page->jsondata = array(
+		$page->jsondata = Saint_Controller_Category::prepareReply($success);
+		return $success;
+	}
+	
+	public static function prepareReply($success = false) {
+		$cats = Saint::getAllCategories();
+		$cu = array();
+		foreach ($cats as $id=>$cat) {
+			$cu[] = array($id,$cat);
+		}
+		$json = array(
 			'success' => $success,
+			'categories' => $cu,
 			'actionlog' => Saint::getActionLog(),
 		);
-		return $success;
+		return $json;
 	}
 }
 

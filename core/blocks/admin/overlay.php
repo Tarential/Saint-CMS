@@ -27,14 +27,14 @@
 						$options[$layout] = ucfirst($layout);
 				?>
 				<li><?php echo Saint::genField("saint-add-page-layout","select","Layout: ",array('options'=>$options)); ?></li>
-				<li><?php echo Saint::genField("saint-edit-page-keywords","text","Keywords: "); ?></li>
-				<li><?php echo Saint::genField("saint-edit-page-description","textarea","Description: "); ?></li>
+				<li><?php echo Saint::genField("saint-add-page-keywords","text","Keywords: "); ?></li>
+				<li><?php echo Saint::genField("saint-add-page-description","textarea","Description: "); ?></li>
 				<?php
 					$options = array();
-					foreach (Saint::getAllCategories() as $key=>$category)
-						$options[$key] = $category;
+					foreach (Saint::getAllCategories() as $category)
+						$options[$category] = $category;
 				?>
-				<li><?php echo Saint::genField("saint-edit-page-categories[]","select","Categories: ",
+				<li><?php echo Saint::genField("saint-add-page-categories[]","select","Categories: ",
 					array('options'=>$options,'selected'=>array(),'multiple'=>true)); ?></li>
 			</ul>
 		</form>
@@ -50,6 +50,7 @@
 			<li id="saint_admin_po_edit" class="link">Edit This Page</li>
 			<li id="saint_admin_po_delete" class="link">Delete This Page</li>
 		</ul>
+		<?php echo Saint::getLabel("page-list","Pages:"); ?>
 		<ul id="saint_admin_page_list">
 			<?php foreach (Saint::getAllPages() as $ipage): ?>
 			<li><a href="<?php echo SAINT_URL . "/" . $ipage->getName(); ?>" class="sublist"><?php echo $ipage->getTitle(); ?></a></li>
@@ -61,6 +62,7 @@
 		<ul>
 			<li id="saint_admin_uo_add" class="link">Add New User</li>
 		</ul>
+		<?php echo Saint::getLabel("user-list","Users:"); ?>
 		<ul id="saint_admin_user_list" class="sublist">
 			<?php foreach (Saint::getAllUsers() as $iuser): ?>
 			<li class="link" id="user-<?php echo $iuser->getId(); ?>"><?php echo $iuser->getUsername(); ?></li>
@@ -76,6 +78,7 @@
 			<span id="saint-add-category-submit" class="link">Add</span>
 			<span id="saint-add-category-cancel" class="link hidden">Cancel</span>
 		</form>
+		<?php echo Saint::getLabel("category-list","Categories:"); ?>
 		<ul id="saint_categories" class="sublist">
 		<?php foreach (Saint::getAllCategories() as $iid=>$icat): ?>
 			<li class="link category-edit" id="cat-<?php echo $iid; ?>"><?php echo $icat; ?><span class="delete close-button">&nbsp;</span></li>

@@ -5,3 +5,4 @@ if (!isset($page->jsondata['actionlog'])) {
 	$page->jsondata['actionlog'] = Saint::getActionLog();
 }*/
 echo json_encode($page->jsondata);
+

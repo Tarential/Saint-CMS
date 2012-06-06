@@ -202,7 +202,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	right: 0px;
 	top: 23px;
 	width: 230px;
-	padding: 0 10px;
+	padding: 5px 10px;
 	height: 277px;
 	overflow: auto;
 }
@@ -303,22 +303,13 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	width: 100%;
 	height: auto; }
 
-/*
-#saint-admin-add-block #saint-add-block-load #mce_0_tbl {
-	height: 500px;
-	width: 900px; }
-
-#saint-admin-add-block #saint-add-block-load #mce_0_ifr {
-	height: 500px;
-}*/
-
 .saint_admin_options {
 	position: absolute;
 	right: 250px;
 	top: 23px;
 	width: 230px;
-	padding: 0 10px;
-	height: 277px;
+	padding: 5px 10px 0;
+	height: 272px;
 	overflow: auto;
 	border-right: 1px solid #000;
 }
@@ -327,23 +318,61 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	padding-bottom: 10px;
 }
 
+#saint_user_edit {
+	padding: 0 0 10px;
+}
+
 #saint_forms_search {
 	height: 40px;
+}
+
+#saint_admin_category_options .saint-label {
+	display: block;
+	margin: 5px 0 2px;
+}
+
+#saint_admin_category_options input {
+	margin: 0 0 5px;
+}
+
+#saint_admin_page_list, #saint_admin_user_list {
+	margin: 0 0 2px;
+}
+
+#saint_admin_page_list li, #saint_admin_user_list li {
+	margin: 0 0 1px;
+}
+
+#saint_admin_page_list li a, #saint_admin_user_list li {
+	font-size: 10px;
+}
+
+#saint_admin_category_options form .saint-label {
+	text-decoration: none; }
+
+#saint_admin_page_options .saint-label, #saint_admin_category_options .saint-label, #saint_admin_user_options .saint-label {
+	text-decoration: underline;
+	display: block;
+	margin: 5px 0 2px;
+}
+
+#saint_categories {
+	margin: 0;
+}
+
+#saint_categories li {
+	margin: 0;
 }
 
 .saint_admin_options ul {
 	list-style: none;
 	padding: 0;
+	margin: 5px 0 10px;
 }
 
 .saint_admin_options ul li {
 	margin-bottom: 10px;
 	clear: both; }
-/*
-.saint_admin_options ul li input {
-	float: right;
-	margin-top: -3px;
-}*/
 
 .saint_admin_options input,select {
 	border: 1px solid #333;

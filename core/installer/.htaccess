@@ -1,4 +1,6 @@
 <Limit GET POST>
+		SetEnvIf Request_URI "/install.css$" allow_css
 		order deny,allow
+		allow from env=allow_css
 		deny from all
 </Limit> 
