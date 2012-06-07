@@ -965,21 +965,19 @@ class Saint {
 				try {
 					$maxid = Saint::getOne("SELECT MAX(`id`) FROM `st_labels` WHERE `name`='$label[1]'");
 					if ($label[0] == $maxid) {
-						// Isolate block name from label name 
-						if (preg_match('/^(block\/.*)\/n\/.*$/',$label[1],$matches)) {
-							$bname = $matches[1];
-							try {
-								$resultpages = Saint::getAll("SELECT `pageid`,`url` FROM `st_pageblocks` WHERE `block`='$bname'");
-								foreach ($resultpages as $rp) {
-									if (!isset($results[$rp[0]]))
-										$results[$rp[0]] = array($rp[1],array($label[1]));
-									else
-										$results[$rp[0]][1][] = $label[1];
-								}
-							} catch (Exception $t) {
-								if ($t->getCode()) {
-									Saint::logWarning("Problem selecting block URLs: ".$t->getMessage(),__FILE__,__LINE__);
-								}
+						// Isolate block name from label name
+						if (preg_match('/^block\/(\d*)\/(.*)\/n\/.*$/',$label[1],$matches)) {
+							$bid = $matches[1];
+							$bname = $matches[2];
+							$result_block = new Saint_Model_Block();
+							$result_block->load($bname,$bid);
+							$resultpages = $result_block->getAllUrls();
+							
+							foreach ($resultpages as $rp) {
+								if (!isset($results[$rp[0]]))
+									$results[$rp[0]] = array($rp[1],array($label[1]));
+								else
+									$results[$rp[0]][1][] = $label[1];
 							}
 						} elseif (preg_match('/^page\/(\d*)\/n\/.*$/',$label[1],$matches)) {
 							$pid = $matches[1];

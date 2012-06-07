@@ -6,13 +6,6 @@
  * @package Saint
  */
 class Saint_Model_Block {
-	protected $_id;
-	protected $_uid;
-	protected $_name;
-	protected $_settings;
-	protected $_settingnames;
-	protected $_enabled;
-	
 	/**
 	 * Get the ID number for the current block template.
 	 * @param string $name Name of block template.
@@ -343,19 +336,6 @@ EOT;
 			return 0;
 		}
 	}
-	
-	/**
-	 * Get URL for viewing an individual block on a given page.
-	 * @param string $block Name of block template.
-	 * @param int $id ID of individual block.
-	 * @param string $page Name of page to use.
-	 * @return string URL to view block.
-	 */
-	public static function getBlockUrl($block, $id, $page) {
-		if ($page == null)
-			$page = "system";
-		return SAINT_BASE_URL.$page.'/single.'.$id;
-	}
 
 	/**
 	 * Get specified setting value for given block name/id.
@@ -591,18 +571,31 @@ EOT;
 		}
 	}
 	
+	protected $_id;
+	protected $_uid;
+	protected $_name;
+	protected $_settings;
+	protected $_settingnames;
+	protected $_enabled;
+	protected $_categories;
+	
 	/**
 	 * Create a dynamic block model.
 	 * @param string $name Name of block template.
 	 * @param int $id ID of individual block.
+	 * @return boolean True if product is loaded, false otherwise.
 	 */
 	public function __construct($name = null, $id = null) {
 		if ($name != null && $id != null) {
-			if (!$this->load($name,$id)) {
+			if ($this->load($name,$id)) {
+				return 1;
+			} else {
 				$this->_id = 0;
 				$this->_uid = 0;
 				$this->_settings = array();
 				$this->_settingnames = array();
+				$this->_categories = array();
+				return 0;
 			}
 		}
 	}
@@ -632,6 +625,7 @@ EOT;
 				$bname = Saint_Model_Block::formatForTable($name);
 				$info = Saint::getRow("SELECT $columns FROM `st_blocks_$bname` WHERE `id`='$id'");
 				$this->_id = $id;
+				$this->_enabled = $info[1];
 				$this->_name = $name;
 				$this->_settingnames = $settingnames;
 				for ($i = 0; $i < sizeof($settingnames); $i++)
@@ -696,6 +690,38 @@ EOT;
 	 */
 	public function getName() {
 		return $this->_name;
+	}
+	
+	/**
+	 * Get URL on which given block can be found.
+	 * @param string $block Name of block template.
+	 * @param int $id ID of individual block.
+	 * @return string URL to view block.
+	 */
+	public function getUrl() {
+		try {
+			return Saint::getOne("SELECT `url` FROM `st_pageblocks` WHERE `block`='$this->_name'");
+		} catch (Exception $t) {
+			if ($t->getCode()) {
+				Saint::logWarning("Problem selecting block URL: ".$t->getMessage(),__FILE__,__LINE__);
+			}
+			return SAINT_URL;
+		}
+	}
+	
+	/**
+	 * Get all URLs which result in this block being rendered.
+	 * @return array 2d array with inner containing page IDs and URLs.
+	 */
+	public function getAllUrls() {
+		try {
+			return Saint::getAll("SELECT `pageid`,`url` FROM `st_pageblocks` WHERE `block`='$this->_name'");
+		} catch (Exception $t) {
+			if ($t->getCode()) {
+				Saint::logWarning("Problem selecting block URLs: ".$t->getMessage(),__FILE__,__LINE__);
+			}
+			return array();
+		}
 	}
 	
 	/**
@@ -875,6 +901,14 @@ EOT;
 	 */
 	public function enable() {
 		$this->_enabled = true;
+	}
+	
+	/**
+	 * Get enabled status of loaded block.
+	 * @return boolean True if enabled, false otherwise.
+	 */
+	public function isEnabled() {
+		return $this->_enabled;
 	}
 	
 	/**
