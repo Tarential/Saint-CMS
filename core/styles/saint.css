@@ -1391,3 +1391,15 @@ body.sle-active #saint_blackout {
 
 .sle.active.loading .blackout {
 	display: block; }
+
+.search-results h3 {
+	margin: 10px 0 3px;
+}
+
+.search-results h3 a {
+	text-decoration: underline;
+}
+
+.search-results h3 a:hover {
+	text-decoration: none;
+}

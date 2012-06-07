@@ -63,7 +63,9 @@ class Saint_Model_User {
 			Saint::query("DELETE FROM `st_users` WHERE `id`='$sid'");
 			return 1;
 		} catch (Exception $e) {
-			Saint::logError("Problem deleting user with id '$sid'.",__FILE__,__LINE__);
+			if ($e->getCode()) {
+				Saint::logError("Problem deleting user with id '$sid': ".$e->getMessage(),__FILE__,__LINE__);
+			}
 			return 0;
 		}
 	}

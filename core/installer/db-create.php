@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `st_sessions` (
 	`nonce` varchar(255) NOT NULL,
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX(`username`),
-	FOREIGN KEY (`username`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE RESTRICT
+	FOREIGN KEY (`username`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 EOT;
 

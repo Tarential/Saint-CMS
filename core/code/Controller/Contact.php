@@ -83,14 +83,16 @@ EOT;
 			$item_vars = array();
 			
 			foreach ($items as $itemid=>$number) {
+				$prod = new Saint_Model_Product();
+				$prod->load($itemid);
 				$item_vars[$itemid] = array(
 					'id' => $itemid,
-					'price' => Saint::getBlockSetting("shop/product",$itemid,"Price"),
-					'name' => Saint::getBlockSetting("shop/product",$itemid,"Name"),
+					'price' => $prod->getDiscountPrice(),
+					'name' => $prod->getName(),
 					'number' => $number,
 					
 				);
-			if (Saint::getBlockSetting("shop/product",$itemid,"File") != '') {
+			if ($prod->getFile() != '') {
 					$linkid = Saint_Model_Shop::createDownload($itemid);
 					$item_vars[$itemid]['link'] = SAINT_URL . "/shop/view.download/id.$itemid/linkid.$linkid";
 				}

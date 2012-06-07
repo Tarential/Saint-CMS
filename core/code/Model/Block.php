@@ -300,7 +300,11 @@ EOT;
 				echo "<div class=\"add-button hidden\">Add New <span class=\"block-name\">".Saint_Model_Block::formatForDisplay($sblock)."</span></div>";
 			}
 			if (sizeof($saved_blocks) == 0) {
-				echo "<p>Sorry, no blocks found to match selected criteria.</p>";
+				if (isset($arguments['label'])) {
+					echo "<p>$arguments[label]</p>";
+				} else {
+					echo "<p>Sorry, no blocks found to match selected criteria.</p>";
+				}
 			} else {
 				foreach ($saved_blocks as $bid) {
 					$nblock = new Saint_Model_Block();

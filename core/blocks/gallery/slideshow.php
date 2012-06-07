@@ -19,6 +19,7 @@ if (isset($arguments['autoplay']))
 else
 	$autoplay = '5000';
 ?>
+<?php if (sizeof($files)): ?>
 <div id="slides">
   <div class="slides_container" style="display:block;<?php 
   if ($width != null) echo "width:".$width."px;";
@@ -48,3 +49,8 @@ else
   	});
   });
 </script>
+<?php elseif (isset($arguments['label'])): ?>
+<?php echo $arguments['label']; ?>
+<?php else: ?>
+	<p>Sorry, no files matched your selected criteria.</p>
+<?php endif; ?>

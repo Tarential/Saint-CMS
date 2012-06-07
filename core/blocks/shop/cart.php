@@ -13,8 +13,8 @@ foreach ($items as $id=>$number) {
 }
 ?>
 <?php if (sizeof($products)): ?>
-<div id="saint-paypal-buynow">
-	<form action="https://<?php echo SAINT_PAYPAL_URL; ?>/cgi-bin/webscr" method="post"<?php if (isset($args['buynow']) && $args['buynow'] == 1): ?> class="buynow"<?php endif; ?>>
+<div id="saint-paypal-buynow"<?php if (isset($args['buynow']) && $args['buynow'] == 1): ?> class="buynow"<?php endif; ?>>
+	<form action="https://<?php echo SAINT_PAYPAL_URL; ?>/cgi-bin/webscr" method="post">
 	<input type="hidden" name="cmd" value="_cart" />
 	<input type="hidden" name="upload" value="1" />
 	<input type="hidden" name="return" value="<?php echo SAINT_URL . "/shop/view.thanks"; ?>" />
@@ -61,3 +61,10 @@ if ($discount_price < $product[0]->getPrice()) {
 <?php endforeach; ?>
 </ul>
 </div>
+<script type="text/javascript">
+$(document).ready(function() {
+	if ($('#saint-paypal-buynow').hasClass("buynow")) {
+		$('#saint-paypal-buynow form').submit();
+	};
+});
+</script>

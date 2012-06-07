@@ -301,8 +301,29 @@ class Saint_Controller_Page {
 					$_POST['saint-file-title'],$_POST['saint-file-keywords'],
 					$_POST['saint-file-description'],$categories);
 				if (isset($_POST['saint-file-label']) && $_POST['saint-file-label']) {
-					Saint_Model_FileLabel::setFile(Saint::convertNameFromWeb($_POST['saint-file-label']),
-						array('fid'=>$_POST['saint-file-id']));
+					if (Saint_Model_FileLabel::setFile(
+						Saint::convertNameFromWeb($_POST['saint-file-label']),
+						array('fid'=>$_POST['saint-file-id']))) {
+						$success = true;
+					} else {
+						$success = false;
+					}
+					
+					$this->_page->setTempLayout("system/json");
+					$this->_page->jsondata = array(
+						"success" => $success,
+						"sfl" => $_POST['saint-file-label'],
+						"sfid" => $_POST['saint-file-id'],
+					);
+					if (isset($_POST['saint-file-label-width']) && $_POST['saint-file-label-width'] != "0" 
+						&& isset($_POST['saint-file-label-height']) && $_POST['saint-file-label-height'] != "0" ) {
+						$arguments = array(
+							"width" => $_POST['saint-file-label-width'],
+							"height" => $_POST['saint-file-label-height'],
+						);
+						$img = new Saint_Model_Image($_POST['saint-file-id'],$arguments);
+						$this->_page->jsondata['url'] = $img->getResizedUrl();
+					}
 				}
 			}
 		}

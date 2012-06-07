@@ -178,6 +178,14 @@ class Saint_Model_Page {
 	}
 	
 	/**
+	 * Request page URL.
+	 * @return string Page URL.
+	 */
+	public function getUrl() {
+		return SAINT_URL . "/" . $this->_name;
+	}
+	
+	/**
 	 * Request page title.
 	 * @return string Page title.
 	 */

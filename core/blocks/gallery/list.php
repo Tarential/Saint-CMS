@@ -48,6 +48,8 @@ $page->sfmnumpages = $page->sfmtotal / $page->sfmperpage;
 			<?php endfor; ?>
 			<?php if (!$closed): ?></tr><?php endif; ?>
 			</table>
+			<?php elseif (isset($arguments['label'])): ?>
+			<?php echo $arguments['label']; ?>
 			<?php else: ?>
 				<p>Sorry, no files matched your selected criteria.</p>
 			<?php endif; ?>

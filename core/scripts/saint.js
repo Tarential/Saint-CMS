@@ -3,10 +3,6 @@ $(document).ready(function() {
 	$('#saint_admin_page_options').removeClass("hidden");
 	$('.focus').focus();
 	
-	if ($('#saint-paypal-buynow').hasClass("buynow")) {
-		$('#saint-paypal-buynow').submit();
-	};
-	
 	$.ajaxSetup({
 		type: 'POST',
 		timeout: 5000,
@@ -28,6 +24,8 @@ $(document).ready(function() {
 	Saint.sfmImageToLoad = 0; // Image to be autoloaded when manager is opened
 	Saint.sfmCurrentlyEditing = 0; // The currently selected file element
 	Saint.sfmAnimationComplete = true;
+	Saint.sflHeight = 0;
+	Saint.sflWidth = 0;
 	
 	$(window).resize(function() {
 		if (Saint.sfmCurrentlyEditing) {
@@ -917,6 +915,15 @@ $(document).ready(function() {
 				Saint.stopEditFile();
 				Saint.closeFileManager();
 			} else {
+				var imgClasses = $(filelabel).attr('class').split(/\s+/);
+				$.each( imgClasses, function(index, item){
+					if (item.match(/^width-/g)) {
+						Saint.sflWidth = item.replace(/^width-/g,'');
+					}
+					if (item.match(/^height-/g)) {
+						Saint.sflHeight = item.replace(/^height-/g,'');
+					}
+				});
 				Saint.openFileManager(filelabel);
 			}
 		}
@@ -1209,12 +1216,17 @@ $(document).ready(function() {
 	};
 	
 	Saint.closeFileManager = function() {
+		Saint.sflHeight = 0;
+		Saint.sflWidth = 0;
 		Saint.fileManagerIsOpen = false;
+		$('#saint-file-manager-data .saint-loadable-content').html("&nbsp;");
 		$('#saint-admin-file-manager').removeClass("active");
 	};
 	
 	Saint.loadedFileManager = function(data) {
 		$('#saint-file-manager-load').html(data);
+		$("#saint-file-label-height").val(Saint.sflHeight);
+		$("#saint-file-label-width").val(Saint.sflWidth);
 		if (Saint.sfmAnimationIsComplete) {
 			Saint.openImage(); }
 	};
@@ -1251,18 +1263,32 @@ $(document).ready(function() {
 	};
 	
 	Saint.sfmLoadPage = function(data) {
-		$('#saint-file-manager-data .saint-loadable-content').html(data);
-		if ($('#sfm-message').html() != "") {
-			$('#sfm-message').addClass('enabled');
-			setTimeout("$('#sfm-message').removeClass('enabled')",5000);
+		$('#saint-file-manager-data .saint-loadable-content').html("&nbsp;");
+		try {
+			realdata = JSON.parse(data);
+			if (realdata['success']) {
+				if (realdata['url'] && realdata['sfl'] && realdata['sfid']) {
+					$("#sfl-"+realdata['sfl']+" img").attr("src",realdata['url']).attr("id","sfid-"+realdata['sfid']);
+				}
+			} else {
+				$('#saint_ajax_indicator').addClass("error");
+				Saint.setActionLog(realdata.actionlog);
+			}
+		} catch (e) {
+			$('#saint-file-manager-data .saint-loadable-content').html(data);
+			if ($('#sfm-message').html() != "") {
+				$('#sfm-message').addClass('enabled');
+				setTimeout("$('#sfm-message').removeClass('enabled')",5000);
+			}
+			if ($('#sfm-status').html() == "saved") {
+				Saint.clearForm('#saint-file-info form');
+				$('#saint-file-mode').val("search");
+				$('#saint-file-info .form-submit').html('Search');
+				$('#saint-file-info .form-cancel').html('Reset');
+			}
+			$('#saint-admin-add-block').removeClass("loading");
+			$('#saint-file-manager-data .saint-admin-block-overlay').removeClass("loading");
 		}
-		if ($('#sfm-status').html() == "saved") {
-			Saint.clearForm('#saint-file-info form');
-			$('#saint-file-mode').val("search");
-			$('#saint-file-info .form-submit').html('Search');
-			$('#saint-file-info .form-cancel').html('Reset');
-		}
-		$('#saint-file-manager-data .saint-admin-block-overlay').removeClass("loading");
 	};
 
 	Saint.refreshPage = function() {

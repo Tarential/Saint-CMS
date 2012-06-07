@@ -19,6 +19,7 @@ if (isset($args['single'])) {
 		"matches" => array(
 			array("enabled","1"),
 		),
+		"label" => "You haven't created any blog posts yet. Click 'edit page' in the Saint admin menu then click 'Add New Post' to create a post.",
 	);
 	if (isset($args['category'])) {
 		$arguments['category'] = Saint_Model_Block::convertNameFromWeb($args['category']);

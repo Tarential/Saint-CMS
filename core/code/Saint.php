@@ -961,27 +961,34 @@ class Saint {
 		$results = array();
 		try {
 			$labels = Saint::getAll("SELECT `id`,`name` FROM `st_labels` WHERE `label` LIKE '$phrase'");
-			print_r($labels);
 			foreach ($labels as $label) {
 				try {
 					$maxid = Saint::getOne("SELECT MAX(`id`) FROM `st_labels` WHERE `name`='$label[1]'");
 					if ($label[0] == $maxid) {
 						// Isolate block name from label name 
-						if (preg_match('/^(.*)\/n\/.*$/',$label[1],$matches))
+						if (preg_match('/^(block\/.*)\/n\/.*$/',$label[1],$matches)) {
 							$bname = $matches[1];
-						else
-							$bname = '';
-						try {
-							$resultpages = Saint::getAll("SELECT `pageid`,`url` FROM `st_pageblocks` WHERE `block`='$bname'");
-							foreach ($resultpages as $rp) {
-								if (!isset($results[$rp[0]]))
-									$results[$rp[0]] = array($rp[1],array($label[1]));
-								else
-									$results[$rp[0]][1][] = $label[1];
+							try {
+								$resultpages = Saint::getAll("SELECT `pageid`,`url` FROM `st_pageblocks` WHERE `block`='$bname'");
+								foreach ($resultpages as $rp) {
+									if (!isset($results[$rp[0]]))
+										$results[$rp[0]] = array($rp[1],array($label[1]));
+									else
+										$results[$rp[0]][1][] = $label[1];
+								}
+							} catch (Exception $t) {
+								if ($t->getCode()) {
+									Saint::logWarning("Problem selecting block URLs: ".$t->getMessage(),__FILE__,__LINE__);
+								}
 							}
-						} catch (Exception $t) {
-							if ($t->getCode()) {
-								Saint::logWarning("Problem selecting block URLs: ".$t->getMessage(),__FILE__,__LINE__);
+						} elseif (preg_match('/^page\/(\d*)\/n\/.*$/',$label[1],$matches)) {
+							$pid = $matches[1];
+							$result_page = new Saint_Model_Page();
+							if ($result_page->loadById($pid)) {
+								if (!isset($results[$pid]))
+									$results[$pid] = array($result_page->getUrl(),array($label[1]));
+								else
+									$results[$pid][1][] = $label[1];
 							}
 						}
 					}
