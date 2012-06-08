@@ -1,15 +1,22 @@
 <?php 
 $args = Saint::getCurrentPage()->getArgs();
-if (isset($args['single'])) {
+$id = 0;
+if (!empty($args['subids'])) {
+	$post = new Saint_Model_BlogPost();
+	$post->loadByUri($args['subids'][0]);
+	$id = $post->getId();
+}
+
+if ($id) {
 	$arguments = array(
 		"matches" => array(
 			array("enabled","1"),
-			array("id",$args['single']),
+			array("id",$id),
 		),
 	);
-	Saint::getCurrentPage()->setTempTitle(Saint_Model_Block::getBlockSetting("blog/post",$args['single'],"title"));
-	Saint::getCurrentPage()->setTempKeywords(explode(",",Saint_Model_Block::getBlockSetting("blog/post",$args['single'],"keywords")));
-	Saint::getCurrentPage()->setTempDescription(Saint_Model_Block::getBlockSetting("blog/post",$args['single'],"description"));
+	Saint::getCurrentPage()->setTempTitle($post->get("title"));
+	Saint::getCurrentPage()->setTempKeywords(explode(",",$post->get("keywords")));
+	Saint::getCurrentPage()->setTempDescription($post->get("description"));
 } else {
 	$arguments = array(
 		"repeat" => 2,
@@ -30,9 +37,6 @@ Saint::includeBlock("top",false);
 <script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js"></script>
 <?php Saint::includeBlock("middle",false); ?>
 
-<?php
-
-Saint::includeRepeatingBlock("blog/post",$arguments);
-?>
+<?php Saint::includeRepeatingBlock("blog/post",$arguments); ?>
 
 <?php Saint::includeBlock("bottom",false); ?>

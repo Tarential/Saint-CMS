@@ -1,6 +1,6 @@
 <?php
 $post = new Saint_Model_BlogPost();
-$post->load($block,$id);
+$post->load($id);
 ?>
 <item>
 <title><?php echo strip_tags(Saint::getBlockLabel($block,$id,"title",'',false)); ?></title>

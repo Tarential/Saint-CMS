@@ -1,5 +1,6 @@
 <?php
 $product = new Saint_Model_Product();
+echo $id;
 if ($product->load($id)) { 
 	$discount_price = $product->getDiscountPrice();
 	if ($discount_price < $product->getPrice()) {

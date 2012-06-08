@@ -66,16 +66,21 @@ class Saint_Controller_Block {
 						$block->disable();
 				}
 			
-				if (isset($_POST['saint_edit_block_categories']))
-					$cats = $_POST['saint_edit_block_categories'];
-				else
-					$cats = array();
-				$block->setCategories($cats);
+				if (isset($_POST['saint_edit_block_categories'])) {
+					$newcats = $_POST['saint_edit_block_categories'];
+				} else {
+					$newcats = array();
+				}
+				$block->setCategories($newcats);
 				
 				foreach ($allsettings as $setting) {
 					$sname = "saint-block-setting-".$setting[0];
 					if (isset($_POST[$sname]))
-						$block->set($setting[0],$_POST[$sname]);
+						$sval = $_POST[$sname];
+					else
+						$sval = "";
+					Saint::logError($setting[0] . ": ".$sval);
+					$block->set($setting[0],$sval);
 				}
 				if ($block->save()) {
 					$success = true; }

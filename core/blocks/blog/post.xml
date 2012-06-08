@@ -4,6 +4,7 @@
 	<setting datatype="timestamp" default="now">postdate</setting>
 	<setting>tags</setting>
 	<setting>title</setting>
+	<setting>uri</setting>
 	<setting datatype="text">keywords</setting>
 	<setting datatype="text">description</setting>
 </block>

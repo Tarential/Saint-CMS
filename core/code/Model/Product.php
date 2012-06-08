@@ -8,7 +8,6 @@ class Saint_Model_Product extends Saint_Model_Block {
 	protected $_sku;
 	protected $_price;
 	protected $_file;
-	protected $_categories;
 	
 	/**
 	 * Create model with default data.
@@ -32,7 +31,6 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 */
 	public function load($id, $name = null) {
 		if (parent::load("shop/product",$id)) {
-			$this->_product_name = $this->_settings['Name'];
 			$this->_sku = $this->_settings['SKU'];
 			$this->_price = $this->_settings['Price'];
 			$this->_file = $this->_settings['File'];
@@ -47,7 +45,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 * @return string Product name.
 	 */
 	public function getName() {
-		return $this->_product_name;
+		return $this->_settings['Name'];
 	}
 	
 	/**
@@ -105,7 +103,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 */
 	public function setName($name) {
 		$sname = Saint::sanitize($name);
-		$this->_product_name = $sname;
+		$this->_settings['Name'] = $sname;
 	}
 	
 	/**

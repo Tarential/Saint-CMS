@@ -578,6 +578,8 @@ EOT;
 	protected $_settingnames;
 	protected $_enabled;
 	protected $_categories;
+	protected $_cats_to_delete;
+	protected $_cats_to_add;
 	
 	/**
 	 * Create a dynamic block model.
@@ -595,6 +597,8 @@ EOT;
 				$this->_settings = array();
 				$this->_settingnames = array();
 				$this->_categories = array();
+				$this->_cats_to_add = array();
+				$this->_cats_to_delete = array();
 				return 0;
 			}
 		}
@@ -628,8 +632,26 @@ EOT;
 				$this->_enabled = $info[1];
 				$this->_name = $name;
 				$this->_settingnames = $settingnames;
+				$this->_categories = array();
+				$this->_cats_to_add = array();
+				$this->_cats_to_delete = array();
 				for ($i = 0; $i < sizeof($settingnames); $i++)
 					$this->_settings[$settingnames[$i]]=$info[$i];
+				
+				// Get categories
+				try {
+					$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_blockcats` as `b` WHERE `b`.`blockid`='".$this->getUid()."' AND `b`.`catid`=`c`.`id`");
+					$cats = array();
+					foreach ($getcats as $getcat) {
+						$cats[$getcat[0]] = $getcat[1];
+					}
+					$this->_categories = $cats;
+				} catch (Exception $e) {
+					if ($e->getCode()) {
+						Saint::logError("Problem getting categories for block id '".$this->getUid()."': ".$e->getMessage(),__FILE__,__LINE__);
+						return 0;
+					}
+				}
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Cannot load Block model with name $name and ID $id. Error: " . $e->getMessage(),__FILE__,__LINE__);
@@ -762,7 +784,7 @@ EOT;
 	public function set($setting,$value) {
 		$setting = Saint::sanitize($setting,SAINT_REG_NAME);
 		$value = Saint::sanitize($value);
-		if (in_array($setting,$this->_settingnames) && $setting && $value) {
+		if (in_array($setting,$this->_settingnames)) {
 			$this->_settings[$setting] = $value;
 			return 1;
 		} else
@@ -777,23 +799,20 @@ EOT;
 	public function addToCategory($category) {
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		if ($scategory) {
-			$id = Saint_Model_Category::getId($scategory);
-			if (!$id) {
-				$id = Saint_Model_Category::addCategory($scategory);
-			}
-			if (!$id) {
-				Saint::logError("Problem assigning block to category '$scategory'. Unable to get category ID.",__FILE__,__LINE__);
-				return 0;
-			} else {
-				try {
-					Saint::query("INSERT INTO `st_blockcats` (`catid`,`blockid`) VALUES ('$id','".$this->getUid()."')");
-					return 1;
-				} catch (Exception $e) {
-					if ($e->getCode()) {
-						Saint::logError("Problem adding block uid '".$this->getUid()."' to category id '$id': ".$e->getMessage(),__FILE__,__LINE__); }
-					return 0;
+			// Add to categories array if not already present.
+			if (!in_array($scategory,$this->_categories)) {
+				$this->_categories[] = $scategory;
+				// Notify system this is a change and must be added to the db when saved.
+				if (!in_array($scategory,$this->_cats_to_add)) {
+					$this->_cats_to_add[] = $scategory;
 				}
 			}
+			// Notify the system not to delete this category (to nullify in case of delete->add->save)
+			if (in_array($scategory,$this->_cats_to_delete)) {
+				$index = array_search($scategory,$this->_cats_to_delete);
+				unset($this->_cats_to_delete[$index]);
+			}
+			return 1;
 		} else {
 			Saint::logError("Invalid category name: '$category'.",__FILE__,__LINE__);
 			return 0;
@@ -808,19 +827,22 @@ EOT;
 	public function removeFromCategory($category) {
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		if ($scategory) {
-			$id = Saint_Model_Category::getId($scategory);
-			if (!$id) {
-				# No id... it can't be part of a category that doesn't exist, so our job is done.
-				return 1;
-			} else {
-				try {
-					Saint::query("DELETE FROM `st_blockcats` WHERE `catid`='$id' AND `blockid`='".$this->getUid()."'");
-					return 1;
-				} catch (Exception $e) {
-					Saint::logError("Problem removing block id '$this->_id' from category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
-					return 0;
+			// Remove from categories array if present
+			if (in_array($scategory,$this->_categories)) {
+				$index = array_search($scategory,$this->_categories);
+				unset($this->_categories[$index]);
+				// Notify system this is a change and must be removed from the db when saved.
+				if (!in_array($scategory,$this->_cats_to_delete)) {
+					$this->_cats_to_delete[] = $scategory;
 				}
 			}
+			// Notify the system not to add this category (to nullify in case of add->delete->save)
+			if (in_array($scategory,$this->_cats_to_add)) {
+				$index = array_search($scategory,$this->_cats_to_add);
+				unset($this->_cats_to_add[$index]);
+			}
+			return 1;
+			$this->_cats_to_delete[] = $scategory;
 		} else {
 			Saint::logError("Invalid category name: '$category'.",__FILE__,__LINE__);
 			return 0;
@@ -834,34 +856,21 @@ EOT;
 	public function setCategories($newcats) {
 		if (!is_array($newcats))
 			$newcats = explode(',',$newcats);
-		
-		foreach ($this->getCategories() as $cat) {
-			if (!in_array($cat,$newcats)) {
+		foreach (Saint::getAllCategories() as $cat) {
+			if (in_array($cat,$newcats)) {
+				$this->addToCategory($cat);
+			} else {
 				$this->removeFromCategory($cat);
 			}
-		}
-		foreach ($newcats as $newcat) {
-			$this->addToCategory($newcat);
 		}
 	}
 	
 	/**
 	 * Get the loaded block's categories.
-	 * @return string[] Array of categories' IDs (keys) and names (values).
+	 * @return string[] Array of category names.
 	 */
 	public function getCategories() {
-		try {
-			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_blockcats` as `b` WHERE `b`.`blockid`='".$this->getUid()."' AND `b`.`catid`=`c`.`id`");
-			$cats = array();
-			foreach ($getcats as $getcat) {
-				$cats[$getcat[0]] = $getcat[1];
-			}
-			return $cats;
-		} catch (Exception $e) {
-			if ($e->getCode()) {
-				Saint::logError("Problem getting categories for block id '".$this->getUid()."': ".$e->getMessage(),__FILE__,__LINE__); }
-			return array();
-		}
+		return $this->_categories;
 	}
 	
 	/**
@@ -873,21 +882,12 @@ EOT;
 		if (!is_array($category))
 			$category = array($category);
 		foreach ($category as $cname) {
-			$scategory = Saint::sanitize($cname,SAINT_REG_NAME);
-			if ($scategory) {
-				$id = Saint_Model_Category::getId($scategory);
-				if ($id) {
-					try {
-						Saint::getOne("SELECT `id` FROM `st_blockcats` WHERE `catid`='$id' AND `blockid`='$this->getUid()'");
-						return 1;
-					} catch (Exception $e) {
-						# Everything is normal, continue
-					}
-				}
+			if (in_array($cname,$this->_categories)) {
+				return 1;
 			}
 		}
 		return 0;
-	}
+}
 	
 	/**
 	 * Flag the loaded block as disabled.
@@ -927,7 +927,11 @@ EOT;
 					}
 				}
 				$set .= "enabled='".$this->_enabled."'";
-				Saint::query("UPDATE `st_blocks_$name` SET $set WHERE id='$id'");
+				Saint::query("UPDATE `st_blocks_$name` SET $set WHERE `id`='$id'");
+				foreach ($this->_cats_to_add as $cat) {
+					$this->dbAddToCategory($cat); }
+				foreach ($this->_cats_to_delete as $cat) {
+					$this->dbRemoveFromCategory($cat); }
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Failed to save block $name with id $id because ".$e->getMessage(),__FILE__,__LINE__);
@@ -935,6 +939,65 @@ EOT;
 			}
 		} else {
 			Saint::logError("You must load a block before calling save.",__FILE__,__LINE__);
+			return 0;
+		}
+	}
+	
+
+	/**
+	 * Add the loaded block to the given category.
+	 * @param string $category Name of category to which the block is to be added.
+	 * @return boolean True for success, false for failure.
+	 */
+	private function dbAddToCategory($category) {
+		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		if ($scategory) {
+			$id = Saint_Model_Category::getId($scategory);
+			if (!$id) {
+				$id = Saint_Model_Category::addCategory($scategory);
+			}
+			if (!$id) {
+				Saint::logError("Problem assigning block to category '$scategory'. Unable to get category ID.",__FILE__,__LINE__);
+				return 0;
+			} else {
+				try {
+					Saint::query("INSERT INTO `st_blockcats` (`catid`,`blockid`) VALUES ('$id','".$this->getUid()."')");
+					return 1;
+				} catch (Exception $e) {
+					if ($e->getCode()) {
+						Saint::logError("Problem adding block uid '".$this->getUid()."' to category id '$id': ".$e->getMessage(),__FILE__,__LINE__); }
+					return 0;
+				}
+			}
+		} else {
+			Saint::logError("Invalid category name: '$category'.",__FILE__,__LINE__);
+			return 0;
+		}
+	}
+	
+	/**
+	 * Remove the loaded block from the given category.
+	 * @param string $category Name of category from which the block is to be removed.
+	 * @return boolean True for success, false for failure.
+	 */
+	private function dbRemoveFromCategory($category) {
+		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		if ($scategory) {
+			$id = Saint_Model_Category::getId($scategory);
+			if (!$id) {
+				# No id... it can't be part of a category that doesn't exist, so our job is done.
+				return 1;
+			} else {
+				try {
+					Saint::query("DELETE FROM `st_blockcats` WHERE `catid`='$id' AND `blockid`='".$this->getUid()."'");
+					return 1;
+				} catch (Exception $e) {
+					Saint::logError("Problem removing block id '$this->_id' from category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
+					return 0;
+				}
+			}
+		} else {
+			Saint::logError("Invalid category name: '$category'.",__FILE__,__LINE__);
 			return 0;
 		}
 	}

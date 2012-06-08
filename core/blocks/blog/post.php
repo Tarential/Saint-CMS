@@ -1,9 +1,9 @@
 <?php
 $post = new Saint_Model_BlogPost();
-$post->load($block,$id);
+$post->load($id);
 ?>
 <div class="blog-post">
-	<h3><?php echo Saint::getBlockLabel($block,$id,"title","Click to edit this title."); ?></h3>
+	<h3><a href="<?php echo $post->getUrl(); ?>"><?php echo Saint::getBlockLabel($block,$id,"title","Click to edit this title."); ?></a></h3>
 	<h6>Posted on <?php echo $post->getPostDate(); ?></h6>
 	<div class="content"><?php echo Saint::getBlockLabel($block,$id,"content","Click to edit this content."); ?></div>
 	<!-- AddThis Button BEGIN -->

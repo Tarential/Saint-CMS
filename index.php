@@ -175,7 +175,14 @@ if (preg_match_all($argument_pattern,$uri,$matches)) {
 	}
 }
 
-$pid = preg_replace($argument_pattern,'',$uri);
+$uri_sans_args = preg_replace($argument_pattern,'',$uri);
+if (preg_match('/^([^\/]+)\/(.*)$/',$uri_sans_args,$matches)) {
+	$pid = $matches[1];
+	$args['subids'] = explode('/',$matches[2]);
+} else {
+	$pid = $uri_sans_args;
+	$args['subids'] = array();
+}
 if ($pid == '')
 	$pid = "home";
 
