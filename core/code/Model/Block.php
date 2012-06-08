@@ -7,28 +7,71 @@
  */
 class Saint_Model_Block {
 	/**
-	 * Get the ID number for the current block template.
+	 * Get the ID number for the current block template; create entry if not found.
 	 * @param string $name Name of block template.
+	 * @param string $model Optional name of model to use when creating block.
 	 * @return int ID number of current block template or zero for failure.
 	 */
-	public static function getBlockTypeId($name) {
+	public static function getBlockTypeId($name, $model = null) {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
-		$btid = 0;
 		if ($sname) {
 			try {
-				$btid = Saint::getOne("SELECT `id` FROM `st_blocktypes` WHERE `name`='$sname'");
+				return Saint::getOne("SELECT `id` FROM `st_blocktypes` WHERE `name`='$sname'");
 			} catch (Exception $f) {
-				try {
-					Saint::query("INSERT INTO `st_blocktypes` (`name`) VALUES ('$sname')");
-					$btid = Saint::getLastInsertId();
-				} catch (Exception $g) {
-					Saint::logError("Problem inserting block type '$sname' into DB: ".$g->getMessage(),__FILE__,__LINE__);
+				if ($f->getCode()) {
+					Saint::logError("Problem selecting block type ID: ".$f->getMessage(),__FILE__,__LINE__);
 				}
+				return Saint_Model_Block::createBlockType($name,$model);
 			}
 		} else {
 			Saint::logError("Name '$name' did not match valid patterns.",__FILE__,__LINE__);
+			return 0;
 		}
-		return $btid;
+	}
+	
+	/**
+	 * Create block type entry in database for given name and model.
+	 * Not meant to be called directly. Call getBlockTypeId instead; if no ID is found it will be created.
+	 * @param $name string Name of new block type.
+	 * @param $model string Name of model to use for block type.
+	 * @return $id int ID of new block type or 0 on failure.
+	 */
+	private static function createBlockType($name,$model = null) {
+		$sname = Saint::sanitize($name,SAINT_REG_NAME);
+		if ($model == null) {
+			$modname = '';
+			$modval = '';
+		} else {
+			$modname = ',`model`';
+			$modval = ",'".Saint::sanitize($model)."'";
+		}
+		try {
+			Saint::query("INSERT INTO `st_blocktypes` (`name`$modname) VALUES ('$sname'$modval)");
+			return Saint::getLastInsertId();
+		} catch (Exception $g) {
+			Saint::logError("Problem inserting block type '$sname' into DB: ".$g->getMessage(),__FILE__,__LINE__);
+		}
+	}
+	
+	/**
+	 * Get the name of the model to use for given block type.
+	 * @param string $name Name of block type
+	 * @return string Name of model to use.
+	 */
+	public static function getBlockModel($name) {
+		$sname = Saint::sanitize($name,SAINT_REG_NAME);
+		$default = "Saint_Model_Block";
+		try {
+			$model = Saint::getOne("SELECT `model` FROM `st_blocktypes` WHERE `name`='$sname'");
+			if (class_exists($model) && ($model == $default || is_subclass_of($model,$default))) {
+				return $model;
+			}
+		} catch (Exception $e) {
+			if ($e->getCode()) {
+				Saint::logError("Problem selecting block type ID: ".$f->getMessage(),__FILE__,__LINE__);
+			}
+		}
+		return $default;
 	}
 	
 	/**
@@ -313,9 +356,15 @@ EOT;
 					$page->setBlockId(0);
 				}
 				if ($paging) {
+					$args = $page->getArgs();
 					$url = "/".$page->getName();
-					foreach ($page->getArgs() as $key=>$val) {
-						if ($key != "pnum" && $key != "btid") {
+					if (isset($args["subids"])) {
+						foreach ($args["subids"] as $subid) {
+							$url .= "/" . $subid;
+						}
+					}
+					foreach ($args as $key=>$val) {
+						if ($key != "pnum" && $key != "btid" && $key != "subids") {
 							$url .= "/$key.$val";
 						}
 					}
@@ -438,6 +487,10 @@ EOT;
 			
 			$sparse = new SimpleXMLElement($sxml);
 			$name = Saint_Model_Block::formatForTable($sparse->name);
+			// Requesting the block type ID will create one if it doesn't exist.
+			if (isset($sparse->model) && $sparse->model != "") {
+				Saint_Model_Block::getBlockTypeId($sparse->name,$sparse->model);
+			}
 			
 			try {
 				Saint::getAll("SHOW TABLES LIKE 'st_blocks_$name'");

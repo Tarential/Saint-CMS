@@ -89,6 +89,7 @@ $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_blocktypes` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` varchar(255) NOT NULL,
+	`model` varchar(255) DEFAULT 'Saint_Model_Block',
 	PRIMARY KEY (`id`),
 	INDEX(`name`)
 ) ENGINE=InnoDB;

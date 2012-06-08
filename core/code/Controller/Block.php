@@ -14,7 +14,8 @@ class Saint_Controller_Block {
 		if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
 			$page = Saint::getCurrentPage();
 			$page->addblockname = Saint_Model_Block::convertNameFromWeb($block);
-			$page->addblock = new Saint_Model_Block();
+			$model = Saint_Model_Block::getBlockModel($page->addblockname);
+			$page->addblock = new $model();
 			
 			if (isset($_POST['blockid']) && Saint::sanitize($_POST['blockid'],SAINT_REG_ID)) {
 				$page->addblock->load($page->addblockname,$_POST['blockid']);
@@ -56,8 +57,10 @@ class Saint_Controller_Block {
 			$page = Saint::getCurrentPage();
 			$args = $page->getArgs();
 			$page->setTempLayout("system/json");
-			$block = new Saint_Model_Block();
-			if ($block->load(Saint_Model_Block::convertNameFromWeb($_POST['saint-block-setting-saintname']),$args['edit'])) {
+			$bname = Saint_Model_Block::convertNameFromWeb($_POST['saint-block-setting-saintname']);
+			$model = Saint_Model_Block::getBlockModel($bname);
+			$block = new $model();
+			if ($block->load($bname,$args['edit'])) {
 				$allsettings = Saint_Model_Block::getSettings($_POST['saint-block-setting-saintname']);
 				if (isset($_POST['saint-block-setting-enabled'])) {
 					if ($_POST['saint-block-setting-enabled'])

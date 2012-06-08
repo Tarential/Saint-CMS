@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <block>
 	<name>blog/post</name>
-	<setting datatype="timestamp" default="now">postdate</setting>
-	<setting>tags</setting>
+	<model>Saint_Model_BlogPost</model>
 	<setting>title</setting>
-	<setting>uri</setting>
+	<setting>tags</setting>
 	<setting datatype="text">keywords</setting>
 	<setting datatype="text">description</setting>
+	<setting datatype="timestamp" default="now">postdate</setting>
+	<setting>uri</setting>
 </block>

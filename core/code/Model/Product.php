@@ -30,6 +30,10 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function load($id, $name = null) {
+		// Magic so it can accept the arguments in either order.
+		if (!Saint::sanitize($id,SAINT_REG_ID) && Saint::sanitize($name,SAINT_REG_ID)) {
+			$id = $name;
+		}
 		if (parent::load("shop/product",$id)) {
 			$this->_sku = $this->_settings['SKU'];
 			$this->_price = $this->_settings['Price'];
