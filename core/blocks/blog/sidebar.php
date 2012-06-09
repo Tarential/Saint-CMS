@@ -1,7 +1,7 @@
 <div id="sidebar">
 	<?php Saint::includeBlock("search/form"); ?>
 		<?php if (Saint::getCurrentPage()->getName() == "blog") { ?>
-		<a href="<?php echo SAINT_URL; ?>/feed" id="rss-feed-link">Subscribe via RSS</a>
+		<a href="<?php echo SAINT_URL; ?>/blog/feed" id="rss-feed-link">Subscribe via RSS</a>
 		<div id="blog-by-cat-nav" class="nav">
 			<h3>Categories</h3>
 			<?php foreach (Saint::getAllCategories() as $category): ?>
@@ -10,7 +10,7 @@
 		</div>
 		<div id="blog-by-month-nav" class="nav">
 		<?php
-			for ($i = 1; $i <= 12; $i++) {
+			for ($i = 12; $i >= 1; $i--) {
 				$start = date("Y-m-d H-i-s",strtotime(date("Y")."-$i-1 00:00:01"));
 				$end = date("Y-m-d H-i-s",strtotime(date("Y")."-".($i+1)."-1 00:00:00"));
 	
