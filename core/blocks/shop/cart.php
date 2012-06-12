@@ -67,4 +67,9 @@ $(document).ready(function() {
 		$('#saint-paypal-buynow form').submit();
 	};
 });
+$(document).on({
+	'click': function(event) {
+		$('#saint-paypal-buynow form').submit();
+	}
+},'.saint-cart-title.link');
 </script>

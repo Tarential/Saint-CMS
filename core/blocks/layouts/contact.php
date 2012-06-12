@@ -1,6 +1,6 @@
-<?php Saint::includeBlock("top",false); ?>
+<?php Saint::includeBlock("top"); ?>
 <?php Saint::includeScript("jquery.validate.min"); ?>
-<?php Saint::includeBlock("middle",false); ?>
+<?php Saint::includeBlock("middle"); ?>
 
 <?php 
 $owner = new Saint_Model_User();
@@ -21,4 +21,4 @@ $owner->loadByUsername(Saint::getSiteOwner());
 
 <?php Saint::includeBlock("contact/form"); ?>
 
-<?php Saint::includeBlock("bottom",false); ?>
+<?php Saint::includeBlock("bottom"); ?>

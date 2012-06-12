@@ -2,6 +2,7 @@
 $args = Saint::getCurrentPage()->getArgs();
 $page = Saint::getCurrentPage();
 $id = 0;
+$url = SAINT_URL . "/" . $page->getName();
 
 if (!empty($args['subids'])) {
 	if ($args['subids'][0] == "feed") {
@@ -12,6 +13,7 @@ if (!empty($args['subids'])) {
 	$post = new Saint_Model_BlogPost();
 	$post->loadByUri($args['subids'][0]);
 	$id = $post->getId();
+	$url = $post->getUrl();
 }
 
 if ($id) {
@@ -20,6 +22,7 @@ if ($id) {
 			array("enabled","1"),
 			array("id",$id),
 		),
+		"repeat" => 1,
 	);
 	$page->setTempTitle($post->get("title"));
 	$page->setTempKeywords(explode(",",$post->get("keywords")));
@@ -39,13 +42,14 @@ if ($id) {
 		$arguments['category'] = Saint_Model_Block::convertNameFromWeb($args['category']);
 	}
 }
-Saint::includeBlock("top",false);
+Saint::includeBlock("top");
 ?>
 
 <link rel="alternate" type="application/rss+xml" title="RSS" href="<?php echo SAINT_URL . "/" . $page->getName() . "/feed"; ?>" />
+<base href="<?php echo $url; ?>" />
 <script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js"></script>
-<?php Saint::includeBlock("middle",false); ?>
+<?php Saint::includeBlock("middle"); ?>
 
-<?php Saint::includeRepeatingBlock("blog/post",$arguments); ?>
+<?php Saint::includeBlock("blog/post",$arguments); ?>
 
-<?php Saint::includeBlock("bottom",false); ?>
+<?php Saint::includeBlock("bottom"); ?>

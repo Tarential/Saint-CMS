@@ -1,1 +1,1 @@
-<?php Saint::includeBlock("shop/admin/transactions",false); ?>
+<?php Saint::includeBlock("shop/admin/transactions"); ?>

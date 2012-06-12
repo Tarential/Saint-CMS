@@ -635,7 +635,7 @@ class Saint {
 	public static function includeSlideshow($arguments = array()) {
 		$page = Saint::getCurrentPage();
 		$page->sfmarguments = $arguments;
-		Saint::includeBlock("gallery/slideshow",false);
+		Saint::includeBlock("gallery/slideshow");
 	}
 	
 	/**
@@ -645,7 +645,7 @@ class Saint {
 	public static function includeGallery($arguments = array()) {
 		$page = Saint::getCurrentPage();
 		$page->sfmarguments = $arguments;
-		Saint::includeBlock("gallery/list",false);
+		Saint::includeBlock("gallery/list");
 	}
 	
 	/**
@@ -809,8 +809,8 @@ class Saint {
 	/**
 	 * Shortcut for Saint_Model_Block::includeRepeatingBlock($block, $arguments, $container, $view).
 	 */
-	public static function includeRepeatingBlock($block, $arguments = null, $container = true, $view = null) {
-		return Saint_Model_Block::includeRepeatingBlock($block, $arguments, $container, $view);
+	public static function includeRepeatingBlock($block, $arguments = array()) {
+		return Saint_Model_Block::includeRepeatingBlock($block, $arguments);
 	}
 
 	/**
@@ -846,8 +846,8 @@ class Saint {
 	/**
 	 * Shortcut for Saint_Model_Block::includeBlock($block,$container, $view).
 	 */
-	public static function includeBlock($block, $container = true, $view = null) {
-		return Saint_Model_Block::includeBlock($block,$container, $view);
+	public static function includeBlock($block, $arguments = array()) {
+		return Saint_Model_Block::includeBlock($block, $arguments);
 	}
 	
 	/**

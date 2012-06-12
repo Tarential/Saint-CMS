@@ -28,7 +28,7 @@ $page->sfmnumpages = $page->sfmtotal / $page->sfmperpage;
 	<div id="sfm-preview-block">
 		<div class="saint-new-block">
 			<?php if (sizeof($files)): ?>
-			<table id="saint-file-preview">
+			<table class="saint-file-preview">
 			<?php 
 				$start = $page->sfmcurpage * $page->sfmperpage; 
 				$finish = min($start + $page->sfmperpage,sizeof($files));

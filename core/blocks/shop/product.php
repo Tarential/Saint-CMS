@@ -1,6 +1,5 @@
 <?php
 $product = new Saint_Model_Product();
-echo $id;
 if ($product->load($id)) { 
 	$discount_price = $product->getDiscountPrice();
 	if ($discount_price < $product->getPrice()) {
@@ -9,7 +8,7 @@ if ($product->load($id)) {
 		$sale = false;
 	}
 ?>
-<div class="saint-product<?php if ($sale) echo " sale"; ?>" id="ssm-sku-<?php echo $product->getSku(); ?>">
+<div class="saint-product<?php if ($sale) echo " sale"; ?> ssm-sku-<?php echo $product->getSku(); ?>">
 	<h2>
 		<?php echo $product->getName(); ?> - <span class="regprice">$<?php echo $product->getPrice(); ?></span>
 		<?php if ($sale): ?>on sale for <span class="saleprice">$<?php echo $discount_price; ?></span><?php endif; ?>

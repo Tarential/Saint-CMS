@@ -121,36 +121,47 @@ class Saint_Model_Block {
 	 * @param string $block Name of block.
 	 * @return boolean True if successful, false otherwise.
 	 */
-	public static function includeBlock($block, $container = true, $view = null) {
-		$page = Saint::getCurrentPage();
-		$view = Saint::sanitize($view,SAINT_REG_NAME);
-		$block = Saint::sanitize($block,SAINT_REG_NAME);
-		if ($block) {
-			$page->addBlock($block);
-			$id = $page->getBlockId();
-			if (!$view)
-				$view = $block;
-			if (file_exists(Saint::getThemeDir() .  "/blocks/".$view.".php"))
-				$incfile = Saint::getThemeDir() .  "/blocks/".$view.".php";
-			elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$view.".php"))
-				$incfile = SAINT_SITE_ROOT .  "/core/blocks/".$view.".php";
-			else {
-				Saint::logError("Cannot find view $view.",__FILE__,__LINE__); 
-				return 0; }
-			if (preg_match('/^layouts/',$view))
-				include $incfile;
-			else {
-				if ($container) {
-					echo "<div id=\"saint_".preg_replace('/\//','_',$block)."\" class=\"saint-block\">\n";
-					include $incfile;
-					echo "\n</div>";
-				} else
-					include $incfile;
-			}
-			return 1;
+	public static function includeBlock($block, $arguments = array()) {
+		if (isset($arguments['repeat']) && $arguments['repeat'] > 0) {
+			Saint::includeRepeatingBlock($block,$arguments);
 		} else {
-			Saint::logError("Block name '$block' could not be validated.",__FILE__,__LINE__);
-			return 0;
+			if (isset($arguments['container']) && $arguments['container'] != "")
+				$container = $arguments['container'];
+			else
+				$container = false;
+			if (isset($arguments['view']) && $arguments['view'] != "")
+				$view = Saint::sanitize($arguments['view'],SAINT_REG_NAME);
+			else
+				$view = false;
+			$page = Saint::getCurrentPage();
+			$block = Saint::sanitize($block,SAINT_REG_NAME);
+			if ($block) {
+				$page->addBlock($block);
+				$id = $page->getBlockId();
+				if (!$view)
+					$view = $block;
+				if (file_exists(Saint::getThemeDir() .  "/blocks/".$view.".php"))
+					$incfile = Saint::getThemeDir() .  "/blocks/".$view.".php";
+				elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$view.".php"))
+					$incfile = SAINT_SITE_ROOT .  "/core/blocks/".$view.".php";
+				else {
+					Saint::logError("Cannot find view $view.",__FILE__,__LINE__); 
+					return 0; }
+				if (preg_match('/^layouts/',$view))
+					include $incfile;
+				else {
+					if ($container) {
+						echo "<div id=\"saint_".preg_replace('/\//','_',$block)."\" class=\"saint-block\">\n";
+						include $incfile;
+						echo "\n</div>";
+					} else
+						include $incfile;
+				}
+				return 1;
+			} else {
+				Saint::logError("Block name '$block' could not be validated.",__FILE__,__LINE__);
+				return 0;
+			}
 		}
 	}
 	
@@ -293,7 +304,7 @@ EOT;
 	 * @param string $view Optional name of block to use as a view template for selected block's data.
 	 * @return boolean True for success, false otherwise 
 	 */
-	public static function includeRepeatingBlock($block, $arguments = null, $container = false, $view = null) {
+	public static function includeRepeatingBlock($block, $arguments = array()) {
 		$sblock = Saint::sanitize($block);
 		if ($sblock) {
 			$saved_blocks = Saint_Model_Block::getBlocks($block,$arguments);
@@ -315,6 +326,14 @@ EOT;
 				$paging = $arguments['paging'];
 			else
 				$paging = false;
+			if (isset($arguments['container']))
+				$container = $arguments['container'];
+			else
+				$container = true;
+			if (isset($arguments['view']) && $arguments['view'] != "")
+				$view = Saint::sanitize($arguments['view'],SAINT_REG_NAME);
+			else
+				$view = false;
 			
 			try {
 				$arguments['start'] = 0;
@@ -332,7 +351,7 @@ EOT;
 			
 			# Display the block
 			if ($container) {
-				echo "<div id=\"saint_".preg_replace('/\//','_',$sblock)."\" class=\"saint-block repeating\">\n";
+				echo "<div class=\"saint-block repeating sbn-".preg_replace('/\//','_',$sblock)."\">\n";
 				echo "<div class=\"add-button hidden\">Add New <span class=\"block-name\">".Saint_Model_Block::formatForDisplay($sblock)."</span></div>";
 			}
 			if (sizeof($saved_blocks) == 0) {
@@ -349,8 +368,8 @@ EOT;
 					$page->addBlock("block/".$bid."/".$block);
 					if ($container) {
 						echo '<div class="block-item">';
-						echo "<div id=\"".$bid."\" class=\"edit-button hidden\">Edit ".Saint_Model_Block::formatForDisplay($sblock)." <span class=\"block-name\">".$bid."</span></div>"; }
-					Saint::includeBlock($sblock, $container, $view);
+						echo "<div class=\"sbid-".$bid." edit-button hidden\">Edit ".Saint_Model_Block::formatForDisplay($sblock)." <span class=\"block-name\">".$bid."</span></div>"; }
+					Saint::includeBlock($sblock,array('view'=>$view));
 					if ($container) {
 						echo "</div>\n"; }
 					$page->setBlockId(0);

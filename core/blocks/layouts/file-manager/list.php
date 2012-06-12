@@ -1,1 +1,1 @@
-<?php Saint::includeBlock("file-manager/list",false); ?>
+<?php Saint::includeBlock("file-manager/list"); ?>

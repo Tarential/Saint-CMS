@@ -5,7 +5,7 @@ if (isset($page->sfmarguments))
 else
 	$arguments = array();
 $args = $page->getArgs();
-$files = Saint_Model_FileManager::getAllFiles($arguments);
+$files = array_values(Saint_Model_FileManager::getAllFiles($arguments));
 if (isset($arguments['width']))
 	$width = $arguments['width'];
 else

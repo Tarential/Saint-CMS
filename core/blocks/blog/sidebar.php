@@ -24,11 +24,13 @@
 						array("postdate",$start,">="),
 						array("postdate",$end,"<"),
 					),
+					"view" => "navigation/blog-posts",
+					"container" => false,
 				);
 				$blocks = Saint_Model_Block::getBlocks("blog/post",$arguments);
 				if (is_array($blocks) && sizeof($blocks) > 0) {
 					echo "<h3>".date("F",strtotime(date("Y")."-$i-1 00:00:01"))."</h3>";
-					Saint::includeRepeatingBlock("blog/post",$arguments,false,"navigation/blog-posts");
+					Saint::includeBlock("blog/post",$arguments);
 				}
 			} ?>
 		</div>

@@ -93,8 +93,6 @@ $saint_group_access = array(
 		'delete-category',
 		'edit-category',
 		'manage-files',
-		'upload-files',
-		'delete-files',
 		'view-transactions',
 		'view-discounts',
 	),

@@ -1,6 +1,6 @@
-<?php Saint::includeBlock("top",false); ?>
+<?php Saint::includeBlock("top"); ?>
 
-<?php Saint::includeBlock("middle",false); ?>
+<?php Saint::includeBlock("middle"); ?>
 
 <?php
 $page = Saint::getCurrentPage();
@@ -14,19 +14,20 @@ if (isset($args['view']) && $args['view'] == "thanks") {
 			'repeat' => 1,
 			"label" => "Couldn't find product with id $args[pid]. Please try the menu to find your product or contact us for support.",
 		); ?>
-		<div id="saint-product-individual">
-		<?php Saint::includeRepeatingBlock("shop/product",$arguments); ?>
+		<div id="saint-product-individual" class="saint-block">
+		<?php Saint::includeBlock("shop/product",$arguments); ?>
 		</div>
 	<?php
 	} else {
 		$arguments = array(
 			'matches' => array('enabled',1),
 			'repeat' => 15,
+			'view' => "shop/list",
 			"label" => "You haven't created any shop products yet. Click 'edit page' in the Saint admin menu then click 'Add New Product' to create a product.",
 		);
-		Saint::includeRepeatingBlock("shop/product",$arguments,true,"shop/list");
+		Saint::includeBlock("shop/product",$arguments);
 	}
 }
 ?>
 
-<?php Saint::includeBlock("bottom",false); ?>
+<?php Saint::includeBlock("bottom"); ?>

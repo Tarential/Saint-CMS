@@ -15,8 +15,10 @@ $arguments = array(
 	"matches" => array(
 		array("enabled","1"),
 	),
+	"view" => "blog/rss-item",
+	"container" => false,
 );
-Saint::includeRepeatingBlock("blog/post",$arguments,0,"blog/rss-item");
+Saint::includeBlock("blog/post",$arguments);
 ?>
 </channel>
 </rss>

@@ -1,7 +1,7 @@
-<?php Saint::includeBlock("top",false); ?>
+<?php Saint::includeBlock("top"); ?>
 
-<?php Saint::includeBlock("middle",false); ?>
+<?php Saint::includeBlock("middle"); ?>
 
 <?php Saint::includeBlock("user/edit"); ?>
 
-<?php Saint::includeBlock("bottom",false); ?>
+<?php Saint::includeBlock("bottom"); ?>

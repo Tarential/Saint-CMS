@@ -5,7 +5,7 @@ if (isset($page->sfmarguments))
 else
 	$arguments = array();
 $args = $page->getArgs();
-$files = Saint_Model_FileManager::getAllFiles($arguments);
+$files = array_values(Saint_Model_FileManager::getAllFiles($arguments));
 $page->sfmtotal = sizeof($files);
 if (isset($args['p']))
 	$page->sfmcurpage = $args['p'];
