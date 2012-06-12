@@ -148,7 +148,7 @@ class Saint_Model_Label {
 		else
 			$editable = "";
 		if ($container)
-			$label = "<span id=\"saint_".preg_replace('/\//','_',$this->_name)."\" class=\"saint-label$editable\">" . stripslashes($label) . "</span>";
+			$label = "<span class=\"sln-".preg_replace('/\//','_',$this->_name)." saint-label$editable\">" . stripslashes($label) . "</span>";
 		else
 			$label = stripslashes($label);
 		return $label;

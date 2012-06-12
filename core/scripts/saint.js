@@ -27,12 +27,6 @@ $(document).ready(function() {
 	Saint.sflHeight = 0;
 	Saint.sflWidth = 0;
 	
-	$(window).resize(function() {
-		if (Saint.sfmCurrentlyEditing) {
-			Saint.sfmCenterImage(Saint.sfmCurrentlyEditing);
-		}
-	});
-	
 	/* START Label Editor */
 	
 	// Flag which editor view is active.
@@ -315,7 +309,7 @@ $(document).ready(function() {
 		// Create a label editor and fill it with data.
 		var labelForm = $('#saint_ajax_templates > .sle.template.hidden').clone().removeClass('template').removeClass('hidden').addClass('active');
 		labelForm.find('.cache').html(label.html());
-		labelForm.find('input[name=label-name]').val(label.attr('id'));
+		labelForm.find('input[name=label-name]').val(Saint.bubbleGet(label,'.saint-label',/^sln-(.*)$/));
 		labelForm.find('div.label-value').html(label.html());
 		labelForm.find('textarea[name=label-value]').val(label.html());
 		// Add our new label editor to the dom.
@@ -1417,6 +1411,12 @@ $(document).ready(function() {
 	/* END Shop Manager */
 	
 	/* START World Events */
+	
+	$(window).resize(function() {
+		if (Saint.sfmCurrentlyEditing) {
+			Saint.sfmCenterImage(Saint.sfmCurrentlyEditing);
+		}
+	});
 	
 	Saint.refreshPage = function() {
 		location.reload(true);
