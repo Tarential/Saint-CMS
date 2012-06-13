@@ -31,22 +31,28 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 	public function renderInput($setting, $options = array()) {
 		switch ($setting) {
 			case "uri":
-				parent::renderInput($setting,array("label"=>"URI:"));
+				$options['label'] = "URI:";
+				$options['details'] = "<p>".SAINT_URL . "/blog/[URI]</p>";
 				if ($this->get($setting) == "") {
-					echo '<span class="details">Leave blank to auto generate.</span>'; }
+					$options['details'] .= "\n<p>(Leave blank to auto generate).</p>";
+				}
+				parent::renderInput($setting,$options);
 				break;
 			case "description":
-				parent::renderInput($setting,array("type"=>"textarea"));
+				$options['type'] = "textarea";
+				parent::renderInput($setting,$options);
 				break;
 			case "keywords":
-				parent::renderInput($setting);
-				echo '<span class="details">Comma separated values (key,words,etc).</span>';
+				$options['details'] = "Comma separated values (key,words,etc).";
+				parent::renderInput($setting,$options);
 				break;
 			case "postdate":
-				parent::renderInput($setting,array("label"=>"Posted on:"));
+				$options['label'] = "Posted on:";
+				$options['details'] = "Format: YYYY-MM-DD HH:MM:SS";
+				parent::renderInput($setting,$options);
 				break;
 			default:
-				parent::renderInput($setting);
+				parent::renderInput($setting,$options);
 		}
 	}
 	

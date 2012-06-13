@@ -520,17 +520,22 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	margin: 10px 0 2px;
 }
 
-#saint-admin-add-block .details {
+#saint-admin-add-block .details, #saint-admin-add-block .details p {
 	font-style: italic;
-}
-
-.saint-add-block-sidebar .details {
-	width: 264px;
 	font-size: 10px;
 }
 
+#saint-admin-add-block .details p {
+	margin-bottom: 2px;
+}
+
+.saint-add-block-sidebar .details {
+	display: block;
+	width: 264px;
+}
+
 #saint-block-setting-SKU, #saint-block-setting-Price {
-	width: 50px;
+	width: 60px;
 	text-align: right;
 }
 

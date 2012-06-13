@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <block>
 	<name>shop/product</name>
+	<model>Saint_Model_Product</model>
 	<setting>Name</setting>
-	<setting>SKU</setting>
 	<setting>Price</setting>
+	<setting>SKU</setting>
 	<setting>File</setting>
 </block>

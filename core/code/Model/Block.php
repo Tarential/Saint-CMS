@@ -587,7 +587,7 @@ EOT;
 								$datatype = "varchar(255)";
 					
 							if (isset($att['default'])) {
-								if ($att['default'] == "now") {
+								if (strtoupper($att['default']) == "NOW") {
 									$default = "CURRENT_TIMESTAMP";
 								} else {
 									$default = "'$att[default]'";
@@ -786,9 +786,9 @@ EOT;
 	}
 	
 	/**
-	 * Category loading called only as needed to help performance.
+	 * Category loading called only as needed to increase performance.
 	 */
-	public function loadCategories() {
+	private function loadCategories() {
 		if ($this->_id) {
 			try {
 				$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_blockcats` as `b` WHERE `b`.`blockid`='".$this->getUid()."' AND `b`.`catid`=`c`.`id`");
@@ -1062,10 +1062,13 @@ EOT;
 		if (isset($options['label']))
 			$label = $options['label'];
 		
-		if ($setting == "id" || $setting == "enabled") {
+		if ($setting == "id") {
 			$type = "hidden";
 		}
-		echo Saint::genField($name,$type,$label,$data);
+		
+		if ($setting != "enabled")
+			echo Saint::genField($name,$type,$label,$data);
+		
 		if (isset($options['details'])) {
 			echo '<span class="details">'.$options['details'].'</span>';
 		}

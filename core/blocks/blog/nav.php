@@ -31,7 +31,7 @@
 	<div id="blog-by-cat-nav" class="nav">
 		<h3>Categories</h3>
 		<?php foreach (Saint::getAllCategories() as $category): ?>
-			<h5><a href="<?php echo SAINT_URL . "/" .$page->getName(); ?>/category.<?php echo $category; ?>/"><?php echo $category; ?></a></h5>
+			<h5><a href="<?php echo SAINT_URL . "/" .$page->getName(); ?>/category/<?php echo $category; ?>/"><?php echo $category; ?></a></h5>
 		<?php endforeach; ?>
 	</div>
 

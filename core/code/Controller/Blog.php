@@ -4,17 +4,27 @@ class Saint_Controller_Blog {
 		$args = $page->getArgs();
 		$id = 0;
 		$url = SAINT_URL . "/" . $page->getName();
+		$category = null;
 		
 		if (!empty($args['subids'])) {
 			if ($args['subids'][0] == "feed") {
 				$page->setTempLayout("blog/rss");
 				$page->render();
 				exit();
+			} elseif ($args['subids'][0] == "category" && isset($args['subids'][1]) && $args['subids'][1] != "") {
+				$category = $args['subids'][1];
+			} else {
+				$post = new Saint_Model_BlogPost();
+				$post->loadByUri($args['subids'][0]);
+				$id = $post->getId();
+				if ($id) {
+					$url = $post->getUrl();
+				} else {
+					# Looking to make a 404 page instead of defaulting to the index?
+					# Uncomment this:
+					# $page->setTempLayout("system/404");
+				}
 			}
-			$post = new Saint_Model_BlogPost();
-			$post->loadByUri($args['subids'][0]);
-			$id = $post->getId();
-			$url = $post->getUrl();
 		}
 		
 		if ($id) {
@@ -39,8 +49,8 @@ class Saint_Controller_Blog {
 				),
 				"label" => "You haven't created any blog posts yet. Click 'edit page' in the Saint admin menu then click 'Add New Post' to create a post.",
 			);
-			if (isset($args['category'])) {
-				$arguments['category'] = Saint_Model_Block::convertNameFromWeb($args['category']);
+			if ($category != null) {
+				$arguments['category'] = Saint_Model_Block::convertNameFromWeb($category);
 			}
 		}
 		$page->setPostArgs($arguments);

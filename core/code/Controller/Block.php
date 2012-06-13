@@ -63,10 +63,11 @@ class Saint_Controller_Block {
 			if ($block->load($bname,$args['edit'])) {
 				$allsettings = Saint_Model_Block::getSettings($_POST['saint-block-setting-saintname']);
 				if (isset($_POST['saint-block-setting-enabled'])) {
-					if ($_POST['saint-block-setting-enabled'])
+					if ($_POST['saint-block-setting-enabled']) {
 						$block->enable();
-					else
+					} else {
 						$block->disable();
+					}
 				}
 			
 				if (isset($_POST['saint-edit-block-categories'])) {
@@ -82,7 +83,6 @@ class Saint_Controller_Block {
 						$sval = $_POST[$sname];
 					else
 						$sval = "";
-					Saint::logError($setting[0] . ": ".$sval);
 					$block->set($setting[0],$sval);
 				}
 				if ($block->save()) {

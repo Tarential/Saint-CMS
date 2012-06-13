@@ -60,14 +60,6 @@ class Saint_Model_Product extends Saint_Model_Block {
 			return 0;
 		}
 	}
-
-	/**
-	 * Get the name of the loaded product.
-	 * @return string Product name.
-	 */
-	public function getName() {
-		return $this->_settings['Name'];
-	}
 	
 	/**
 	 * Get SKU of loaded product.
@@ -118,15 +110,6 @@ class Saint_Model_Product extends Saint_Model_Block {
 		return $this->getDiscountPrice()*$this->getTaxRate();
 	}
 
-	/**
-	 * Set name of loaded product.
-	 * @param string $name New name for loaded product.
-	 */
-	public function setName($name) {
-		$sname = Saint::sanitize($name);
-		$this->_settings['Name'] = $sname;
-	}
-	
 	/**
 	 * Set sku of loaded product.
 	 * @param string $name New sku for loaded product.

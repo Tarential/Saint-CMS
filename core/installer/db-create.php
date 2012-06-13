@@ -310,11 +310,11 @@ INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('login','Login'
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`,`model`) VALUES ('blog','Blog','blog/index','NOW()',`Saint_Model_Blog`);
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`,`model`) VALUES ('blog','Blog','blog/index','NOW()','Saint_Model_Blog');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`,`model`) VALUES ('feed','RSS Feed','blog/rss','NOW()',`Saint_Model_Blog`);
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`,`model`) VALUES ('feed','RSS Feed','blog/rss','NOW()','Saint_Model_Blog');
 EOT;
 
 $sql[] = <<<EOT

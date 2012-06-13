@@ -5,7 +5,7 @@ if ($block->getId()) {
 <div class="saint-product list<?php if ($sale) echo " sale"; ?>" id="ssm-sku-<?php echo $block->getSku(); ?>">
 	<h4>
 		<a href="<?php echo SAINT_URL; ?>/shop/pid.<?php echo $block->getId(); ?>/">
-			<?php echo $block->getName(); ?>
+			<?php echo $block->get("Name"); ?>
 			<span class="price">$<?php if ($sale) echo $block->getDiscountPrice(); else echo $block->getPrice(); ?></span>
 		</a>
 	</h4>

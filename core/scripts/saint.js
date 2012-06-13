@@ -815,6 +815,8 @@ $(document).ready(function() {
 	
 	/* START Block Management */
 	
+	Saint.sbeUriOverride = false;
+	
 	$(document).on({
 		'click': function(event) {
 			Saint.saveAddBox();
@@ -858,6 +860,27 @@ $(document).ready(function() {
 		}
 	},'.block-item > .edit-button');
 
+	/**
+	 * Automatically update settings in the preview box.
+	 */
+	$(document).on({
+		'keyup': function(event) {
+			var setting = event.currentTarget.id.replace(/^saint-block-setting-/,'');
+			// For the blog
+			if (setting == "uri") {
+				if ($('#saint-block-setting-uri').val() == "") {
+					Saint.sbeUriOverride = false;
+				} else {
+					Saint.sbeUriOverride = true;
+				}
+			}
+			if (setting == "title" && !Saint.sbeUriOverride) {
+				$('#saint-block-setting-uri').val($(event.currentTarget).val().replace(/[\s*]/g,'-').replace(/[^\w-]/g,'').toLowerCase());
+			}
+			$('#saint-add-block-data .sbs-'+setting).html($(event.currentTarget).val());
+		}
+	},'#saint-add-block-settings input');
+	
 	Saint.openAddBox = function() {
 		$('#saint-admin-add-block').addClass("loading").addClass("active");
 	};
@@ -871,6 +894,12 @@ $(document).ready(function() {
 		$('.editable').addClass("editnow");
 		$('#saint-add-block-data .editable').addClass('editnow');
 		$('#saint-admin-add-block').removeClass("loading");
+		// Special code for blog
+		if ($('#saint-block-setting-uri').val() == "") {
+			Saint.sbeUriOverride = false;
+		} else {
+			Saint.sbeUriOverride = true;
+		}
 	};
 	
 	Saint.saveAddBox = function() {
@@ -891,7 +920,7 @@ $(document).ready(function() {
 			}
 		} catch (e) {
 			$('#saint_ajax_indicator').addClass("error");
-			Saint.addError("There was a problem adding your page. Please check the server error log for further information.",0);
+			Saint.addError("There was a problem adding your block. Please check the server error log for further information.",0);
 		}	
 	};
 	
