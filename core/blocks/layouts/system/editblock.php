@@ -28,6 +28,7 @@
 </div>
 <div id="saint-add-block-data" class="saint-add-block-data">
 	<div class="saint-new-block">
-		<?php Saint::includeBlock($page->addblockname,$page->addblockarguments); ?>
+		<?php $page->addblock->renderPreview(); ?>
+		<?php /* Saint::includeBlock($page->addblockname,$page->addblockarguments); */ ?>
 	</div>
 </div>

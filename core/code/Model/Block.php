@@ -1041,6 +1041,12 @@ EOT;
 		return $this->_enabled;
 	}
 	
+	/**
+	 * Render form input for given setting using given options.
+	 * Override this function in your child class to customize input types. See Saint_Model_BlogPost.
+	 * @param string $setting Field name.
+	 * @param array $options Options to use when generating the field.
+	 */
 	public function renderInput($setting, $options = array()) {
 		$name = "saint-block-setting-$setting";
 		$type = "text";
@@ -1060,6 +1066,23 @@ EOT;
 			$type = "hidden";
 		}
 		echo Saint::genField($name,$type,$label,$data);
+	}
+	
+	/**
+	 * Render a preview for editing the current block.
+	 * In this default method the standard view is used. Override it in your child class to customize the preview.
+	 * See Saint_Model_BlogPost for an example.
+	 */
+	public function renderPreview($arguments = array()) {
+		if (!isset($arguments['repeat'])) {
+			$arguments['repeat'] = 1;
+		}
+		if (!isset($arguments['matches'])) {
+			$arguments['matches'] = array(
+				array("id",$this->_id,"="),
+			);
+		}
+		Saint::includeBlock($this->_name,$arguments);
 	}
 	
 	/**

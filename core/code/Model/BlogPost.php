@@ -50,6 +50,11 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 		}
 	}
 	
+	public function renderPreview($arguments = array()) {
+		$arguments['view'] = "blog/post-preview";
+		parent::renderPreview($arguments);
+	}
+	
 	public function save() {
 		if ($this->_settings['uri'] == "") {
 			$this->_settings['uri'] = $this->_settings['title'];
