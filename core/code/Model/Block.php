@@ -1041,15 +1041,22 @@ EOT;
 		return $this->_enabled;
 	}
 	
-	public function renderInput($setting) {
+	public function renderInput($setting, $options = array()) {
 		$name = "saint-block-setting-$setting";
+		$type = "text";
+		$label = ucfirst($setting).":";
 		$data = array(
 			"value" => $this->get($setting),
 			"static" => true,
 		);
-		$type = "text";
-		$label = ucfirst($setting);
-		if ($setting == "id") {
+		
+		if (isset($options['type']))
+			$type = $options['type'];
+		
+		if (isset($options['label']))
+			$label = $options['label'];
+		
+		if ($setting == "id" || $setting == "enabled") {
 			$type = "hidden";
 		}
 		echo Saint::genField($name,$type,$label,$data);

@@ -18,6 +18,8 @@ class Saint_Model_Blog extends Saint_Model_Page {
 	public function setPostArgs($args) {
 		if (is_array($args)) {
 			$this->_post_args = $args;
+		} else {
+			$this->_post_args = array($args);
 		}
 	}
 }

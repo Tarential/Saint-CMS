@@ -28,12 +28,22 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 		return SAINT_URL.'/blog/'.$this->_settings['uri'];
 	}
 	
-	public function renderInput($setting) {
+	public function renderInput($setting, $options = array()) {
 		switch ($setting) {
 			case "uri":
-				parent::renderInput($setting);
+				parent::renderInput($setting,array("label"=>"URI:"));
 				if ($this->get($setting) == "") {
-					echo "(leave blank to auto generate)"; }
+					echo '<span class="details">Leave blank to auto generate.</span>'; }
+				break;
+			case "description":
+				parent::renderInput($setting,array("type"=>"textarea"));
+				break;
+			case "keywords":
+				parent::renderInput($setting);
+				echo '<span class="details">Comma separated values (key,words,etc).</span>';
+				break;
+			case "postdate":
+				parent::renderInput($setting,array("label"=>"Posted on:"));
 				break;
 			default:
 				parent::renderInput($setting);

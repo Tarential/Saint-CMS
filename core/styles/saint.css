@@ -514,13 +514,17 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	margin: 0 20px;
 }
 
-.saint-add-block-sidebar label {
+.saint-add-block-sidebar .saint-label {
 	display: block;
 	font-weight: bold;
 	margin: 10px 0 2px;
 }
 
-.saint-add-block-sidebar input {
+.saint-add-block-sidebar .details {
+	font-style: italic;
+}
+
+.saint-add-block-sidebar input, .saint-add-block-sidebar select, .saint-add-block-sidebar textarea {
 	border: 1px solid #333;
 	margin: 0;
 	width: 264px;
@@ -1402,8 +1406,4 @@ body.sle-active #saint_blackout {
 
 .search-results h3 a:hover {
 	text-decoration: none;
-}
-
-#saint-add-block-settings .saint-label {
-	display: block;
 }
