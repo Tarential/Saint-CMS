@@ -1066,6 +1066,9 @@ EOT;
 			$type = "hidden";
 		}
 		echo Saint::genField($name,$type,$label,$data);
+		if (isset($options['details'])) {
+			echo '<span class="details">'.$options['details'].'</span>';
+		}
 	}
 	
 	/**

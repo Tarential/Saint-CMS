@@ -153,4 +153,32 @@ class Saint_Model_Product extends Saint_Model_Block {
 		$sfile = Saint::sanitize($file);
 		$this->_file = $sfile;
 	}
+	
+	/**
+	 * Specify custom field options for the product edit screen.
+	 * @see core/code/Model/Saint_Model_Block::renderInput()
+	 */
+	public function renderInput($setting, $options = array()) {
+			switch ($setting) {
+			case "File":
+				parent::renderInput($setting,
+					array(
+						"details" => "File associated with product. This file must be stored in the 'restricted' folder and will be delivered to users when they make a purchase.",
+						"label" => "(Optional) File:",
+					)
+				);
+				break;
+			default:
+				parent::renderInput($setting);
+		}
+	}
+	
+	/**
+	 * Assign a preview template to the product edit screen.
+	 * @see core/code/Model/Saint_Model_Block::renderPreview()
+	 */
+	public function renderPreview($arguments = array()) {
+		$arguments['view'] = "shop/product-preview";
+		parent::renderPreview($arguments);
+	}
 }

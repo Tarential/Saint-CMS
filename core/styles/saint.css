@@ -520,8 +520,18 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	margin: 10px 0 2px;
 }
 
-.saint-add-block-sidebar .details {
+#saint-admin-add-block .details {
 	font-style: italic;
+}
+
+.saint-add-block-sidebar .details {
+	width: 264px;
+	font-size: 10px;
+}
+
+#saint-block-setting-SKU, #saint-block-setting-Price {
+	width: 50px;
+	text-align: right;
 }
 
 .saint-add-block-sidebar input, .saint-add-block-sidebar select, .saint-add-block-sidebar textarea {
@@ -1175,13 +1185,30 @@ span.match {
 	border: none;
 }
 
+.blog-post.preview .sbs-title {
+	width: 100%; }
+
 .saint-new-block .setting {
 	border: 1px dotted green;
 }
 
+.saint-product.preview {
+	width: 550px;
+	margin-left: 10px; }
+
+.saint-product.preview .saint-image {
+	width: 128px;
+}
+
+.saint-product.preview .content .saint-label {
+	display: block;
+	min-height: 300px;
+	width: 400px;
+	border: 1px dotted red;
+}
+
 .saint-new-block .setting.block {
 	display: block;
-	width: 100%;
 	min-height: 20px;
 }
 
