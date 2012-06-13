@@ -1403,3 +1403,7 @@ body.sle-active #saint_blackout {
 .search-results h3 a:hover {
 	text-decoration: none;
 }
+
+#saint-add-block-settings .saint-label {
+	display: block;
+}

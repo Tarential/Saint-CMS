@@ -45,20 +45,50 @@ class Saint_Model_Page {
 	}
 	
 	/**
+	 * Get the name of the model to use for page of given name.
+	 * @param $name Name of page to check.
+	 * @return string Name of model to use for given page.
+	 */
+	public static function getModel($name) {
+		$default = "Saint_Model_Page";
+		if ($sname = Saint::sanitize($name,SAINT_REG_NAME)) {
+			try {
+				$model = Saint::getOne("SELECT `model` FROM `st_pages` WHERE `name`='$sname'");
+				if (class_exists($model) && ($model == $default || is_subclass_of($model,$default))) {
+					return $model;
+				}
+			} catch (Exception $e) {
+				if ($e->getCode()) {
+					Saint::logError("Unable to select page model from database: ".$e->getMessage,__FILE__,__LINE__);
+				}
+				return $default;
+			}
+		} else {
+			Saint::logError("Invalid page name: '$name'.",__FILE__,__LINE__);
+			return $default;
+		}
+	}
+	
+	/**
 	 * Checks if page name is available for use (ie not in database).
 	 * @param string $name Name to test.
 	 * @return boolean True if available, false otherwise.
 	 */
 	public static function nameAvailable($name) {
-		if ($name = Saint::sanitize($name,SAINT_REG_NAME)) {
+		if ($sname = Saint::sanitize($name,SAINT_REG_NAME)) {
 			try {
-				$id = Saint::getOne("SELECT `id` FROM `st_pages` WHERE `name`='$name'");
+				$id = Saint::getOne("SELECT `id` FROM `st_pages` WHERE `name`='$sname'");
 				return 0;
 			} catch (Exception $e) {
+				if ($e->getCode()) {
+					Saint::logError("Unable to select page ID from database: ".$e->getMessage,__FILE__,__LINE__);
+				}
 				return 1;
 			}
-		} else
+		} else {
+			Saint::logError("Invalid page name: '$name'.",__FILE__,__LINE__);
 			return 0;
+		}
 	}
 	
 	/**
@@ -721,6 +751,13 @@ class Saint_Model_Page {
 				return 0;
 			}
 		}
+	}
+	
+	/**
+	 * Process input using a custom controller. Skeleton only; used in child classes.
+	 */
+	public function process() {
+		
 	}
 	
 	/**

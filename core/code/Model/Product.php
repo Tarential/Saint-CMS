@@ -12,15 +12,32 @@ class Saint_Model_Product extends Saint_Model_Block {
 	/**
 	 * Create model with default data.
 	 */
-	public function __construct($id = 0) {
-		if ($this->_id && $this->load($id)) {
-			return 1;
+	public function __construct($id = 0, $name = null, $enabled = null, $settings = array()) {
+		// Magic so it can accept the first two arguments in either order.
+		if (!Saint::sanitize($id,SAINT_REG_ID) && Saint::sanitize($name,SAINT_REG_ID)) {
+			$id = $name;
+		}
+		if (empty($settings)) {
+			if ($this->_id && $this->load($id)) {
+				return 1;
+			}
 		} else {
-			parent::__construct("shop/product");
-			$this->_name = '';
-			$this->_sku = '';
-			$this->_price = 0;
-			$this->_file = '';
+			parent::__construct("shop/product",$id,$enabled,$settings);
+			if (isset($settings['Price'])) {
+				$this->_price = $settings['Price'];
+			} else {
+				$this->_price = 0;
+			}
+			if (isset($settings['SKU'])) {
+				$this->_sku = $settings['SKU'];
+			} else {
+				$this->_sku = '';
+			}
+			if (isset($settings['File'])) {
+				$this->_file = $settings['File'];
+			} else {
+				$this->_file = '';
+			}
 		}
 	}
 	
@@ -81,7 +98,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 * @return float Discounted price of loaded product.
 	 */
 	public function getDiscountPrice() {
-		return Saint::getDiscounter()->getDiscountedPrice($this->_id, $this->_categories, $this->_price);
+		return Saint::getDiscounter()->getDiscountedPrice($this->_id, $this->getCategories(), $this->_price);
 	}
 	
 	/**

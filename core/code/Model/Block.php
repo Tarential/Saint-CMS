@@ -121,9 +121,9 @@ class Saint_Model_Block {
 	 * @param string $block Name of block.
 	 * @return boolean True if successful, false otherwise.
 	 */
-	public static function includeBlock($block, $arguments = array()) {
+	public static function includeBlock($block_name, $arguments = array()) {
 		if (isset($arguments['repeat']) && $arguments['repeat'] > 0) {
-			Saint::includeRepeatingBlock($block,$arguments);
+			Saint::includeRepeatingBlock($block_name,$arguments);
 		} else {
 			if (isset($arguments['container']) && $arguments['container'] != "")
 				$container = $arguments['container'];
@@ -134,12 +134,17 @@ class Saint_Model_Block {
 			else
 				$view = false;
 			$page = Saint::getCurrentPage();
-			$block = Saint::sanitize($block,SAINT_REG_NAME);
-			if ($block) {
-				$page->addBlock($block);
+			$block_name = Saint::sanitize($block_name,SAINT_REG_NAME);
+			if ($block_name) {
+				$page->addBlock($block_name);
 				$id = $page->getBlockId();
+				if (isset($arguments['block'])) {
+					$block = $arguments['block'];
+				} else {
+					$block = new Saint_Model_Block();
+				}
 				if (!$view)
-					$view = $block;
+					$view = $block_name;
 				if (file_exists(Saint::getThemeDir() .  "/blocks/".$view.".php"))
 					$incfile = Saint::getThemeDir() .  "/blocks/".$view.".php";
 				elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$view.".php"))
@@ -151,7 +156,7 @@ class Saint_Model_Block {
 					include $incfile;
 				else {
 					if ($container) {
-						echo "<div id=\"saint_".preg_replace('/\//','_',$block)."\" class=\"saint-block\">\n";
+						echo "<div id=\"saint_".preg_replace('/\//','_',$block_name)."\" class=\"saint-block\">\n";
 						include $incfile;
 						echo "\n</div>";
 					} else
@@ -159,7 +164,7 @@ class Saint_Model_Block {
 				}
 				return 1;
 			} else {
-				Saint::logError("Block name '$block' could not be validated.",__FILE__,__LINE__);
+				Saint::logError("Block name '$block_name' could not be validated.",__FILE__,__LINE__);
 				return 0;
 			}
 		}
@@ -182,9 +187,12 @@ class Saint_Model_Block {
 			$where = '';
 			$name = Saint_Model_Block::formatForTable($sblock);
 			$category = '';
+			$collection = false;
 			
 			# Compile arguments
 			if (is_array($arguments)) {
+				if (isset($arguments['collection']))
+					$collection = $arguments['collection'];
 				if (isset($arguments['category']))
 					$category = Saint::sanitize($arguments['category']);
 				if (isset($arguments['start']))
@@ -268,8 +276,12 @@ EOT;
 				$cattables = '';
 				$catwhere = '';
 			}
-			
-			return "SELECT `b`.`id` FROM `st_blocks_$name` as `b`$cattables $where $catwhere $obs $ls";
+			if ($collection) {
+				$sel = "*";
+			} else {
+				$sel = "`id`";
+			}
+			return "SELECT `b`.$sel FROM `st_blocks_$name` as `b`$cattables $where $catwhere $obs $ls";
 		} else {
 			Saint::logError("Invalid block name '$block'.",__FILE__,__LINE__);
 			return 0;
@@ -293,6 +305,19 @@ EOT;
 				# If we don't find any, use an empty array
 				$saved_blocks = array();
 			}
+			if (isset($arguments['collection']) && $arguments['collection'] == true) {
+				$real_blocks = array();
+				$setting_names = Saint_Model_Block::getSettings($block);
+				$model = Saint_Model_Block::getBlockModel($block);
+				foreach ($saved_blocks as $sb) {
+					$settings = array();
+					for ($i = 2; $i < sizeof($setting_names); $i++) {
+						$settings[$setting_names[$i][0]] = $sb[$i];
+					}
+					$real_blocks[] = new $model($block,$sb[0],$sb[1],$settings);
+				}
+				$saved_blocks = $real_blocks;
+			}
 			return $saved_blocks;
 	}
 	
@@ -307,6 +332,7 @@ EOT;
 	public static function includeRepeatingBlock($block, $arguments = array()) {
 		$sblock = Saint::sanitize($block);
 		if ($sblock) {
+			$arguments['collection'] = true;
 			$saved_blocks = Saint_Model_Block::getBlocks($block,$arguments);
 			$page = Saint::getCurrentPage();
 			$args = $page->getArgs();
@@ -361,15 +387,13 @@ EOT;
 					echo "<p>Sorry, no blocks found to match selected criteria.</p>";
 				}
 			} else {
-				foreach ($saved_blocks as $bid) {
-					$nblock = new Saint_Model_Block();
-					$nblock->load($name,$bid);
-					$page->setBlockId($bid);
-					$page->addBlock("block/".$bid."/".$block);
+				foreach ($saved_blocks as $block) {
+					$page->setBlockId($block->getId());
+					//$page->addBlock("block/".$bid."/".$block);
 					if ($container) {
 						echo '<div class="block-item">';
-						echo "<div class=\"sbid-".$bid." edit-button hidden\">Edit ".Saint_Model_Block::formatForDisplay($sblock)." <span class=\"block-name\">".$bid."</span></div>"; }
-					Saint::includeBlock($sblock,array('view'=>$view));
+						echo "<div class=\"sbid-".$block->getId()." edit-button hidden\">Edit ".Saint_Model_Block::formatForDisplay($sblock)." <span class=\"block-name\">".$block->getId()."</span></div>"; }
+					Saint::includeBlock($sblock,array('view'=>$view,'block'=>$block));
 					if ($container) {
 						echo "</div>\n"; }
 					$page->setBlockId(0);
@@ -659,21 +683,34 @@ EOT;
 	 * @param int $id ID of individual block.
 	 * @return boolean True if product is loaded, false otherwise.
 	 */
-	public function __construct($name = null, $id = null) {
+	public function __construct($name = null, $id = null, $enabled = null, $settings = array()) {
 		if ($name != null && $id != null) {
-			if ($this->load($name,$id)) {
-				return 1;
+			if (empty($settings)) {
+				if ($this->load($name,$id)) {
+					return 1;
+				}
 			} else {
-				$this->_id = 0;
-				$this->_uid = 0;
-				$this->_settings = array();
+				$this->_id = Saint::sanitize($id,SAINT_REG_ID);
+				$this->_enabled = Saint::sanitize($enabled,SAINT_REG_BOOL);
+				$this->_name = Saint::sanitize($name,SAINT_REG_NAME);
 				$this->_settingnames = array();
-				$this->_categories = array();
-				$this->_cats_to_add = array();
-				$this->_cats_to_delete = array();
-				return 0;
+				$this->_categories = null;
+				foreach ($settings as $key=>$val) {
+					$sname = Saint::sanitize($key);
+					$this->_settingnames[] = $sname;
+					$this->_settings[$sname] = Saint::sanitize($val);
+				}
+				return 1;
 			}
 		}
+		$this->_id = 0;
+		$this->_uid = 0;
+		$this->_settings = array();
+		$this->_settingnames = array();
+		$this->_categories = array();
+		$this->_cats_to_add = array();
+		$this->_cats_to_delete = array();
+		return 0;
 	}
 	
 	/**
@@ -704,26 +741,12 @@ EOT;
 				$this->_enabled = $info[1];
 				$this->_name = $name;
 				$this->_settingnames = $settingnames;
-				$this->_categories = array();
+				$this->_categories = null;
 				$this->_cats_to_add = array();
 				$this->_cats_to_delete = array();
 				for ($i = 0; $i < sizeof($settingnames); $i++)
 					$this->_settings[$settingnames[$i]]=$info[$i];
 				
-				// Get categories
-				try {
-					$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_blockcats` as `b` WHERE `b`.`blockid`='".$this->getUid()."' AND `b`.`catid`=`c`.`id`");
-					$cats = array();
-					foreach ($getcats as $getcat) {
-						$cats[$getcat[0]] = $getcat[1];
-					}
-					$this->_categories = $cats;
-				} catch (Exception $e) {
-					if ($e->getCode()) {
-						Saint::logError("Problem getting categories for block id '".$this->getUid()."': ".$e->getMessage(),__FILE__,__LINE__);
-						return 0;
-					}
-				}
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Cannot load Block model with name $name and ID $id. Error: " . $e->getMessage(),__FILE__,__LINE__);
@@ -759,6 +782,33 @@ EOT;
 				Saint::logError("Failed to add new block named $fname because",$e->getMessage(),__FILE__,__LINE__);
 				return 0;
 			}
+		}
+	}
+	
+	/**
+	 * Category loading called only as needed to help performance.
+	 */
+	public function loadCategories() {
+		if ($this->_id) {
+			try {
+				$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_blockcats` as `b` WHERE `b`.`blockid`='".$this->getUid()."' AND `b`.`catid`=`c`.`id`");
+				$cats = array();
+				foreach ($getcats as $getcat) {
+					$cats[$getcat[0]] = $getcat[1];
+				}
+				$this->_categories = $cats;
+				return 1;
+			} catch (Exception $e) {
+				$this->_categories = array();
+				if ($e->getCode()) {
+					Saint::logError("Problem getting categories for block id '".$this->getUid()."': ".$e->getMessage(),__FILE__,__LINE__);
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+		} else {
+			return 0;
 		}
 	}
 	
@@ -869,6 +919,8 @@ EOT;
 	 * @return boolean True for success, false for failure.
 	 */
 	public function addToCategory($category) {
+		if ($this->_categories == null) {
+			$this->loadCategories(); }
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		if ($scategory) {
 			// Add to categories array if not already present.
@@ -897,6 +949,8 @@ EOT;
 	 * @return boolean True for success, false for failure.
 	 */
 	public function removeFromCategory($category) {
+		if ($this->_categories == null) {
+			$this->loadCategories(); }
 		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
 		if ($scategory) {
 			// Remove from categories array if present
@@ -942,6 +996,8 @@ EOT;
 	 * @return string[] Array of category names.
 	 */
 	public function getCategories() {
+		if ($this->_categories == null) {
+			$this->loadCategories(); }
 		return $this->_categories;
 	}
 	
@@ -951,6 +1007,8 @@ EOT;
 	 * @return boolean True if block is in at least one of the given categories, false otherwise.
 	 */
 	public function inCategory($category) {
+		if ($this->_categories == null) {
+			$this->loadCategories(); }
 		if (!is_array($category))
 			$category = array($category);
 		foreach ($category as $cname) {
@@ -981,6 +1039,20 @@ EOT;
 	 */
 	public function isEnabled() {
 		return $this->_enabled;
+	}
+	
+	public function renderInput($setting) {
+		$name = "saint-block-setting-$setting";
+		$data = array(
+			"value" => $this->get($setting),
+			"static" => true,
+		);
+		$type = "text";
+		$label = ucfirst($setting);
+		if ($setting == "id") {
+			$type = "hidden";
+		}
+		echo Saint::genField($name,$type,$label,$data);
 	}
 	
 	/**

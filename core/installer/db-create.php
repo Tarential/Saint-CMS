@@ -124,6 +124,7 @@ CREATE TABLE IF NOT EXISTS `st_pages` (
 	`name` varchar(255) NOT NULL,
 	`title` varchar(255) NOT NULL DEFAULT '',
 	`layout` varchar(255) NOT NULL DEFAULT '',
+	`model` varchar(255) NOT NULL DEFAULT 'Saint_Model_Page',
 	`meta_keywords` text DEFAULT '',
 	`meta_description` text DEFAULT '',
 	`allow_robots` boolean NOT NULL,
@@ -309,11 +310,11 @@ INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('login','Login'
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('blog','Blog','blog/index','NOW()');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`,`model`) VALUES ('blog','Blog','blog/index','NOW()',`Saint_Model_Blog`);
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('feed','RSS Feed','blog/rss','NOW()');
+INSERT INTO st_pages (`name`,`title`,`layout`,`created`,`model`) VALUES ('feed','RSS Feed','blog/rss','NOW()',`Saint_Model_Blog`);
 EOT;
 
 $sql[] = <<<EOT

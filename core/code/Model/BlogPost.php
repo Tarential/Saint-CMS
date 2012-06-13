@@ -28,6 +28,18 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 		return SAINT_URL.'/blog/'.$this->_settings['uri'];
 	}
 	
+	public function renderInput($setting) {
+		switch ($setting) {
+			case "uri":
+				parent::renderInput($setting);
+				if ($this->get($setting) == "") {
+					echo "(leave blank to auto generate)"; }
+				break;
+			default:
+				parent::renderInput($setting);
+		}
+	}
+	
 	public function save() {
 		if ($this->_settings['uri'] == "") {
 			$this->_settings['uri'] = $this->_settings['title'];

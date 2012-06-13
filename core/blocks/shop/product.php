@@ -1,23 +1,17 @@
 <?php
-$product = new Saint_Model_Product();
-if ($product->load($id)) { 
-	$discount_price = $product->getDiscountPrice();
-	if ($discount_price < $product->getPrice()) {
-		$sale = true;
-	} else {
-		$sale = false;
-	}
+if ($block->getId()) {
+	$sale = $block->getDiscountPrice() < $block->getPrice() ? 1 : 0;
 ?>
-<div class="saint-product<?php if ($sale) echo " sale"; ?> ssm-sku-<?php echo $product->getSku(); ?>">
+<div class="saint-product<?php if ($sale) echo " sale"; ?> ssm-sku-<?php echo $block->getSku(); ?>">
 	<h2>
-		<?php echo $product->getName(); ?> - <span class="regprice">$<?php echo $product->getPrice(); ?></span>
+		<?php echo $block->getName(); ?> - <span class="regprice">$<?php echo $block->getPrice(); ?></span>
 		<?php if ($sale): ?>on sale for <span class="saleprice">$<?php echo $discount_price; ?></span><?php endif; ?>
 	</h2>
-	<?php Saint::getBlockImage($block, $id, "main-image"); ?>
-	<?php echo Saint::getBlockLabel($block,$id,"description","Enter product description here..."); ?>
+	<?php Saint::getBlockImage($block->getName(), $block->getId(), "main-image"); ?>
+	<?php echo Saint::getBlockLabel($block->getName(),$block->getId(),"description","Enter product description here..."); ?>
 	<div class="ssm meta-links">
-		<a href="<?php echo SAINT_URL; ?>/shop/addtocart.<?php echo $product->getId(); ?>" class="link add-to-cart">Add to Cart</a>
-		<a href="<?php echo SAINT_URL; ?>/shop/addtocart.<?php echo $product->getId(); ?>/buynow.1" class="link buy-now">Buy Now</a>
+		<a href="<?php echo SAINT_URL; ?>/shop/addtocart.<?php echo $block->getId(); ?>" class="link add-to-cart">Add to Cart</a>
+		<a href="<?php echo SAINT_URL; ?>/shop/addtocart.<?php echo $block->getId(); ?>/buynow.1" class="link buy-now">Buy Now</a>
 	</div>
 </div>
 <?php } else { ?>

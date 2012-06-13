@@ -69,8 +69,8 @@ class Saint_Controller_Block {
 						$block->disable();
 				}
 			
-				if (isset($_POST['saint_edit_block_categories'])) {
-					$newcats = $_POST['saint_edit_block_categories'];
+				if (isset($_POST['saint-edit-block-categories'])) {
+					$newcats = $_POST['saint-edit-block-categories'];
 				} else {
 					$newcats = array();
 				}

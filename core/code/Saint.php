@@ -247,7 +247,7 @@ class Saint {
 	 */
 	public static function getSiteDescription() {
 		try {
-			return Saint::getOne("SELECT meta_description FROM st_config");
+			return Saint::getOne("SELECT `meta_description` FROM `st_config`");
 		} catch (Exception $e) {
 			Saint::logWarning("Problem getting site description: ".$e->getMessage(),__FILE__,__LINE__);
 			return '';
@@ -262,6 +262,14 @@ class Saint {
 	public static function getDiscounter() {
 		global $_pc;
 		return $_pc->getDiscounter();
+	}
+	
+	/**
+	 * Shortcut for creating collections with Saint_Model_Block::getBlocks().
+	 */
+	public static function getCollection($block,$arguments = array()) {
+		$arguments['collection'] = true;
+		return Saint_Model_Block::getBlocks($block,$arguments);
 	}
 	
 	/**
@@ -890,7 +898,10 @@ class Saint {
 	 */
 	public static function genField ($name,$type,$label = '',$data = null,$rules = '') {
 		$field = '';
-		$label = Saint::getPageLabel("sff-".$name,$label);
+		if (!isset($data['static']) || $data['static'] == false)
+			$label = Saint::getPageLabel("sff-".preg_replace('/[\[\]]*/','',$name),$label);
+		else
+			$label = '<span class="saint-label">'.$label.'</span>';
 		if (isset($data['value']))
 			$val = $data['value'];
 		else

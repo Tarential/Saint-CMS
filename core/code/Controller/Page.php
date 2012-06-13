@@ -17,7 +17,8 @@ class Saint_Controller_Page {
 	 */
 	public function __construct($name,$args = array()) {
 		$this->_discounter = null;
-		$this->_page = new Saint_Model_Page();
+		$page_model = Saint_Model_Page::getModel($name);
+		$this->_page = new $page_model();
 		$this->_page->setArgs($args);
 		return $this->_page->loadByName($name);
 	}
@@ -376,6 +377,7 @@ class Saint_Controller_Page {
 		
 		/*
 		 * Parse arguments for potential commands
+		 * @todo Split this section into functional categories.
 		 */
 		foreach ($this->_page->getArgs() as $key=>$val) {
 			switch ($key) {
@@ -399,7 +401,8 @@ class Saint_Controller_Page {
 					break;
 			}
 		}
-	
+		
+		$this->_page->process();
 		$this->_page->render();
 	}
 }

@@ -6,24 +6,23 @@
 		<li id="saint-add-block-cancel" class="link">Cancel</li>
 	</ul>
 	<form id="saint-add-block-settings">
-		<input type="hidden" name="saint-block-setting-saintname" id="saint-block-setting-saintname" value="<?php echo $page->addblockname; ?>" />
-		<input type="hidden" name="saint-block-setting-enabled" id="saint-block-setting-enabled" value="1" />
+		<?php echo Saint::genField("saint-block-setting-saintname","hidden","",array("value"=>$page->addblockname)); ?>
+		<?php echo Saint::genField("saint-block-setting-enabled","hidden","",array("value"=>1)); ?>
 		<?php
 			$options = array();
 			foreach (Saint::getAllCategories() as $category)
 				$options[$category] = $category;
+			$data = array(
+				"options" => $options,
+				"static" => true,
+				"multiple" => true,
+			);
 		?>
 		<div>
-		<label for="saint_edit_block_categories[]">Categories:</label>
-		<?php echo Saint::genField("saint_edit_block_categories[]","select","Categories: ",
-			array('options'=>$options,'selected'=>$page->addblock->getCategories(),'multiple'=>true)); ?></div>
+		<?php echo Saint::genField("saint-edit-block-categories[]","select","Categories:",
+			array('options'=>$options,'selected'=>$page->addblock->getCategories(),'multiple'=>true,'static'=>true)); ?></div>
 		<?php foreach ($page->addblock->getAllSettings() as $key=>$val): ?>
-			<?php if ($key == "id"): ?>
-				<input type="hidden" name="saint-block-setting-id" id="saint-block-setting-id" value="<?php echo $val; ?>" />
-			<?php elseif ($key != "enabled"): ?>
-				<?php $name = "saint-block-setting-$key";?>
-				<div><label for="<?php echo $name; ?>"><?php echo ucfirst($key); ?>:</label><input type="text" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="<?php echo $val; ?>" /></div>
-			<?php endif; ?>
+			<?php echo $page->addblock->renderInput($key); ?>
 		<?php endforeach; ?>
 	</form>
 </div>
