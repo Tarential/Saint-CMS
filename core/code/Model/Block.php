@@ -1042,14 +1042,24 @@ EOT;
 	}
 	
 	/**
+	 * Get settings for currently rendering input.
+	 * @return array Settings for currently rendering input.
+	 */
+	public function getInputSettings() {
+		return $this->_input_settings;
+	}
+	
+	/**
 	 * Render form input for given setting using given options.
 	 * Override this function in your child class to customize input types. See Saint_Model_BlogPost.
 	 * @param string $setting Field name.
 	 * @param array $options Options to use when generating the field.
 	 */
 	public function renderInput($setting, $options = array()) {
+		$page = Saint::getCurrentPage();
 		$name = "saint-block-setting-$setting";
 		$type = "text";
+		$details = array();
 		$label = ucfirst($setting).":";
 		$data = array(
 			"value" => $this->get($setting),
@@ -1066,12 +1076,20 @@ EOT;
 			$type = "hidden";
 		}
 		
-		if ($setting != "enabled")
-			echo Saint::genField($name,$type,$label,$data);
-		
 		if (isset($options['details'])) {
-			echo '<span class="details">'.$options['details'].'</span>';
+			$details = $options['details'];
 		}
+		
+		$this->_input_settings = array(
+			"name" => $name,
+			"type" => $type,
+			"label" => $label,
+			"data" => $data,
+			"details" => $details,
+		);
+		
+		if ($setting != "enabled")
+			Saint::includeBlock("admin/setting-input");
 	}
 	
 	/**

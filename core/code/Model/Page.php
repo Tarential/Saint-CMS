@@ -5,23 +5,6 @@
  * @package Saint
  */
 class Saint_Model_Page {
-	protected $_id;
-	protected $_bid;
-	protected $_name;
-	protected $_enabled;
-	protected $_args;
-	protected $_title;
-	protected $_temptitle;
-	protected $_layout;
-	protected $_templayout;
-	protected $_meta_description;
-	protected $_temp_meta_description;
-	protected $_meta_keywords;
-	protected $_temp_meta_keywords;
-	protected $_allow_robots;
-	protected $_blocks;
-	protected $_newblocks; # Blocks are recalculated at each rendering
-
 	/**
 	 * Get all the page names from the database.
 	 * @return string[] Names of all pages in the database.
@@ -125,6 +108,24 @@ class Saint_Model_Page {
 			return 0;
 	}
 	
+	protected $_id;
+	protected $_bid;
+	protected $_name;
+	protected $_enabled;
+	protected $_args;
+	protected $_title;
+	protected $_temptitle;
+	protected $_layout;
+	protected $_templayout;
+	protected $_meta_description;
+	protected $_temp_meta_description;
+	protected $_meta_keywords;
+	protected $_temp_meta_keywords;
+	protected $_allow_robots;
+	protected $_blocks;
+	protected $_newblocks; # Blocks are recalculated at each rendering
+	protected $_edit_block; # Block currently being edited by admin
+	
 	/**
 	 * Load page model with blank data.
 	 */
@@ -145,6 +146,7 @@ class Saint_Model_Page {
 		$this->_allow_robots = true;
 		$this->_blocks = array();
 		$this->_newblocks = array();
+		$this->_edit_block = new Saint_Model_Block();
 	}
 	
 	/**
@@ -312,6 +314,29 @@ class Saint_Model_Page {
 	 */
 	public function getBlockId() {
 		return $this->_bid;
+	}
+	
+	/**
+	 * Get the block which is currently being edited on this page.
+	 * @return Saint_Model_Block Block which is currently being edited.
+	 */
+	public function getEditBlock() {
+		return $this->_edit_block;
+	}
+	
+	/**
+	 * Set the block which is currently being edited on this page.
+	 * @param Saint_Model_Block $block Block being edited. Will also accept children of Block.
+	 * @return boolean True on success, false otherwise.
+	 */
+	public function setEditBlock($block) {
+		if (is_a($block,'Saint_Model_Block') || is_subclass_of($block,'Saint_Model_Block')) {
+			$this->_edit_block = $block;
+			return 1;
+		} else {
+			Saint::logError("Given element was not of class Saint_Model_Block, nor was it a child class.",__FILE__,__LINE__);
+			return 0;
+		}
 	}
 	
 	/**

@@ -11,14 +11,13 @@ class Saint_Controller_Transaction {
 	 * Reposts given data to PayPal and logs transaction details.
 	 */
 	public static function verifyIpn() {
-		Saint::logError("Verifying IPN",__FILE__,__LINE__);
+		Saint::logEvent("Verifying IPN",__FILE__,__LINE__);
 		Saint::getCurrentPage()->setTempLayout("system/system");
 		
 		// read the post from PayPal system and add 'cmd'
 		$req = 'cmd=_notify-validate';
 		
 		foreach ($_POST as $key => $value) {
-			Saint::logError($key . ": " . $value);
 			$value = urlencode(stripslashes($value));
 			$req .= "&$key=$value";
 		}

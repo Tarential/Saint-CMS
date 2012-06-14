@@ -13,28 +13,23 @@ class Saint_Controller_Block {
 	public static function loadBlock($block) {
 		if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
 			$page = Saint::getCurrentPage();
-			$page->addblockname = Saint_Model_Block::convertNameFromWeb($block);
-			$model = Saint_Model_Block::getBlockModel($page->addblockname);
-			$page->addblock = new $model();
+			$blockname = Saint_Model_Block::convertNameFromWeb($block);
+			$model = Saint_Model_Block::getBlockModel($blockname);
+			$edit_block = new $model();
+			$page->setEditBlock($edit_block);
 			
 			if (isset($_POST['blockid']) && Saint::sanitize($_POST['blockid'],SAINT_REG_ID)) {
-				$page->addblock->load($page->addblockname,$_POST['blockid']);
+				$edit_block->load($blockname,$_POST['blockid']);
 			} else {
-				$page->addblock->loadNew($page->addblockname);
+				$edit_block->loadNew($blockname);
 			}
 
-			if (!$page->addblock) {
+			if (!$edit_block) {
 				$page->setTempLayout("system/error");
 				$page->error = "Failed to load block for editing. Check error logs for further details.";
 				return 0;
 			}
 			
-			$page->addblockid = $page->addblock->getId();
-			$page->addblockarguments = array(
-				"repeat" => 1,
-				"start" => 0,
-				"matches" => array("id",$page->addblockid,"="),
-			);
 			$page->setTempLayout("system/editblock");
 		} else {
 			Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$block."-".$_POST['blockid'].

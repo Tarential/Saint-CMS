@@ -1,3 +1,4 @@
+<?php $block = Saint::getCurrentPage()->getEditBlock(); ?>
 <div id="saint-add-block-sidebar" class="saint-add-block-sidebar">
 	<h1></h1>
 	<ul class="options">
@@ -6,7 +7,7 @@
 		<li id="saint-add-block-cancel" class="link">Cancel</li>
 	</ul>
 	<form id="saint-add-block-settings">
-		<?php echo Saint::genField("saint-block-setting-saintname","hidden","",array("value"=>$page->addblockname)); ?>
+		<?php echo Saint::genField("saint-block-setting-saintname","hidden","",array("value"=>$block->getName())); ?>
 		<?php echo Saint::genField("saint-block-setting-enabled","hidden","",array("value"=>1)); ?>
 		<?php
 			$options = array();
@@ -20,15 +21,14 @@
 		?>
 		<div>
 		<?php echo Saint::genField("saint-edit-block-categories[]","select","Categories:",
-			array('options'=>$options,'selected'=>$page->addblock->getCategories(),'multiple'=>true,'static'=>true)); ?></div>
-		<?php foreach ($page->addblock->getAllSettings() as $key=>$val): ?>
-			<?php echo $page->addblock->renderInput($key); ?>
+			array('options'=>$options,'selected'=>$block->getCategories(),'multiple'=>true,'static'=>true)); ?></div>
+		<?php foreach ($block->getAllSettings() as $key=>$val): ?>
+			<?php echo $block->renderInput($key); ?>
 		<?php endforeach; ?>
 	</form>
 </div>
 <div id="saint-add-block-data" class="saint-add-block-data">
 	<div class="saint-new-block">
-		<?php $page->addblock->renderPreview(); ?>
-		<?php /* Saint::includeBlock($page->addblockname,$page->addblockarguments); */ ?>
+		<?php $block->renderPreview(); ?>
 	</div>
 </div>

@@ -32,9 +32,9 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 		switch ($setting) {
 			case "uri":
 				$options['label'] = "URI:";
-				$options['details'] = "<p>".SAINT_URL . "/blog/[URI]</p>";
+				$options['details'] = array(SAINT_URL . "/blog/[URI]");
 				if ($this->get($setting) == "") {
-					$options['details'] .= "\n<p>(Leave blank to auto generate).</p>";
+					$options['details'][] = "(Leave blank to auto generate)";
 				}
 				parent::renderInput($setting,$options);
 				break;
@@ -43,12 +43,12 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 				parent::renderInput($setting,$options);
 				break;
 			case "keywords":
-				$options['details'] = "Comma separated values (key,words,etc).";
+				$options['details'] = array("Comma separated values (key,words,etc).");
 				parent::renderInput($setting,$options);
 				break;
 			case "postdate":
 				$options['label'] = "Posted on:";
-				$options['details'] = "Format: YYYY-MM-DD HH:MM:SS";
+				$options['details'] = array("Format: YYYY-MM-DD HH:MM:SS");
 				parent::renderInput($setting,$options);
 				break;
 			default:
