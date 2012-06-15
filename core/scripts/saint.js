@@ -681,7 +681,7 @@ $(document).ready(function() {
 				Saint.startPageEdit();
 			}
 		}
-	},'#saint_admin_po_edit');
+	},'#saint_admin_po_edit, #saint-logo');
 
 	$(document).on({
 		'click': function(event) {

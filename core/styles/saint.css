@@ -160,6 +160,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	height: 20px;
 	width: 74px;
 	background: url('../images/saint-logo.png');
+	z-index: 101;
 }
 
 #saint_ajax_indicator {
