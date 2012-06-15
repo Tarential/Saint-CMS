@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>Saint - <?php echo $page->getTitle(); ?></title>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<meta name="robots" content="<?php if ($page->allowsRobots()): ?>index,follow<?php else: ?>noindex,nofollow<?php endif; ?>" />
 		<meta name="keywords" content="<?php echo implode(',',$page->getMetaKeywords()); ?>" />
 		<meta name="description" content="<?php echo $page->getMetaDescription(); ?>" />

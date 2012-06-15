@@ -17,7 +17,7 @@ if (isset($args['r']))
 <?php endif; ?>
 <div class="sig-page-numbers">
 <?php for ($i = 0; $i < $page->sfmnumpages; $i++): ?>
-<span class="sig-page-<?php echo $i; ?>" class="link<?php if ($i == $page->sfmcurpage): ?> current<?php endif; ?>">
+<span class="sig-page-<?php echo $i; ?> link<?php if ($i == $page->sfmcurpage): ?> current<?php endif; ?>">
 	<a href="<?php echo $url."/p.".$i; ?>"><?php echo $i+1; ?></a>
 </span>
 <?php if ($page->sfmnumpages-1 > $i): ?> | <?php endif; ?>

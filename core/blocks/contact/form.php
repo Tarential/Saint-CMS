@@ -4,14 +4,14 @@
 		<li><?php echo Saint::genField("saint-contact-email","text","Your E-Mail: "); ?></li>
 		<li><?php echo Saint::genField("saint-contact-message","textarea","Your Message: "); ?></li>
 	</ul>
-	<span id="saint-contact-submit" class="link"><?php echo Saint::getPageLabel("submit","Submit Message"); ?></span>
+	<div class="link submit"><?php echo Saint::getPageLabel("submit","Submit Message"); ?></div>
 </form>
 <script type="text/javascript">
 $(document).on({
 	'click': function(event) {
 		$('#saint-contact-form').submit();
 	}
-},'#saint-contact-submit');
+},'#saint-contact-form .link.submit');
 </script>
 <?php
 /* To be enabled once problem with jquery-validate and Saint label system is resolved

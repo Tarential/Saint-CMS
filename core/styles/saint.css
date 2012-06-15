@@ -609,22 +609,19 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	display: block;
 }
 
-span.editnow, span.editnow * {
+.saint-label.editnow, .saint-label.editnow * {
 	border-bottom: 1px dotted red; }
 
-span.editnow:hover, span.editnow *:hover {
-	border-bottom: 1px solid red; }
-
-div.editnow > .block-item {
+.editnow > .block-item {
 	border: 1px dotted #000; }
 
 .block-item {
 	position: relative; }
 
-span.editnow:hover {
+.saint-label.editnow:hover {
 	cursor: pointer; }
 
-span.block-name {
+.block-name {
 	font-style: italic; }
 
 .editing {
@@ -688,24 +685,22 @@ span.match {
 	text-align: left;
 }
 
-.search-submit {
-	margin-left: 5px;
-	width: 30px;
-	float: left; }
-
-.search-phrase {
+#saint-search input {
+	margin-bottom: 2px;
+	border: 1px solid #000; 
 	width: 150px;
 	float: left;
 }
+
+#saint-search input.submit {
+	margin-left: 5px;
+	width: 30px;
+	float: left; }
 
 #saint-search span {
 	display: block;
 	margin-bottom: 5px;
 	font-weight: bold; }
-
-#saint-search input {
-	margin-bottom: 2px;
-	border: 1px solid #000; }
 
 #rss-feed-link {
 	clear: both;

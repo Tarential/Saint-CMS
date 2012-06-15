@@ -41,7 +41,9 @@ $page->sfmnumpages = $page->sfmtotal / $page->sfmperpage;
 				);
 				$resizedurl = $img->getResizedUrl($resizeargs);
 				?>
-				<a href="<?php echo $img->getUrl(); ?>" target="_blank"><img id="sig-<?php echo $files[$i]['id']; ?>" class="link" src="<?php echo $resizedurl ?>" /></a>
+				<a href="<?php echo $img->getUrl(); ?>" target="_blank">
+					<img id="sig-<?php echo $files[$i]['id']; ?>" class="link" src="<?php echo $resizedurl ?>" alt="<?php echo $img->getTitle(); ?>" title="<?php echo $img->getDescription(); ?>" />
+				</a>
 				<h3><?php echo $files[$i]['title']; ?></h3>
 			</td>
 			<?php if ($i % 3 == 2): $closed = true; ?></tr><?php endif; ?>

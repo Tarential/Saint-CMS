@@ -61,7 +61,7 @@ $(document).ready(function() {
 				return true;
 			}
 		}
-	},'body:not(body.sle-active) span.editable, body:not(body.sle-active) span.editable *');
+	},'body:not(body.sle-active) div.editable, body:not(body.sle-active) div.editable *');
 	
 	/**
 	 * Stop label editor.
