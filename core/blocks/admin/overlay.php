@@ -9,9 +9,9 @@
 		<div id="saint-logo">&nbsp;</div>
 		
 		<ul id="saint_admin_menu">
+			<li id="saint_menu_link_settings" class="link">Settings</li>
 			<li id="saint_menu_link_pages" class="link saint_menu_link_pages">Pages</li>
 			<li id="saint_menu_link_users" class="link">Users</li>
-			<li id="saint_menu_link_categories" class="link">Categories</li>
 			<li id="saint_menu_link_shop" class="link">Shop</li>
 			<li id="saint_menu_link_files" class="link">Files</li>
 			<li id="saint_menu_link_logout" class="link">Logout</li>
@@ -71,20 +71,32 @@
 			</ul>
 		</div>
 		
-		<div id="saint_admin_category_options" class="saint_admin_options hidden">
-			<form>
+		<div id="saint_admin_settings" class="saint_admin_options hidden">
+			<h4>Settings</h4>
+			<form class="settings">
+				<?php echo Saint::genField("saint-site-title","text","Title:",array("static"=>true,"value"=>Saint::getSiteTitle())); ?>
+				<?php echo Saint::genField("saint-site-keywords","text","Keywords:",array("static"=>true,"value"=>Saint::getSiteKeywords())); ?>
+				<?php echo Saint::genField("saint-site-description","textarea","Description:",array("static"=>true,"value"=>Saint::getSiteDescription())); ?>
+				<?php $tp = new Saint_Model_Page(); if ($tp->loadById(Saint::getShopPageId())) $shopuri = $tp->getName(); else $shopuri = ""; ?>
+				<?php echo Saint::genField("saint-shop-uri","text","Shop URI: (leave blank to disable)",array("static"=>true,"value"=>$shopuri)); ?>
+				<?php if ($tp->loadById(Saint::getBlogPageId())) $bloguri = $tp->getName(); else $bloguri = ""; ?>
+				<?php echo Saint::genField("saint-blog-uri","text","Blog URI: (leave blank to disable)",array("static"=>true,"value"=>$bloguri)); ?>
+				<span class="submit link">Save Settings</span>
+			</form>
+			
+			<h4>Categories</h4>
+			<ul id="saint_categories" class="sublist">
+			<?php foreach (Saint::getAllCategories() as $iid=>$icat): ?>
+				<li class="link category-edit" id="cat-<?php echo $iid; ?>"><?php echo $icat; ?><span class="delete close-button">&nbsp;</span></li>
+			<?php endforeach; ?>
+			</ul>
+			<form class="categories">
 				<input type="hidden" value="0" name="saint-set-category-id" id="saint-set-category-id" />
 				<input type="hidden" value="0" name="saint-delete-category" id="saint-delete-category" />
 				<?php echo Saint::genField("saint-add-category","text","Name:")?>
 				<span id="saint-add-category-submit" class="link">Add</span>
 				<span id="saint-add-category-cancel" class="link hidden">Cancel</span>
 			</form>
-			<?php echo Saint::getLabel("category-list","Categories:"); ?>
-			<ul id="saint_categories" class="sublist">
-			<?php foreach (Saint::getAllCategories() as $iid=>$icat): ?>
-				<li class="link category-edit" id="cat-<?php echo $iid; ?>"><?php echo $icat; ?><span class="delete close-button">&nbsp;</span></li>
-			<?php endforeach; ?>
-			</ul>
 		</div>
 		
 		<div id="saint_admin_dynamic_options" class="saint_admin_options hidden">&nbsp;</div>

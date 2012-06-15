@@ -1,7 +1,7 @@
 <div class="saint-product ssm-sku-<?php echo $block->getSku(); ?> preview">
 	<h2>
 		<span class="setting sbs-Name" title="Name"><?php
-		if ($block->get("Name") == "") echo "Your product name will go here"; else echo $block->get("Name");
+		if ($block->get("name") == "") echo "Your product name will go here"; else echo $block->get("name");
 		?></span> - <span class="regprice">$<span class="setting sbs-Price" title="Price"><?php
 		if ($block->getPrice() == "") echo "00.00"; else echo $block->getPrice();
 		?></span></span>

@@ -23,18 +23,18 @@ class Saint_Model_Product extends Saint_Model_Block {
 			}
 		} else {
 			parent::__construct("shop/product",$id,$enabled,$settings);
-			if (isset($settings['Price'])) {
-				$this->_price = $settings['Price'];
+			if (isset($settings['price'])) {
+				$this->_price = $settings['price'];
 			} else {
 				$this->_price = 0;
 			}
-			if (isset($settings['SKU'])) {
-				$this->_sku = $settings['SKU'];
+			if (isset($settings['sku'])) {
+				$this->_sku = $settings['sku'];
 			} else {
 				$this->_sku = '';
 			}
-			if (isset($settings['File'])) {
-				$this->_file = $settings['File'];
+			if (isset($settings['file'])) {
+				$this->_file = $settings['file'];
 			} else {
 				$this->_file = '';
 			}
@@ -52,9 +52,9 @@ class Saint_Model_Product extends Saint_Model_Block {
 			$id = $name;
 		}
 		if (parent::load("shop/product",$id)) {
-			$this->_sku = $this->_settings['SKU'];
-			$this->_price = $this->_settings['Price'];
-			$this->_file = $this->_settings['File'];
+			$this->_sku = $this->_settings['sku'];
+			$this->_price = $this->_settings['price'];
+			$this->_file = $this->_settings['file'];
 			return 1;
 		} else {
 			return 0;
@@ -146,7 +146,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 			case "File":
 				parent::renderInput($setting,
 					array(
-						"details" => "File associated with product. This file must be stored in the 'restricted' folder and will be delivered to users when they make a purchase.",
+						"details" => array("File associated with product. This file must be stored in the 'restricted' folder and will be delivered to users when they make a purchase."),
 						"label" => "(Optional) File:",
 					)
 				);

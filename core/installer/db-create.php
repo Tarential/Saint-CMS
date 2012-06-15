@@ -57,13 +57,14 @@ $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_config` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`installed` boolean NOT NULL DEFAULT false,
-	`title` varchar(255),
+	`title` varchar(255) DEFAULT '',
 	`owner` varchar(255),
-	`meta_keywords` text,
-	`meta_description` text,
-	`allow_robots`boolean NOT NULL,
-	`allow_registration`boolean NOT NULL,
-	`allow_guestedits`boolean NOT NULL,
+	`keywords` text DEFAULT '',
+	`description` text DEFAULT '',
+	`allow_robots` boolean NOT NULL,
+	`allow_registration` boolean NOT NULL,
+	`blog_page` INTEGER DEFAULT 0,
+	`shop_page` INTEGER DEFAULT 0,
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`owner`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;

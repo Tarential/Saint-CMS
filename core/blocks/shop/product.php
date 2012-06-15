@@ -4,7 +4,7 @@ if ($block->getId()) {
 ?>
 <div class="saint-product<?php if ($sale) echo " sale"; ?> ssm-sku-<?php echo $block->getSku(); ?>">
 	<h2>
-		<?php echo $block->get("Name"); ?> - <span class="regprice">$<?php echo $block->getPrice(); ?></span>
+		<?php echo $block->get("name"); ?> - <span class="regprice">$<?php echo $block->getPrice(); ?></span>
 		<?php if ($sale): ?>on sale for <span class="saleprice">$<?php echo $discount_price; ?></span><?php endif; ?>
 	</h2>
 	<?php Saint::getBlockImage($block->getName(), $block->getId(), "main-image"); ?>

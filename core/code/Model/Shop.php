@@ -4,7 +4,7 @@
  * @author Preston St. Pierre
  * @package Saint
  */
-class Saint_Model_Shop {
+class Saint_Model_Shop extends Saint_Model_Page {
 	
 	/**
 	 * Create new temporary file access link.

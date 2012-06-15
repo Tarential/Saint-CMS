@@ -28,6 +28,14 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 		return SAINT_URL.'/blog/'.$this->_settings['uri'];
 	}
 	
+	public function getAllUrls() {
+		$blog_page = new Saint_Model_Page();
+		$blog_page->loadByName("blog");
+		return array(
+			array($blog_page->getId(),$this->getUrl()),
+		);
+	}
+	
 	public function renderInput($setting, $options = array()) {
 		switch ($setting) {
 			case "uri":

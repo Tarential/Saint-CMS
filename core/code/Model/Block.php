@@ -9,10 +9,10 @@ class Saint_Model_Block {
 	/**
 	 * Get the ID number for the current block template; create entry if not found.
 	 * @param string $name Name of block template.
-	 * @param string $model Optional name of model to use when creating block.
+	 * @param array $options Options for new block type.
 	 * @return int ID number of current block template or zero for failure.
 	 */
-	public static function getBlockTypeId($name, $model = null) {
+	public static function getBlockTypeId($name, $options = array()) {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
 		if ($sname) {
 			try {
@@ -21,7 +21,7 @@ class Saint_Model_Block {
 				if ($f->getCode()) {
 					Saint::logError("Problem selecting block type ID: ".$f->getMessage(),__FILE__,__LINE__);
 				}
-				return Saint_Model_Block::createBlockType($name,$model);
+				return Saint_Model_Block::createBlockType($name,$options);
 			}
 		} else {
 			Saint::logError("Name '$name' did not match valid patterns.",__FILE__,__LINE__);
@@ -32,18 +32,18 @@ class Saint_Model_Block {
 	/**
 	 * Create block type entry in database for given name and model.
 	 * Not meant to be called directly. Call getBlockTypeId instead; if no ID is found it will be created.
-	 * @param $name string Name of new block type.
-	 * @param $model string Name of model to use for block type.
-	 * @return $id int ID of new block type or 0 on failure.
+	 * @param string $name Name of new block type.
+	 * @param array $options Options for new block type.
+	 * @return int $id ID of new block type or 0 on failure.
 	 */
-	private static function createBlockType($name,$model = null) {
+	private static function createBlockType($name,$options = array()) {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
-		if ($model == null) {
+		if (isset($options['model']) && $options['model'] != null) {
+			$modname = ',`model`';
+			$modval = ",'".Saint::sanitize($options['model'])."'";
+		} else {
 			$modname = '';
 			$modval = '';
-		} else {
-			$modname = ',`model`';
-			$modval = ",'".Saint::sanitize($model)."'";
 		}
 		try {
 			Saint::query("INSERT INTO `st_blocktypes` (`name`$modname) VALUES ('$sname'$modval)");
@@ -532,7 +532,7 @@ EOT;
 			$name = Saint_Model_Block::formatForTable($sparse->name);
 			// Requesting the block type ID will create one if it doesn't exist.
 			if (isset($sparse->model) && $sparse->model != "") {
-				Saint_Model_Block::getBlockTypeId($sparse->name,$sparse->model);
+				Saint_Model_Block::getBlockTypeId($sparse->name,array("model"=>$sparse->model));
 			}
 			
 			try {

@@ -149,6 +149,10 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	border-right-width: 1px;
 	overflow: hidden; }
 
+#saint_admin_overlay h4, #saint_admin_overlay h5 {
+	margin: 2px 0 5px;
+}
+
 #saint-logo {
 	position: absolute;
 	right: 25px;
@@ -374,7 +378,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	margin-bottom: 10px;
 	clear: both; }
 
-.saint_admin_options input,select {
+.saint_admin_options input, .saint_admin_options select, .saint_admin_options textarea {
 	border: 1px solid #333;
 	width: 100%; }
 
@@ -389,6 +393,11 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 
 .sublist .link:hover {
 	text-decoration: underline;
+}
+
+.settings .submit.link {
+	display: block;
+	margin: 2px 0 10px;
 }
 
 .saint-admin-block {
@@ -987,7 +996,7 @@ span.match {
 	float: left;
 }
 
-#saint_shop_admin_nav {
+.ssm.nav-bar {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -998,12 +1007,12 @@ span.match {
 	border-bottom: 1px solid #000;
 }
 
-#saint_shop_admin_nav ul {
+.ssm.nav-bar ul {
 	padding: 0;
 	margin: 2px 0 0 4px;
 }
 
-#saint_shop_admin_nav ul li {
+.ssm.nav-bar ul li {
 	display: inline;
 	margin-right: 10px; }
 

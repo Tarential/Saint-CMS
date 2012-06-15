@@ -247,10 +247,68 @@ class Saint {
 	 */
 	public static function getSiteDescription() {
 		try {
-			return Saint::getOne("SELECT `meta_description` FROM `st_config`");
+			return Saint::getOne("SELECT `description` FROM `st_config`");
 		} catch (Exception $e) {
 			Saint::logWarning("Problem getting site description: ".$e->getMessage(),__FILE__,__LINE__);
 			return '';
+		}
+	}
+	
+	/**
+	 * Get the site keywords.
+	 * @return string Site keywords as comma separated values.
+	 */
+	public static function getSiteKeywords() {
+		try {
+			return Saint::getOne("SELECT `keywords` FROM `st_config`");
+		} catch (Exception $e) {
+			Saint::logWarning("Problem getting site keywords: ".$e->getMessage(),__FILE__,__LINE__);
+			return '';
+		}
+	}
+	
+	/**
+	 * Set the site title.
+	 * @return Boolean true on success, false otherwise.
+	 */
+	public static function setSiteTitle($title) {
+		$stitle = Saint::sanitize($title);
+		try {
+			Saint::query("UPDATE `st_config` SET `title`='$stitle'");
+			return 1;
+		} catch (Exception $e) {
+			Saint::logWarning("Problem setting site title: ".$e->getMessage(),__FILE__,__LINE__);
+			return 0;
+		}
+	}
+	
+	/**
+	 * Set the site description.
+	 * @return Boolean true on success, false otherwise.
+	 */
+	public static function setSiteDescription($description) {
+		$sdescription = Saint::sanitize($description);
+		try {
+			Saint::query("UPDATE `st_config` SET `description`='$sdescription'");
+			return 1;
+		} catch (Exception $e) {
+			Saint::logWarning("Problem setting site description: ".$e->getMessage(),__FILE__,__LINE__);
+			return 0;
+		}
+	}
+
+	/**
+	 * Set the site keywords.
+	 * @return Boolean true on success, false otherwise.
+	 */
+	public static function setSiteKeywords($keywords) {
+		$skeywords = Saint::sanitize($keywords);
+		try {
+			Saint::query("UPDATE `st_config` SET `keywords`='$skeywords'");
+			return 1;
+		} catch (Exception $e) {
+			Saint::logWarning("Problem setting site keywords: ".$e->getMessage(),__FILE__,__LINE__);
+			return 0;
 		}
 	}
 	
@@ -859,6 +917,84 @@ class Saint {
 	}
 	
 	/**
+	 * Get ID of page used for the Saint blog.
+	 * @return int ID of page used for the blog or 0 if disabled.
+	 */
+	public static function getBlogPageId() {
+		try {
+			$blog_page = new Saint_Model_Page();
+			if (!$blog_page->loadById(Saint::getOne("SELECT `blog_page` FROM `st_config`"))) {
+				Saint::setBlogPageId(0);
+			}
+			return $blog_page->getId();
+		} catch (Exception $e) {
+			if ($e->getCode()) {
+				Saint::logError("Unable to select blog page ID: ".$e->getMessage(),__FILE__,__LINE__);
+			}
+			return 0;
+		}
+	}
+	
+	/**
+	 * Get ID of page used for the Saint shop.
+	 * @return int ID of page used for the shop or 0 if disabled.
+	 */
+	public static function getShopPageId() {
+		try {
+			$shop_page = new Saint_Model_Page();
+			if (!$shop_page->loadById(Saint::getOne("SELECT `shop_page` FROM `st_config`"))) {
+				Saint::setShopPageId(0);
+			}
+			return $shop_page->getId();
+		} catch (Exception $e) {
+			if ($e->getCode()) {
+				Saint::logError("Unable to select shop page ID: ".$e->getMessage(),__FILE__,__LINE__);
+			}
+			return 0;
+		}
+	}
+	
+	/**
+	 * Set ID of page used for the Saint blog.
+	 * @param int $id ID of new page to be used for the blog.
+	 * @return boolean True on success, false otherwise.
+	 */
+	public static function setBlogPageId($id) {
+		$new_page = new Saint_Model_Page();
+		if ($id == 0 || $new_page->loadById($id)) {
+			try {
+				Saint::query("UPDATE `st_config` SET `blog_page`='".$new_page->getId()."'");
+				return 1;
+			} catch (Exception $e) {
+				Saint::logError("Unable to update blog page ID: ".$e->getMessage(),__FILE__,__LINE__);
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	}	
+	
+	/**
+	 * Set ID of page used for the Saint shop.
+	 * @param int $id ID of new page to be used for the shop.
+	 * @return boolean True on success, false otherwise.
+	 */
+	public static function setShopPageId($id) {
+		$new_page = new Saint_Model_Page();
+		if ($id == 0 || $new_page->loadById($id)) {
+			try {
+				Saint::query("UPDATE `st_config` SET `shop_page`='".$new_page->getId()."'");
+				return 1;
+			} catch (Exception $e) {
+				Saint::logError("Unable to update shop page ID: ".$e->getMessage(),__FILE__,__LINE__);
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	}
+	
+	/**
 	 * Include a style of passed name with preference given to user directory.
 	 * @param string $style Name of style file to include. 
 	 */
@@ -980,7 +1116,8 @@ class Saint {
 						if (preg_match('/^block\/(\d*)\/(.*)\/n\/.*$/',$label[1],$matches)) {
 							$bid = $matches[1];
 							$bname = $matches[2];
-							$result_block = new Saint_Model_Block();
+							$bmodel = Saint_Model_Block::getBlockModel($bname);
+							$result_block = new $bmodel();
 							$result_block->load($bname,$bid);
 							$resultpages = $result_block->getAllUrls();
 							
@@ -1007,12 +1144,20 @@ class Saint {
 					}
 				}
 			}
-			return $results;
 		} catch (Exception $e) {
 			if ($e->getCode()) {
 				Saint::logError("Unable to select labels for search: ".$e->getMessage(),__FILE__,__LINE__);
 			}
-			return array();
 		}
+		
+		try {
+			
+		} catch (Exception $g) {
+			if ($g->getCode()) {
+				Saint::logError("Unable to select settings for search: ".$e->getMessage(),__FILE__,__LINE__);
+			}
+		}
+		
+		return $results;
 	}
 }

@@ -37,7 +37,7 @@ class Saint_Controller_Page {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function setCurrentPage($page) {
-		if (is_a($page,'Saint_Model_Page')) {
+		if (is_a($page,'Saint_Model_Page') || is_subclass_of('Saint_Model_Page')) {
 			$this->_page = $page;
 			return 1;
 		} else
@@ -150,6 +150,118 @@ class Saint_Controller_Page {
 			);
 		}
 
+		/*
+		 * Setting controls
+		 */
+	
+		if (isset($_POST['saint-site-title']) && $_POST['saint-site-title'] != "") {
+			$this->_page->setTempLayout("system/json");
+			$success = true;
+			$errors = array();
+			
+			if (!Saint::setSiteTitle($_POST['saint-site-title'])) {
+				$success = false;
+				$errors[] = "Invalid title.";
+			}
+			
+			if (isset($_POST['saint-site-description']) && !Saint::setSiteDescription($_POST['saint-site-description'])) {
+				$success = false;
+				$errors[] = "Invalid description.";
+			}
+			
+			if (isset($_POST['saint-site-keywords']) && !Saint::setSiteKeywords($_POST['saint-site-keywords'])) {
+				$success = false;
+				$errors[] = "Invalid keywords.";
+			}
+			
+			if (isset($_POST['saint-shop-uri'])) {
+				$prev_page = new Saint_Model_Page();
+				$prev_page->loadById(Saint::getShopPageId());
+				Saint::logError("Shop Start");
+				if ($prev_page->getName() != $_POST['saint-shop-uri']) {
+					Saint::logError("Working");
+					if ($_POST['saint-shop-uri'] == "") {
+						Saint::logError("Deleting");
+						$prev_page->delete();
+						Saint::setShopPageId(0);
+						Saint::logEvent("Disabled Saint shop.");
+					} elseif (!Saint_Model_Page::nameAvailable($_POST['saint-shop-uri'])) {
+						Saint::logError("Name taken.");
+						$success = false;
+						$errors[] = "Name is already in use.";
+						Saint::logEvent("The page name you requested to use for the shop is already taken. Either rename or delete the page then try again.");
+					} elseif ($prev_page->getId()) {
+						Saint::logError("Altering existing shop page.");
+						if ($prev_page->setName($_POST['saint-shop-uri'])) {
+							$prev_page->save();
+						} else {
+							$success = false;
+							$errors[] = "Unable to change the name of the shop page.";
+							Saint::logEvent("Unable to change the name of the shop page. See the error log for more details.");
+						}
+					} else {
+						Saint::logError("Adding new shop page.");
+						$new_page = new Saint_Model_Page();
+						$new_page->setName($_POST['saint-shop-uri']);
+						$new_page->setLayout("shop/shop");
+						$new_page->setTitle(Saint::getSiteTitle());
+						$new_page->setKeywords(Saint::getSiteKeywords());
+						$new_page->setDescription(Saint::getSiteDescription());
+						$new_page->save(true);
+						$new_page->setModel("Saint_Model_Shop");
+						Saint::setShopPageId($new_page->getId());
+						Saint::logEvent("Added shop page at URI ".$prev_page->getName());
+					}
+				}
+			}
+			
+			if (isset($_POST['saint-blog-uri'])) {
+				$prev_page = new Saint_Model_Page();
+				$prev_page->loadById(Saint::getBlogPageId());
+				Saint::logError("Blog Start");
+				if ($prev_page->getName() != $_POST['saint-blog-uri']) {
+					Saint::logError("Working");
+					if ($_POST['saint-blog-uri'] == "") {
+						Saint::logError("Deleting");
+						$prev_page->delete();
+						Saint::setBlogPageId(0);
+						Saint::logEvent("Disabled Saint blog.");
+					} elseif (!Saint_Model_Page::nameAvailable($_POST['saint-blog-uri'])) {
+						Saint::logError("Name taken.");
+						$success = false;
+						$errors[] = "Name is already in use.";
+						Saint::logEvent("The page name you requested to use for the blog is already taken. Either rename or delete the page then try again.");
+					} elseif ($prev_page->getId()) {
+						Saint::logError("Altering existing blog page.");
+						if ($prev_page->setName($_POST['saint-blog-uri'])) {
+							$prev_page->save();
+						} else {
+							$success = false;
+							$errors[] = "Unable to change the name of the blog page.";
+							Saint::logEvent("Unable to change the name of the blog page. See the error log for more details.");
+						}
+					} else {
+						Saint::logError("Adding new blog page.");
+						$new_page = new Saint_Model_Page();
+						$new_page->setName($_POST['saint-blog-uri']);
+						$new_page->setLayout("blog/index");
+						$new_page->setTitle(Saint::getSiteTitle());
+						$new_page->setKeywords(Saint::getSiteKeywords());
+						$new_page->setDescription(Saint::getSiteDescription());
+						$new_page->save(true);
+						$new_page->setModel("Saint_Model_Blog");
+						Saint::setBlogPageId($new_page->getId());
+						Saint::logEvent("Added blog page at URI ".$prev_page->getName());
+					}
+				}
+			}
+			
+			$this->_page->jsondata = array(
+				"success" => $success,
+				"actionlog" => Saint::getActionLog(),
+			);
+		}
+		
 		/*
 		 * Search controls
 		 */

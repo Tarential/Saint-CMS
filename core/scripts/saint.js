@@ -543,13 +543,45 @@ $(document).ready(function() {
 	
 	/* END User Administration */
 	
+	/* START Setting Management */
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.saveSettings();
+		}
+	},'#saint_admin_settings .settings .submit.link');
+	
+	Saint.saveSettings = function() {
+		var postdata = $('#saint_admin_settings form.settings').serialize();
+		var url = '/system/';
+		Saint.callHome(url, postdata, Saint.savedSettings);
+	};
+	
+	Saint.savedSettings = function(data) {
+		try {
+			realdata = JSON.parse(data);
+			if (realdata['success']) {
+				Saint.notify("Saved settings.");
+			} else {
+				Saint.addError("There was a problem saving the selected category.");
+				$('#saint_ajax_indicator').addClass("error");
+			}
+			Saint.setActionLog(realdata.actionlog);
+		} catch (e) {
+			$('#saint_ajax_indicator').addClass("error");
+			Saint.addError("There was a problem saving the selected category. Please check the server error log for further information.",0);
+		}
+	};
+	
+	/* END Setting Management */
+	
 	/* START Category Management */
 	
 	$(document).on({
 		'click': function(event) {
-			Saint.showOptions("#saint_admin_category_options");
+			Saint.showOptions("#saint_admin_settings");
 		}
-	},'#saint_menu_link_categories');
+	},'#saint_menu_link_settings');
 	
 	$(document).on({
 		'click': function(event) {
@@ -575,7 +607,7 @@ $(document).ready(function() {
 				$('#saint-set-category-id').val(editid);
 				$('#saint-add-category').val(editname);
 				$('#saint-delete-category').val(1);
-				var postdata = $('#saint_admin_category_options form').serialize();
+				var postdata = $('#saint_admin_settings form').serialize();
 				var url = '/system/';
 				Saint.callHome(url, postdata, Saint.savedCategory);
 			} else {
@@ -600,7 +632,7 @@ $(document).ready(function() {
 	
 	
 	Saint.saveCategory = function() {
-		var postdata = $('#saint_admin_category_options form').serialize();
+		var postdata = $('#saint_admin_settings form.categories').serialize();
 		var url = '/system/';
 		Saint.callHome(url, postdata, Saint.savedCategory);
 	};
@@ -1532,6 +1564,10 @@ $(document).ready(function() {
 			}
 		}
 		return id;
+	};
+	
+	Saint.notify = function(notice) {
+		alert(notice);
 	};
 	
 	/* END World Events */

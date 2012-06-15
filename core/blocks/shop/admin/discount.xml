@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <block>
 	<name>shop/admin/discount</name>
-	<setting>Name</setting>
-	<setting>Type</setting>
-	<setting>Amount</setting>
-	<setting datatype="timestamp" default="now">StartDate</setting>
-	<setting datatype="datetime" default="2100-01-01 00:00:00">EndDate</setting>
-	<setting>Filters</setting>
+	<setting>name</setting>
+	<setting>type</setting>
+	<setting>amount</setting>
+	<setting datatype="timestamp" default="now">startdate</setting>
+	<setting datatype="datetime" default="2100-01-01 00:00:00">enddate</setting>
+	<setting>filters</setting>
 </block>

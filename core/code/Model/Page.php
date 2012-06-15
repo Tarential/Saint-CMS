@@ -298,6 +298,26 @@ class Saint_Model_Page {
 	}
 	
 	/**
+	 * Set new model for loaded page.
+	 * @param string $newmodel Model descended from (or equal to) Saint_Model_Page.
+	 * @return boolean True on success, false otherwise.
+	 */
+	public function setModel($newmodel) {
+		$newmodel = Saint::sanitize($newmodel);
+		if (is_a($newmodel,"Saint_Model_Page") || is_subclass_of($newmodel,"Saint_Model_Page")) {
+			try {
+				Saint::query("UPDATE `st_pages` SET `model`='$newmodel' WHERE `id`='$this->_id'");
+				return 1;
+			} catch (Exception $e) {
+				Saint::logError("Unable to set page model: ".$e->getMessage(),__FILE__,__LINE__);
+			}
+		} else {
+			Saint::logError("Error: '$newmodel' is not a valid page model.",__FILE__,__LINE__);
+		}
+		return 0;
+	}
+	
+	/**
 	 * Request page blocks.
 	 * @return string[] Block names used in page.
 	 */
