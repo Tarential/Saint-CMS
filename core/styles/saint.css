@@ -130,10 +130,10 @@ nav .toplevel ul {
 nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	display: block; }
 
-#saint_ajax_templates {
+.saint-templates {
 	position: absolute; }
 
-#saint_admin_overlay {
+.saint-admin-overlay {
 	z-index: 100;
 	position: fixed;
 	top: 0px;
@@ -149,11 +149,11 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	border-right-width: 1px;
 	overflow: hidden; }
 
-#saint_admin_overlay h4, #saint_admin_overlay h5 {
+.saint-admin-overlay h4, .saint-admin-overlay h5 {
 	margin: 2px 0 5px;
 }
 
-#saint-logo {
+.saint-admin-overlay .saint-logo {
 	position: absolute;
 	right: 25px;
 	top: 0px;
@@ -163,7 +163,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	z-index: 101;
 }
 
-#saint_ajax_indicator {
+.saint-ajax-indicator {
 	position: absolute;
 	top: 0px;
 	right: 0px;
@@ -171,15 +171,15 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	height: 20px;
 	background: url('../images/success.png') no-repeat; }
 
-#saint_ajax_indicator.enabled {
+.saint-ajax-indicator.enabled {
 	background: url('../images/ajax-loader.gif') 2px 2px no-repeat;
 }
 
-#saint_ajax_indicator.error {
+.saint-ajax-indicator.error {
 	background: url('../images/error.png') no-repeat;
 }
 
-#saint_admin_menu {
+.saint-admin-menu {
 	display: block;
 	position: absolute;
 	margin: 0;
@@ -191,18 +191,18 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	border-bottom: solid 1px #000;
 }
 
-#saint_admin_menu li {
+.saint-admin-menu li {
 	display: inline;
 	margin-left: 10px;
 }
 
-#saint_admin_menu a {
+.saint-admin-menu a {
 	color: #000;
 	font-weight: bold;
 	text-decoration: none;
 }
 
-#saint_admin_event_log {
+.saint-action-log {
 	position: absolute;
 	right: 0px;
 	top: 23px;
@@ -212,11 +212,11 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	overflow: auto;
 }
 
-#saint_admin_event_log p {
+.saint-action-log p {
 	font-size: 10px;
 }
 
-#saint-admin-page-options {
+.saint-admin-options.current-page {
 	position: fixed;
 	width: 210px;
 	padding: 0 0 0 10px;
@@ -236,27 +236,27 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	-o-transition: all 250ms; /* Opera */
 }
 
-#saint-admin-page-options.visible {
+.saint-admin-options.current-page.visible {
 	left: 25px;
 }
 
-#saint-admin-page-options select, #saint-admin-page-options input, #saint-admin-page-options textarea {
+.saint-admin-options.current-page select, .saint-admin-options.current-page input, .saint-admin-options.current-page textarea {
 	width: 200px; }
 
-#saint-admin-page-options select {
+.saint-admin-options.current-page select {
 	height: auto; }
 
-#saint-admin-page-options label {
+.saint-admin-options.current-page label {
 	margin: 10px 0 2px 0;
 	display: block;
 	font-weight: bold; }
 
-#saint-admin-page-options ul {
+.saint-admin-options.current-page ul {
 	list-style: none;
 	padding: 0;
 }
 
-#saint-page-options-close {
+.saint-admin-options.current-page .close-button {
 	display: block;
 	position: absolute;
 	top: 2px;
@@ -301,14 +301,14 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	background-size: 10px 10px;
 }
 
-#saint-page-options-close:hover {
+.saint-admin-options.current-page .close-button:hover {
 	cursor: pointer; }
 
 .saint-label textarea {
 	width: 100%;
 	height: auto; }
 
-.saint_admin_options {
+.saint-admin-options {
 	position: absolute;
 	right: 250px;
 	top: 23px;
@@ -319,71 +319,47 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	border-right: 1px solid #000;
 }
 
-#saint_forms_user {
-	padding-bottom: 10px;
-}
-
-#saint_user_edit {
-	padding: 0 0 10px;
-}
-
-#saint_forms_search {
-	height: 40px;
-}
-
-#saint_admin_category_options .saint-label {
-	display: block;
-	margin: 5px 0 2px;
-}
-
-#saint_admin_category_options input {
-	margin: 0 0 5px;
-}
-
-#saint_admin_page_list, #saint_admin_user_list {
+.saint-admin-options .page-list, .saint-admin-options .user-list {
 	margin: 0 0 2px;
 }
 
-#saint_admin_page_list li, #saint_admin_user_list li {
+.saint-admin-options .page-list li, .saint-admin-options .user-list li {
 	margin: 0 0 1px;
 }
 
-#saint_admin_page_list li a, #saint_admin_user_list li {
+.saint-admin-options .page-list li a, .saint-admin-options .user-list li {
 	font-size: 10px;
 }
 
-#saint_admin_category_options form .saint-label {
-	text-decoration: none; }
-
-#saint_admin_page_options .saint-label, #saint_admin_category_options .saint-label, #saint_admin_user_options .saint-label {
+.saint-admin-options.page-options .saint-label, .saint-admin-options.user-options .saint-label {
 	text-decoration: underline;
 	display: block;
 	margin: 5px 0 2px;
 }
 
-#saint_categories {
+.saint-admin-options .category-list {
 	margin: 0;
 }
 
-#saint_categories li {
+.saint-admin-options .category-list li {
 	margin: 0;
 }
 
-.saint_admin_options ul {
+.saint-admin-options ul {
 	list-style: none;
 	padding: 0;
 	margin: 5px 0 10px;
 }
 
-.saint_admin_options ul li {
+.saint-admin-options ul li {
 	margin-bottom: 10px;
 	clear: both; }
 
-.saint_admin_options input, .saint_admin_options select, .saint_admin_options textarea {
+.saint-admin-options input, .saint-admin-options select, .saint-admin-options textarea {
 	border: 1px solid #333;
 	width: 100%; }
 
-#saint_admin_event_log span.labelname {
+.saint-action-log span.labelname {
 	font-weight: bold; }
 
 .sublist .link {
@@ -416,7 +392,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	overflow: hidden;
 }
 
-.saint-admin-block-overlay {
+.saint-admin-block .overlay {
 	width: 100%;
 	height: 100%;
 	display: none;
@@ -427,15 +403,15 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	top: 0;
 }
 
-.saint-admin-block-overlay.loading {
+.saint-admin-block .overlay.loading {
 	display: block;
 }
 
-.loading > .saint-admin-block-overlay {
+.loading > .saint-admin-block .overlay {
 	display: block;
 }
 
-#saint-admin-file-manager {
+.saint-admin-block.file-manager {
 	top: 104%;
 	z-index: 87;
 	transition: all 600ms;
@@ -444,12 +420,12 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	-o-transition: all 600ms;
 }
 
-#saint-admin-file-manager.active {
+.saint-admin-block.file-manager.active {
 	top: 4%;
 	z-index: 87;	
 }
 
-#saint-admin-add-block {
+.saint-admin-block.add-block {
 	top: -100%;
 	z-index: 86;
 	transition: all 600ms;
@@ -458,11 +434,11 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	-o-transition: all 600ms;
 }
 
-#saint-admin-add-block.active {
+.saint-admin-block.add-block.active {
 	top: 4%;
 }
 
-#saint-admin-shop-manager {
+.saint-admin-block.shop-manager {
 	bottom: 104%;
 	z-index: 85;
 	transition: all 600ms;
@@ -471,11 +447,11 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	-o-transition: all 600ms;
 }
 
-#saint-admin-shop-manager.active {
+.saint-admin-block.shop-manager.active {
 	bottom: 4%;
 }
 
-.saint-add-block-load {
+.saint-admin-block .load {
 	height: 100%;
 	width: 100%;
 	position: absolute;
@@ -530,12 +506,12 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	margin: 10px 0 2px;
 }
 
-#saint-admin-add-block .details, #saint-admin-add-block .details p {
+.saint-admin-block.add-block .details, .saint-admin-block.add-block .details p {
 	font-style: italic;
 	font-size: 10px;
 }
 
-#saint-admin-add-block .details p {
+.saint-admin-block.add-block .details p {
 	margin-bottom: 2px;
 }
 
@@ -735,12 +711,12 @@ span.match {
 	clear: both;
 }
 
-#saint_admin_overlay label {
+.saint-admin-overlay label {
 	display: block;
 	font-weight: bold;
 }
 
-#saint_admin_overlay .loading {
+.saint-admin-overlay .loading {
 	background: url('../images/ajax-loader-large.gif') center center no-repeat;
 }
 
@@ -898,12 +874,12 @@ span.match {
 	margin: 0 10px;
 }
 
-#saint_navigation_sfm-pager .next, .sig-pager .next {
+.sfm-pager .next, .sig-pager .next {
 	margin-right: 10px;
 	margin-top: 2px;
 	float: right; }
 
-#saint_navigation_sfm-pager .previous, .sig-pager .previous {
+.sfm-pager .previous, .sig-pager .previous {
 	margin-left: 10px;
 	margin-top: 2px;
 	float: left; }
@@ -1017,7 +993,7 @@ span.match {
 	display: inline;
 	margin-right: 10px; }
 
-#saint-shop-manager-load {
+.saint-admin-block.shop-manager .load {
 	position: absolute;
 	top: 25px;
 	bottom: 0px;
@@ -1027,37 +1003,37 @@ span.match {
 	overflow: auto;
 }
 
-#saint-shop-manager-load h2 {
+.saint-admin-block.shop-manager .load h2 {
 	margin: 2px 0 5px;
 }
 
-#saint-shop-manager-load th {
+.saint-admin-block.shop-manager .load th {
 	text-align: left;
 }
 
-#saint-shop-manager-load th.date {
+.saint-admin-block.shop-manager .load th.date {
 	width: 100px;
 }
 
-#saint-shop-manager-load th.id {
+.saint-admin-block.shop-manager .load th.id {
 	width: 100px;
 }
 
-#saint-shop-manager-load th.paypal {
+.saint-admin-block.shop-manager .load th.paypal {
 	width: 200px;
 }
 
-#saint-shop-manager-load th.amount {
+.saint-admin-block.shop-manager .load th.amount {
 	width: 100px;
 }
 
-#saint-shop-manager-load .edit-button {
+.saint-admin-block.shop-manager .load .edit-button {
 	font-size: 18px;
 	font-weight: bold;
 	margin: 10px 0 3px;
 }
 
-#saint-shop-manager-load .amount {
+.saint-admin-block.shop-manager .load .amount {
 	font-style: italic; }
 
 #saint-paypal-buynow {
@@ -1312,7 +1288,7 @@ span.match {
 	resize: both;
 }
 
-#saint_blackout {
+.blackout {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -1330,7 +1306,7 @@ span.match {
 body.sle-active {
 	overflow: hidden; }
 
-body.sle-active #saint_blackout {
+body.sle-active .blackout {
 	display: block;
 }
 

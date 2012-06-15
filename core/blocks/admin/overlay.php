@@ -1,23 +1,23 @@
 <?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
-<div id="saint_admin-overlay">
+<div class="saint-admin-code">
 	<script type="text/javascript">
 		var SAINT_URL = "<?php echo SAINT_URL; ?>";
 	</script>
-	<div id="saint_blackout">&nbsp;</div>
-	<div id="saint_admin_overlay">
-		<div id="saint_ajax_indicator">&nbsp;</div>
-		<div id="saint-logo">&nbsp;</div>
+	<div class="blackout">&nbsp;</div>
+	<div class="saint-admin-overlay">
+		<div class="saint-ajax-indicator">&nbsp;</div>
+		<div class="saint-logo">&nbsp;</div>
 		
-		<ul id="saint_admin_menu">
-			<li id="saint_menu_link_settings" class="link">Settings</li>
-			<li id="saint_menu_link_pages" class="link saint_menu_link_pages">Pages</li>
-			<li id="saint_menu_link_users" class="link">Users</li>
-			<li id="saint_menu_link_shop" class="link">Shop</li>
-			<li id="saint_menu_link_files" class="link">Files</li>
-			<li id="saint_menu_link_logout" class="link">Logout</li>
+		<ul class="saint-admin-menu">
+			<li class="link settings">Settings</li>
+			<li class="link pages">Pages</li>
+			<li class="link users">Users</li>
+			<li class="link shop">Shop</li>
+			<li class="link files">Files</li>
+			<li class="link logout">Logout</li>
 		</ul>
 		
-		<div id="saint_admin_page_add" class="saint_admin_options hidden">
+		<div class="saint-admin-options page-add hidden">
 			<form>
 				<ul>
 					<li><?php echo Saint::genField("saint-add-page-title","text","Name: "); ?></li>
@@ -40,38 +40,38 @@
 				</ul>
 			</form>
 			<ul>
-				<li><div id="saint_admin_page_add_submit" class="link">Add Page</div></li>
-				<li><div class="link saint_menu_link_pages">Back to Page Options</div></li>
+				<li><div class="link add">Add Page</div></li>
+				<li><div class="link back">Back to Page Options</div></li>
 			</ul>
 		</div>
 		
-		<div id="saint_admin_page_options" class="saint_admin_options hidden">
+		<div class="saint-admin-options page-options hidden">
 			<ul>
-				<li id="saint_admin_po_add" class="link">Add New Page</li>
-				<li id="saint_admin_po_edit" class="link">Edit This Page</li>
-				<li id="saint_admin_po_delete" class="link">Delete This Page</li>
+				<li class="link add">Add New Page</li>
+				<li class="link edit">Edit This Page</li>
+				<li class="link delete">Delete This Page</li>
 			</ul>
 			<?php echo Saint::getLabel("page-list","Pages:"); ?>
-			<ul id="saint_admin_page_list">
+			<ul class="page-list">
 				<?php foreach (Saint::getAllPages() as $ipage): ?>
 				<li><a href="<?php echo SAINT_URL . "/" . $ipage->getName(); ?>" class="sublist"><?php echo $ipage->getTitle(); ?></a></li>
 				<?php endforeach; ?>
 			</ul>
 		</div>
 	
-		<div id="saint_admin_user_options" class="saint_admin_options hidden">
+		<div class="saint-admin-options user-options hidden">
 			<ul>
-				<li id="saint_admin_uo_add" class="link">Add New User</li>
+				<li class="link add">Add New User</li>
 			</ul>
 			<?php echo Saint::getLabel("user-list","Users:"); ?>
-			<ul id="saint_admin_user_list" class="sublist">
+			<ul class="user-list sublist">
 				<?php foreach (Saint::getAllUsers() as $iuser): ?>
 				<li class="link" id="user-<?php echo $iuser->getId(); ?>"><?php echo $iuser->getUsername(); ?></li>
 				<?php endforeach; ?>
 			</ul>
 		</div>
 		
-		<div id="saint_admin_settings" class="saint_admin_options hidden">
+		<div class="saint-admin-options site-options hidden">
 			<h4>Settings</h4>
 			<form class="settings">
 				<?php echo Saint::genField("saint-site-title","text","Title:",array("static"=>true,"value"=>Saint::getSiteTitle())); ?>
@@ -85,33 +85,33 @@
 			</form>
 			
 			<h4>Categories</h4>
-			<ul id="saint_categories" class="sublist">
+			<ul class="sublist category-list">
 			<?php foreach (Saint::getAllCategories() as $iid=>$icat): ?>
 				<li class="link category-edit" id="cat-<?php echo $iid; ?>"><?php echo $icat; ?><span class="delete close-button">&nbsp;</span></li>
 			<?php endforeach; ?>
 			</ul>
 			<form class="categories">
-				<input type="hidden" value="0" name="saint-set-category-id" id="saint-set-category-id" />
-				<input type="hidden" value="0" name="saint-delete-category" id="saint-delete-category" />
+				<input type="hidden" value="0" name="saint-set-category-id" />
+				<input type="hidden" value="0" name="saint-delete-category" />
 				<?php echo Saint::genField("saint-add-category","text","Name:")?>
 				<span id="saint-add-category-submit" class="link">Add</span>
 				<span id="saint-add-category-cancel" class="link hidden">Cancel</span>
 			</form>
 		</div>
 		
-		<div id="saint_admin_dynamic_options" class="saint_admin_options hidden">&nbsp;</div>
+		<div class="saint-admin-options dynamic hidden">&nbsp;</div>
 		
-		<div id="saint_admin_event_log">
+		<div class="saint-action-log">
 		<?php foreach(Saint::getActionLog() as $action): ?>
 		<p><?php echo $action; ?></p>
 		<?php endforeach; ?>
 		</div>
 	</div>
 	<?php endif; ?>
-	<div id="saint_ajax_templates">
+	<div class="saint-templates">
 		<?php if (Saint::getCurrentUser()->hasPermissionTo("edit-page")): ?>
-		<div id="saint-admin-page-options" class="hidden">
-			<span id="saint-page-options-close" class="close-button">&nbsp;</span>
+		<div class="saint-admin-options current-page hidden">
+			<span class="close-button">&nbsp;</span>
 			<form>
 				<input type="hidden" name="saint-edit-page-id" value="<?php echo $page->getId(); ?>" />
 				<ul>
@@ -135,28 +135,26 @@
 					<li><?php echo Saint::genField("saint-edit-page-categories[]","select","Categories: ",
 						array('options'=>$options,'selected'=>$page->getCategories(),'multiple'=>true)); ?></li>
 				</ul>
-				<span id="saint-page-options-save" class="link">Save</span>
+				<span class="link save">Save</span>
 			</form>
 		</div>
 		<?php endif; ?>
 		
-		<div id="saint-admin-add-block" class="saint-admin-block">
-			<div id="saint-add-block-overlay" class="saint-admin-block-overlay">&nbsp;</div>
-			<div id="saint-add-block-load" class="saint-add-block-load">&nbsp;</div>
+		<div class="saint-admin-block add-block">
+			<div class="overlay">&nbsp;</div>
+			<div class="load">&nbsp;</div>
 		</div>
 		
-		<div id="saint-admin-file-manager" class="saint-admin-block">
-			<div id="saint-file-manager-overlay" class="saint-admin-block-overlay">&nbsp;</div>
-			<div id="saint-file-manager-load" class="saint-add-block-load">&nbsp;</div>
+		<div class="saint-admin-block file-manager">
+			<div class="overlay">&nbsp;</div>
+			<div class="load">&nbsp;</div>
 		</div>
 		
-		<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
-		<div id="saint-admin-shop-manager" class="saint-admin-block">
-			<div id="saint-shop-manager-overlay" class="saint-admin-block-overlay">&nbsp;</div>
-			<div id="saint-shop-manager-load" class="saint-add-block-load">&nbsp;</div>
+		<div class="saint-admin-block shop-manager">
+			<div class="overlay">&nbsp;</div>
+			<div class="load">&nbsp;</div>
 			<?php Saint::includeBlock("shop/admin/nav"); ?>
 		</div>
-		<?php endif; ?>
 		
 		<div class="sle template hidden">
 			<div class="blackout">&nbsp;</div>
@@ -206,7 +204,7 @@
 				<input type="hidden" name="saint-wysiwyg-name" value="" />
 				<textarea name="saint-wysiwyg-content" class="wysiwyg-editable"></textarea>
 			</form>
-			<span class="link" id="saint-save-wysiwyg">Save</span>
+			<span class="link save">Save</span>
 		</div>
 	</div>
 </div>
