@@ -2,7 +2,6 @@
 $cart = Saint::getShoppingCart();
 $items = $cart->getItems();
 Saint::includeBlock("notices",false);
-$page = Saint::getCurrentPage();
 $args = $page->getArgs();
 $products = array();
 foreach ($items as $id=>$number) {

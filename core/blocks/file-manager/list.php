@@ -1,5 +1,4 @@
 <?php
-$page = Saint::getCurrentPage();
 if (isset($page->sfmarguments))
 	$arguments = $page->sfmarguments;
 else

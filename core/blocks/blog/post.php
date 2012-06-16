@@ -1,9 +1,9 @@
 <div class="blog-post">
 	<h3><a href="<?php echo $block->getUrl(); ?>"><?php echo $block->get("title"); ?></a></h3>
 	<h6>Posted on <?php echo $block->getPostDate(); ?></h6>
-	<div class="content"><?php echo Saint::getBlockLabel($block->getName(),$block->getId(),"content","This is your post content. Click here to edit this text."); ?></div>
+	<div class="content"><?php echo $block->getLabel("content","This is your post content. Click here to edit this text."); ?></div>
 	<!-- AddThis Button BEGIN -->
-	<div class="addthis_toolbox addthis_default_style " addthis:url="<?php echo SAINT_URL; ?>/blog/<?php echo $block->getUrl(); ?>">
+	<div class="addthis_toolbox addthis_default_style " addthis:url="<?php echo $block->getUrl(); ?>">
 	<a href="http://www.addthis.com/bookmark.php?v=300&amp;pubid=xa-4f03d10a66bfde1c" class="addthis_button_compact">Share</a>
 	<span class="addthis_separator">|</span>
 	<a class="addthis_button_preferred_1"></a>

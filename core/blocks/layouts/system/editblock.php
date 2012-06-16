@@ -1,4 +1,4 @@
-<?php $block = Saint::getCurrentPage()->getEditBlock(); ?>
+<?php $block = $page->getEditBlock(); ?>
 <div id="saint-add-block-sidebar" class="saint-add-block-sidebar">
 	<h1></h1>
 	<ul class="options">

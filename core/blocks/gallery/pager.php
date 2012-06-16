@@ -1,5 +1,4 @@
 <?php
-$page = Saint::getCurrentPage();
 $args = $page->getArgs();
 $url = SAINT_URL . "/" . $page->getName(); 
 if (isset($args['r']))

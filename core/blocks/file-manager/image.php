@@ -1,7 +1,4 @@
-<?php
-	$page = Saint::getCurrentPage();
-	$image = $page->curfile;
-?>
+<?php	$image = $page->curfile; ?>
 <div class="saint-image editable width-<?php echo $image->getWidth(); ?> height-<?php echo $image->getHeight();
 ?> sfl-<?php echo Saint::convertNameToWeb($image->getName()); ?>">
 	<?php if ($image->linkToFull()): ?><a href="<?php echo $image->getUrl(); ?>"><?php endif; ?>

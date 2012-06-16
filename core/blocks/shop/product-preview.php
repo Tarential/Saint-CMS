@@ -7,10 +7,10 @@
 		?></span></span>
 	</h2>
 	<div class="saint-image">
-		<?php Saint::getBlockImage($block->getName(), $block->getId(), "main-image"); ?>
+		<?php $block->includeImage("main-image"); ?>
 		<span class="details">Click this image to change it.</span>
 	</div>
 	<div class="content">
-		<?php echo Saint::getBlockLabel($block->getName(),$block->getId(),"description","This is your product description. Click here to edit this text."); ?>
+		<?php echo $block->getLabel("description","This is your product description. Click here to edit this text."); ?>
 	</div>
 </div>

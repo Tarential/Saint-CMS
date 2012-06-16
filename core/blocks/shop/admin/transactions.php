@@ -1,6 +1,5 @@
 <?php
 $user = Saint::getCurrentUser();
-$page = Saint::getCurrentPage();
 $args = $page->getArgs();
 $matches = array();
 if (isset($args['ppid'])) {

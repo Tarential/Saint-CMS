@@ -3,7 +3,6 @@
 <?php Saint::includeBlock("middle"); ?>
 
 <?php
-$page = Saint::getCurrentPage();
 $args = $page->getArgs();
 if (isset($args['view']) && $args['view'] == "thanks") {
 	Saint::includeBlock("shop/thanks");

@@ -194,6 +194,26 @@ class Saint_Model_Page {
 	}
 	
 	/**
+	 * Get label of given name unique to this page.
+	 * @param string $name Name of label to retrieve.
+	 * @return string Contents of label.
+	 */
+	public function getLabel($name, $default = '', $options = array()) {
+		$name = "page/" . $this->_id . "/n/" . $name;
+		return Saint::getLabel($name,$default);
+	}
+	
+	/**
+	 * Get image label of given name unique to this page.
+	 * @param string $name Name of the image label.
+	 * @param string $options Options for displaying image.
+	 */
+	public function includeImage($name, $options = array()) {
+		$name = "page/" . $this->_id . "/n/" . $name;
+		Saint_Model_ImageLabel::includeImage($name, $options);
+	}
+	
+	/**
 	 * Request page ID.
 	 * @return int Page ID.
 	 */

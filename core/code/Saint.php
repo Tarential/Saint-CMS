@@ -715,30 +715,6 @@ class Saint {
 	}
 	
 	/**
-	 * Get code for CMS-editable image specific to the given block.
-	 * @param string $block Name of block in which image is included.
-	 * @param string $id Model ID of block in which image is included.
-	 * @param string $name Name of image label.
-	 * @param array[] $arguments Optional arguments for image label.
-	 * @return string Code for image label.
-	 */
-	public static function getBlockImage($block, $id, $name, $arguments = array()) {
-		$name = "block/" . $id . "/" . $block . "/n/" . $name;
-		return Saint_Model_ImageLabel::getImage($name, $arguments);
-	}
-	
-	/**
-	 * Get code for CMS-editable image specific to the current page.
-	 * @param string $name Name of image label.
-	 * @param $arguments Optional arguments for image label.
-	 * @return string Code for image label.
-	 */
-	public static function getPageImage($name, $arguments = array()) {
-		$name = "page/" . Saint::getCurrentPage()->getName() . "/n/" . $name;
-		return Saint_Model_ImageLabel::getImage($name, $arguments);
-	}
-	
-	/**
 	 * Get code for CMS-editable image general to the entire site.
 	 * @param string $name Name of image label.
 	 * @param $arguments Optional arguments for image label.
@@ -780,36 +756,6 @@ class Saint {
 	 */
 	public static function getWysiwyg($name, $default = '') {
 		return Saint_Model_Wysiwyg::get($name,$default);
-	}
-	
-	/**
-	 * Get code for CMS-editable text area specific to the current page.
-	 * @param string $name Label name.
-	 * @param string $default Label default content.
-	 * @param boolean $container True to include wrapper div, false otherwise.
-	 * @param string $lang Language to use for label. Defaults to current user's selected language.
-	 * @param boolean $wysiwyg True to make label editor WYSIWYG, false by default.
-	 * @return string Code for selected label.
-	 */
-	public static function getPageLabel($name, $default = '', $container = true, $lang = null, $wysiwyg = false, $revision = 0) {
-		$name = "page/" . Saint::getCurrentPage()->getId() . "/n/" . $name;
-		return Saint::getLabel($name,$default,$container,$lang,$wysiwyg,$revision);
-	}
-	
-	/**
-	 * Get code for CMS-editable text area specific to the given block.
-	 * @param string $block Name of block in which the label is included.
-	 * @param string $id Model ID of block in which the label is included.
-	 * @param string $name Label name.
-	 * @param string $default Label default content.
-	 * @param boolean $container True to include wrapper div, false otherwise.
-	 * @param string $lang Language to use for label. Defaults to current user's selected language.
-	 * @param boolean $wysiwyg True to make label editor WYSIWYG, false by default.
-	 * @return string Code for selected label.
-	 */
-	public static function getBlockLabel($block, $id, $name, $default = '', $container = true, $lang = null, $wysiwyg = false, $revision = 0) {
-		$name = "block/" . $id . "/" . $block . "/n/" . $name;
-		return Saint::getLabel($name,$default,$container,$lang,$wysiwyg,$revision);
 	}
 	
 	/**
@@ -1035,7 +981,7 @@ class Saint {
 	public static function genField ($name,$type,$label = '',$data = null,$rules = '') {
 		$field = '';
 		if (!isset($data['static']) || $data['static'] == false)
-			$label = Saint::getPageLabel("sff-".preg_replace('/[\[\]]*/','',$name),$label);
+			$label = Saint::getCurrentPage()->getLabel("sff-".preg_replace('/[\[\]]*/','',$name),$label);
 		else
 			$label = '<span class="saint-label">'.$label.'</span>';
 		if (isset($data['value']))

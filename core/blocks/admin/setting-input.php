@@ -1,4 +1,4 @@
-<?php $options = Saint::getCurrentPage()->getEditBlock()->getInputSettings(); ?>
+<?php $options = $page->getEditBlock()->getInputSettings(); ?>
 <?php echo Saint::genField($options['name'],$options['type'],$options['label'],$options['data']); ?>
 <?php if (sizeof($options['details'])): ?>
 	<span class="details">

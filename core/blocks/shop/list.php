@@ -12,7 +12,7 @@
 			<a href="<?php echo SAINT_URL; ?>/shop/addtocart.<?php echo $block->getId(); ?>/buynow.1" class="link buy-now">Buy Now</a>
 		</div>
 		<a href="<?php echo SAINT_URL; ?>/shop/pid.<?php echo $block->getId(); ?>/">
-			<?php Saint::getBlockImage($block->getName(), $block->getId(), "main-image",array('link'=>false,'max-width'=>180,'max-height'=>200)); ?>
+			<?php $block->includeImage("main-image",array('link'=>false,'max-width'=>180,'max-height'=>200)); ?>
 		</a>
 		<?php if ($sale): ?>
 		<h6>Down from $<?php echo $block->getPrice(); ?>. Save <span class="discount"><?php echo round((1-$block->getDiscountPrice()/$block->getPrice())*100,0); ?>%</span>!</h6>

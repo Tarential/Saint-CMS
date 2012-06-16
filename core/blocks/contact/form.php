@@ -4,7 +4,7 @@
 		<li><?php echo Saint::genField("saint-contact-email","text","Your E-Mail: "); ?></li>
 		<li><?php echo Saint::genField("saint-contact-message","textarea","Your Message: "); ?></li>
 	</ul>
-	<div class="link submit"><?php echo Saint::getPageLabel("submit","Submit Message"); ?></div>
+	<div class="link submit"><?php echo $page->getLabel("submit","Submit Message"); ?></div>
 </form>
 <script type="text/javascript">
 $(document).on({

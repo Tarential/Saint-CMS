@@ -813,6 +813,26 @@ EOT;
 	}
 	
 	/**
+	 * Get label of given name unique to this block.
+	 * @param string $name Name of label to retrieve.
+	 * @return string Contents of label.
+	 */
+	public function getLabel($name, $default = '', $options = array()) {
+		$name = "block/" . $this->_id . "/" . $this->_name . "/n/" . $name;
+		return Saint::getLabel($name,$default);
+	}
+	
+	/**
+	 * Get image label of given name unique to this block.
+	 * @param string $name Name of the image label.
+	 * @param string $options Options for displaying image.
+	 */
+	public function includeImage($name, $options = array()) {
+		$name = "block/" . $this->_id . "/" . $this->_name . "/n/" . $name;
+		Saint_Model_ImageLabel::includeImage($name, $options);
+	}
+	
+	/**
 	 * Get the block ID.
 	 * @return int ID for the loaded block.
 	 */

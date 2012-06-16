@@ -7,8 +7,8 @@ if ($block->getId()) {
 		<?php echo $block->get("name"); ?> - <span class="regprice">$<?php echo $block->getPrice(); ?></span>
 		<?php if ($sale): ?>on sale for <span class="saleprice">$<?php echo $discount_price; ?></span><?php endif; ?>
 	</h2>
-	<?php Saint::getBlockImage($block->getName(), $block->getId(), "main-image"); ?>
-	<?php echo Saint::getBlockLabel($block->getName(),$block->getId(),"description","Enter product description here..."); ?>
+	<?php $block->includeImage("main-image"); ?>
+	<?php echo $block->getLabel("description","Enter product description here..."); ?>
 	<div class="ssm meta-links">
 		<a href="<?php echo SAINT_URL; ?>/shop/addtocart.<?php echo $block->getId(); ?>" class="link add-to-cart">Add to Cart</a>
 		<a href="<?php echo SAINT_URL; ?>/shop/addtocart.<?php echo $block->getId(); ?>/buynow.1" class="link buy-now">Buy Now</a>
