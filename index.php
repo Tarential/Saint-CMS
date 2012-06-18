@@ -121,7 +121,11 @@ else
 
 $subdir = substr(SAINT_SITE_ROOT,strlen($_SERVER['DOCUMENT_ROOT']));
 define('SAINT_URL',chop(SAINT_BASE_URL . $subdir,'/'));
-$uri = trim(substr(trim(rtrim($_SERVER['REQUEST_URI'],'/'),'/'),strlen($subdir)),'/');
+if ($get_start = strpos($_SERVER['REQUEST_URI'],'?'))
+	$uri_sans_get = rtrim(trim(substr($_SERVER['REQUEST_URI'],0,$get_start),'/'),'/');
+else
+	$uri_sans_get = rtrim(trim($_SERVER['REQUEST_URI'],'/'),'/');
+$uri = trim(substr($uri_sans_get,strlen($subdir)),'/');
 
 /**
  * Saint class autoload function.
@@ -175,6 +179,11 @@ if (preg_match_all($argument_pattern,$uri,$matches)) {
 	}
 }
 
+foreach ($_GET as $key=>$val) {
+	if (trim(rtrim($key,'/'),'/') != $uri) {
+		$args[$key] = $val;
+	}
+}
 $uri_sans_args = preg_replace($argument_pattern,'',$uri);
 if (preg_match('/^([^\/]+)\/(.*)$/',$uri_sans_args,$matches)) {
 	$pid = $matches[1];
