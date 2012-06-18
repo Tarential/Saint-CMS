@@ -96,6 +96,10 @@ class Saint_Model_Discount {
 			foreach ($applicable_discounts['percent'] as $percent) {
 				$finalprice *= (1-($percent['amount']/100));
 			}
+			
+			if ($finalprice < 0)
+				$finalprice = 0;
+			
 			return round($finalprice,2);
 		}
 	}

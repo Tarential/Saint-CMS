@@ -6,8 +6,8 @@ $sql = array();
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_languages` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(255) NOT NULL,
-	`title` varchar(255),
+	`name` VARCHAR(255) NOT NULL,
+	`title` VARCHAR(255),
 	`enabled`boolean NOT NULL DEFAULT 1,
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX(`name`)
@@ -17,15 +17,16 @@ EOT;
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_users` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`username` varchar(255) NOT NULL,
-	`password` varchar(255) NOT NULL,
-	`email` varchar(255) NOT NULL,
-	`fname` varchar(255) NOT NULL,
-	`lname` varchar(255) NOT NULL,
-	`phone` varchar(255) NOT NULL,
-	`language` varchar(255) NOT NULL,
+	`username` VARCHAR(255) NOT NULL,
+	`password` VARCHAR(255) NOT NULL,
+	`email` VARCHAR(255) NOT NULL,
+	`fname` VARCHAR(255) NOT NULL,
+	`lname` VARCHAR(255) NOT NULL,
+	`phone` VARCHAR(255) NOT NULL,
+	`language` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX(`username`),
+	CONSTRAINT `st_users_language_name`
 	FOREIGN KEY (`language`) REFERENCES st_languages(`name`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 EOT;
@@ -34,20 +35,21 @@ $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_usergroups` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`userid` INTEGER UNSIGNED NOT NULL,
-	`group` varchar(255) NOT NULL,
+	`group` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX `ug`(`userid`,`group`)
+	UNIQUE INDEX `st_usergroups_usergroup`(`userid`,`group`)
 ) ENGINE=InnoDB;
 EOT;
 
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_sessions` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`username` varchar(255) NOT NULL,
-	`sequence` varchar(255) NOT NULL,
-	`nonce` varchar(255) NOT NULL,
+	`username` VARCHAR(255) NOT NULL,
+	`sequence` VARCHAR(255) NOT NULL,
+	`nonce` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX(`username`),
+	UNIQUE INDEX `st_sessions_username` (`username`),
+	CONSTRAINT `st_sessions_username_username`
 	FOREIGN KEY (`username`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 EOT;
@@ -56,16 +58,17 @@ EOT;
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_config` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`installed` boolean NOT NULL DEFAULT false,
-	`title` varchar(255) DEFAULT '',
-	`owner` varchar(255),
-	`keywords` text DEFAULT '',
-	`description` text DEFAULT '',
-	`allow_robots` boolean NOT NULL,
-	`allow_registration` boolean NOT NULL,
+	`installed` BOOLEAN NOT NULL DEFAULT false,
+	`title` VARCHAR(255) DEFAULT '',
+	`owner` VARCHAR(255),
+	`keywords` TEXT DEFAULT '',
+	`description` TEXT DEFAULT '',
+	`allow_robots` BOOLEAN NOT NULL,
+	`allow_registration` BOOLEAN NOT NULL,
 	`blog_page` INTEGER DEFAULT 0,
 	`shop_page` INTEGER DEFAULT 0,
 	PRIMARY KEY (`id`),
+	CONSTRAINT `st_config_owner_username`
 	FOREIGN KEY (`owner`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 EOT;
@@ -74,14 +77,16 @@ EOT;
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_labels` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(255) NOT NULL,
-	`owner` varchar(255) NOT NULL,
+	`name` VARCHAR(255) NOT NULL,
+	`owner` VARCHAR(255) NOT NULL,
 	`revision`int UNSIGNED NOT NULL,
-	`language` varchar(255) NOT NULL,
-	`label` mediumtext,
+	`language` VARCHAR(255) NOT NULL,
+	`label` MEDIUMTEXT,
 	PRIMARY KEY (`id`),
-	INDEX(`name`),
+	INDEX `st_labels_name` (`name`),
+	CONSTRAINT `st_labels_language_name`
 	FOREIGN KEY (`language`) REFERENCES st_languages(`name`) ON UPDATE CASCADE ON DELETE RESTRICT,
+	CONSTRAINT `st_labels_owner_username`
 	FOREIGN KEY (`owner`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 EOT;
@@ -89,10 +94,10 @@ EOT;
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_blocktypes` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(255) NOT NULL,
-	`model` varchar(255) DEFAULT 'Saint_Model_Block',
+	`name` VARCHAR(255) NOT NULL,
+	`model` VARCHAR(255) DEFAULT 'Saint_Model_Block',
 	PRIMARY KEY (`id`),
-	INDEX(`name`)
+	INDEX `st_blocktypes_name` (`name`)
 ) ENGINE=InnoDB;
 EOT;
 
@@ -102,18 +107,18 @@ CREATE TABLE IF NOT EXISTS `st_blocks` (
 	`blocktypeid` INTEGER UNSIGNED NOT NULL,
 	`blockid` INTEGER UNSIGNED NOT NULL,
 	PRIMARY KEY (`id`),
-	INDEX(`blocktypeid`),
-	INDEX(`blockid`)
+	INDEX `st_blocks_blocktypeid` (`blocktypeid`),
+	INDEX `st_blocks_blockid` (`blockid`)
 ) ENGINE=InnoDB;
 EOT;
 
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_wysiwyg` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(255) NOT NULL,
+	`name` VARCHAR(255) NOT NULL,
 	`content` longtext NOT NULL,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX(`name`)
+	UNIQUE INDEX `st_wysiwyg` (`name`)
 ) ENGINE=InnoDB;
 EOT;
 
@@ -121,18 +126,18 @@ EOT;
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_pages` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`enabled`boolean NOT NULL DEFAULT 1,
-	`name` varchar(255) NOT NULL,
-	`title` varchar(255) NOT NULL DEFAULT '',
-	`layout` varchar(255) NOT NULL DEFAULT '',
-	`model` varchar(255) NOT NULL DEFAULT 'Saint_Model_Page',
-	`meta_keywords` text DEFAULT '',
-	`meta_description` text DEFAULT '',
-	`allow_robots` boolean NOT NULL,
+	`enabled` BOOLEAN NOT NULL DEFAULT 1,
+	`name` VARCHAR(255) NOT NULL,
+	`title` VARCHAR(255) NOT NULL DEFAULT '',
+	`layout` VARCHAR(255) NOT NULL DEFAULT '',
+	`model` VARCHAR(255) DEFAULT 'Saint_Model_Page',
+	`meta_keywords` TEXT DEFAULT '',
+	`meta_description` TEXT DEFAULT '',
+	`allow_robots` BOOLEAN NOT NULL,
 	`created` DATETIME,
 	`updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX(`name`)
+	UNIQUE INDEX `st_pages_name` (`name`)
 ) ENGINE=InnoDB;
 EOT;
 
@@ -140,11 +145,12 @@ $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_pageblocks` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`pageid` INTEGER UNSIGNED NOT NULL,
-	`block` varchar(255) NOT NULL,
-	`url` varchar(255) NOT NULL,
+	`block` VARCHAR(255) NOT NULL,
+	`url` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`id`),
 	INDEX(`pageid`),
 	INDEX(`block`),
+	CONSTRAINT `st_pageblocks_pageid_id`
 	FOREIGN KEY (`pageid`) REFERENCES st_pages(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 EOT;
@@ -153,29 +159,30 @@ EOT;
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_files` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`enabled` boolean NOT NULL DEFAULT 1,
-	`user` boolean NOT NULL DEFAULT 0,
-	`location` varchar(255) NOT NULL,
-	`title` varchar(255) NOT NULL,
-	`keywords` text NOT NULL,
-	`description` text NOT NULL,
-	`extension` varchar(255) NOT NULL,
-	`type` varchar(255) NOT NULL,
+	`enabled` BOOLEAN NOT NULL DEFAULT 1,
+	`user` BOOLEAN NOT NULL DEFAULT 0,
+	`location` VARCHAR(255) NOT NULL,
+	`title` VARCHAR(255) NOT NULL,
+	`keywords` TEXT NOT NULL,
+	`description` TEXT NOT NULL,
+	`extension` VARCHAR(255) NOT NULL,
+	`type` VARCHAR(255) NOT NULL,
 	`width` INTEGER UNSIGNED NOT NULL DEFAULT 0,
 	`height` INTEGER UNSIGNED NOT NULL DEFAULT 0,
 	`size` INTEGER UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX(`location`)
+	UNIQUE INDEX `st_files_location` (`location`)
 ) ENGINE=InnoDB;
 EOT;
 
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_filelabels` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(255) NOT NULL,
+	`name` VARCHAR(255) NOT NULL,
 	`fileid` INTEGER UNSIGNED NOT NULL,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX(`name`),
+	UNIQUE INDEX `st_filelabels_name` (`name`),
+	CONSTRAINT `st_filelabels_fileid_id`
 	FOREIGN KEY (`fileid`) REFERENCES st_files(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 EOT;
@@ -183,9 +190,9 @@ EOT;
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_categories` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` varchar(255) NOT NULL,
+	`name` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX(`name`)
+	UNIQUE INDEX `st_categories_name` (`name`)
 ) ENGINE=InnoDB;
 EOT;
 
@@ -195,10 +202,12 @@ CREATE TABLE IF NOT EXISTS `st_blockcats` (
 	`catid` INTEGER UNSIGNED NOT NULL,
 	`blockid` INTEGER UNSIGNED NOT NULL,
 	PRIMARY KEY (`id`),
-	INDEX(`catid`),
-	INDEX(`blockid`),
-	UNIQUE INDEX `ug`(`catid`,`blockid`),
+	INDEX `st_blockcats_catid` (`catid`),
+	INDEX `st_blockcats_blockid` (`blockid`),
+	UNIQUE INDEX `st_blockcats_catidblockid`(`catid`,`blockid`),
+	CONSTRAINT `st_blockcats_catid_id`
 	FOREIGN KEY (`catid`) REFERENCES st_categories(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT `st_blockcats_blockid_id`
 	FOREIGN KEY (`blockid`) REFERENCES st_blocks(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 EOT;
@@ -209,10 +218,12 @@ CREATE TABLE IF NOT EXISTS `st_pagecats` (
 	`catid` INTEGER UNSIGNED NOT NULL,
 	`pageid` INTEGER UNSIGNED NOT NULL,
 	PRIMARY KEY (`id`),
-	INDEX(`catid`),
-	INDEX(`pageid`),
-	UNIQUE INDEX `ug`(`catid`,`pageid`),
+	INDEX `st_pagecats_catid` (`catid`),
+	INDEX `st_pagecats_pageid` (`pageid`),
+	UNIQUE INDEX `st_pagecats_catidpageid`(`catid`,`pageid`),
+	CONSTRAINT `st_pagecats_catid_id`
 	FOREIGN KEY (`catid`) REFERENCES st_categories(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT `st_pagecats_pageid_id`
 	FOREIGN KEY (`pageid`) REFERENCES st_pages(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 EOT;
@@ -223,10 +234,12 @@ CREATE TABLE IF NOT EXISTS `st_filecats` (
 	`catid` INTEGER UNSIGNED NOT NULL,
 	`fileid` INTEGER UNSIGNED NOT NULL,
 	PRIMARY KEY (`id`),
-	INDEX(`catid`),
-	INDEX(`fileid`),
-	UNIQUE INDEX `ug`(`catid`,`fileid`),
+	INDEX `st_filecats_catid` (`catid`),
+	INDEX `st_filecats_fileid` (`fileid`),
+	UNIQUE INDEX `st_filecats_catidfileid`(`catid`,`fileid`),
+	CONSTRAINT `st_filecats_catid_id`
 	FOREIGN KEY (`catid`) REFERENCES st_categories(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT `st_filecats_fileid_id`
 	FOREIGN KEY (`fileid`) REFERENCES st_files(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 EOT;
@@ -249,9 +262,9 @@ CREATE TABLE IF NOT EXISTS `st_shop_cart_products` (
 	`productid` INTEGER UNSIGNED NOT NULL,
 	`number` INTEGER UNSIGNED NOT NULL DEFAULT 1,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX `scpcp` (`cartid`,`productid`),
-	FOREIGN KEY (`cartid`) REFERENCES st_shop_carts(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-	FOREIGN KEY (`productid`) REFERENCES st_blocks(`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+	UNIQUE INDEX `st_shop_cart_products_cartidproductid` (`cartid`,`productid`),
+	CONSTRAINT `st_shop_cart_products_cartid_id`
+	FOREIGN KEY (`cartid`) REFERENCES st_shop_carts(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 EOT;
 
@@ -274,6 +287,7 @@ CREATE TABLE IF NOT EXISTS `st_shop_paypal_details` (
 	`paypalid` VARCHAR(255) NOT NULL UNIQUE,
 	`details` LONGTEXT,
 	PRIMARY KEY (`id`),
+	CONSTRAINT `st_shop_paypal_details_paypalid_paypalid`
 	FOREIGN KEY (`paypalid`) REFERENCES `st_shop_transactions`(`paypalid`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 EOT;
@@ -286,6 +300,7 @@ CREATE TABLE IF NOT EXISTS `st_shop_downloads` (
 	`remaining` INTEGER UNSIGNED NOT NULL DEFAULT 1,
 	`expires` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
+	CONSTRAINT `st_shop_downloads_productid_id`
 	FOREIGN KEY (`productid`) REFERENCES st_blocks(`id`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 EOT;

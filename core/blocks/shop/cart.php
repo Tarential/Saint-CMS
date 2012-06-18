@@ -49,7 +49,7 @@ if ($discount_price < $product[0]->getPrice()) {
 }
 ?>
 <li<?php if ($sale) echo ' class="sale"'; ?>>
-	<span class="product-name"><?php echo $product[0]->getName(); ?></span>
+	<span class="product-name"><?php echo $product[0]->get("name"); ?></span>
 	<span class="product-meta">
 		<span class="product-price">$<?php echo number_format(round($discount_price,2),2); ?></span>
 		<span class="product-number">(x<?php echo $product[1]; ?>)</span>

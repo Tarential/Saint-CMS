@@ -404,40 +404,25 @@ class Saint_Model_FileManager {
 	/**
 	 * Set the title for the loaded file.
 	 * @param string $title New title for loaded file.
-	 * @return boolean True on success, false otherwise.
 	 */
 	public function setTitle($title) {
-		if ($title = Saint::sanitize($title)) {
-			$this->_title = $title;
-			return 1;
-		} else
-			return 0;
+		$this->_title = Saint::sanitize($title);
 	}
 	
 	/**
 	 * Set the keywords for the loaded file.
 	 * @param string $keywords New keywords for loaded file.
-	 * @return boolean True on success, false otherwise.
 	 */
 	public function setKeywords($keywords) {
-		if ($keywords = Saint::sanitize($keywords)) {
-			$this->_keywords = $keywords;
-			return 1;
-		} else
-			return 0;
+		$this->_keywords = Saint::sanitize($keywords);
 	}
 	
 	/**
 	 * Set the description for the loaded file.
 	 * @param string $description New description for loaded file.
-	 * @return boolean True on success, false otherwise.
 	 */
 	public function setDescription($description) {
-		if ($description = Saint::sanitize($description)) {
-			$this->_description = $description;
-			return 1;
-		} else
-			return 0;
+		$this->_description = Saint::sanitize($description);
 	}
 	
 	/**

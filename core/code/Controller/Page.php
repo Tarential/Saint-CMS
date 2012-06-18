@@ -177,21 +177,22 @@ class Saint_Controller_Page {
 			if (isset($_POST['saint-shop-uri'])) {
 				$prev_page = new Saint_Model_Page();
 				$prev_page->loadById(Saint::getShopPageId());
-				Saint::logError("Shop Start");
 				if ($prev_page->getName() != $_POST['saint-shop-uri']) {
-					Saint::logError("Working");
 					if ($_POST['saint-shop-uri'] == "") {
-						Saint::logError("Deleting");
 						$prev_page->delete();
 						Saint::setShopPageId(0);
 						Saint::logEvent("Disabled Saint shop.");
 					} elseif (!Saint_Model_Page::nameAvailable($_POST['saint-shop-uri'])) {
-						Saint::logError("Name taken.");
-						$success = false;
-						$errors[] = "Name is already in use.";
-						Saint::logEvent("The page name you requested to use for the shop is already taken. Either rename or delete the page then try again.");
+						$test_page = new Saint_Model_Page();
+						$test_page->loadByName($_POST['saint-shop-uri']);
+						if ($test_page->getLayout() == "shop/index") {
+							Saint::setShopPageId($test_page->getId());
+						} else {
+							$success = false;
+							$errors[] = "Name is already in use.";
+							Saint::logEvent("The page name you requested to use for the shop is already taken. Either rename or delete the page then try again.");
+						}
 					} elseif ($prev_page->getId()) {
-						Saint::logError("Altering existing shop page.");
 						if ($prev_page->setName($_POST['saint-shop-uri'])) {
 							$prev_page->save();
 						} else {
@@ -203,12 +204,12 @@ class Saint_Controller_Page {
 						Saint::logError("Adding new shop page.");
 						$new_page = new Saint_Model_Page();
 						$new_page->setName($_POST['saint-shop-uri']);
-						$new_page->setLayout("shop/shop");
+						$new_page->setLayout("shop/index");
 						$new_page->setTitle(Saint::getSiteTitle());
 						$new_page->setKeywords(Saint::getSiteKeywords());
 						$new_page->setDescription(Saint::getSiteDescription());
 						$new_page->setModel("Saint_Model_Shop");
-						$new_page->save(true);
+						$new_page->save();
 						Saint::setShopPageId($new_page->getId());
 						Saint::logEvent("Added shop page at URI ".$prev_page->getName());
 					}
@@ -227,10 +228,16 @@ class Saint_Controller_Page {
 						Saint::setBlogPageId(0);
 						Saint::logEvent("Disabled Saint blog.");
 					} elseif (!Saint_Model_Page::nameAvailable($_POST['saint-blog-uri'])) {
-						Saint::logError("Name taken.");
-						$success = false;
-						$errors[] = "Name is already in use.";
-						Saint::logEvent("The page name you requested to use for the blog is already taken. Either rename or delete the page then try again.");
+						$test_page = new Saint_Model_Page();
+						$test_page->loadByName($_POST['saint-blog-uri']);
+						if ($test_page->getLayout() == "blog/index") {
+							Saint::setBlogPageId($test_page->getId());
+						} else {
+							Saint::logError("Name taken.");
+							$success = false;
+							$errors[] = "Name is already in use.";
+							Saint::logEvent("The page name you requested to use for the blog is already taken. Either rename or delete the page then try again.");
+						}
 					} elseif ($prev_page->getId()) {
 						Saint::logError("Altering existing blog page.");
 						if ($prev_page->setName($_POST['saint-blog-uri'])) {
