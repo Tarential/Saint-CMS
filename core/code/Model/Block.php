@@ -333,7 +333,13 @@ EOT;
 		$sblock = Saint::sanitize($block);
 		if ($sblock) {
 			$arguments['collection'] = true;
-			$saved_blocks = Saint_Model_Block::getBlocks($block,$arguments);
+			// Allow the blocks to be passed as an argument with the request
+			// to avoid repeating the query if it has been made already.
+			if (isset($arguments['blocks'])) {
+				$saved_blocks = $arguments['blocks'];
+			} else {
+				$saved_blocks = Saint_Model_Block::getBlocks($block,$arguments);
+			}
 			$page = Saint::getCurrentPage();
 			$args = $page->getArgs();
 			$page->crb = $block;
@@ -400,19 +406,24 @@ EOT;
 				}
 				if ($paging) {
 					$args = $page->getArgs();
-					$url = "/".$page->getName();
+					$url = SAINT_URL."/".$page->getName();
 					if (isset($args["subids"])) {
 						foreach ($args["subids"] as $subid) {
 							$url .= "/" . $subid;
 						}
 					}
+					$cur = 0;
 					foreach ($args as $key=>$val) {
 						if ($key != "pnum" && $key != "btid" && $key != "subids") {
-							$url .= "/$key.$val";
+							if ($cur == 0)
+								$mark = "?";
+							else
+								$mark = "&";
+							$url .= $mark."$key=$val";
 						}
 					}
 					$btid = Saint_Model_Block::getBlockTypeId($page->crb);
-					$page->crburl = chop($url,'/')."/btid.$btid/pnum.";
+					$page->crburl = chop($url,'/')."/?btid=$btid&pnum=";
 					$page->crbpstart = Saint::getStartingNumber($btid)-1;
 					$page->crbnstart = Saint::getStartingNumber($btid)+1;
 					$page->crbnumpages = ceil($numresults / $repeat);

@@ -295,67 +295,55 @@ EOT;
 # START CONTENT SECTION
 
 $sql[] = <<<EOT
-INSERT INTO st_languages (`name`,`title`) VALUES ('english','English');
+INSERT INTO `st_languages` (`name`,`title`) VALUES ('english','English');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('home','Home','blank','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('home','Home','blank','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('user','User','user/edit','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('user','User','user/edit','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('login','Login','user/login','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('login','Login','user/login','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`,`model`) VALUES ('blog','Blog','blog/index','NOW()','Saint_Model_Blog');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('search','Search','search/results','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`,`model`) VALUES ('feed','RSS Feed','blog/rss','NOW()','Saint_Model_Blog');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('system','Saint','system/system','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('search','Search','search/results','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('filemanager','Saint','file-manager/index','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('system','Saint','system/system','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('upload','Saint','file-manager/upload','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('filemanager','Saint','file-manager/index','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('contact','Contact','contact','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('upload','Saint','file-manager/upload','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('gallery','Gallery','gallery/gallery','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('contact','Contact','contact','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('slideshow','Slideshow','gallery/slideshow','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('gallery','Gallery','gallery/gallery','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('maintenance','Site Maintenance','system/maintenance','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('slideshow','Slideshow','gallery/slideshow','NOW()');
-EOT;
-
-$sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('shop','Shop','shop/shop','NOW()');
-EOT;
-
-$sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('maintenance','Site Maintenance','system/maintenance','NOW()');
-EOT;
-
-$sql[] = <<<EOT
-INSERT INTO st_pages (`name`,`title`,`layout`,`created`) VALUES ('404','Page Not Found','system/404','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('404','Page Not Found','system/404','NOW()');
 EOT;
 
 # END CONTENT SECTION

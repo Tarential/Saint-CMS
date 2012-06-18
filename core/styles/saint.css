@@ -649,7 +649,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 span.match {
 	font-weight: bold; }
 
-#saint_navigation_pager .saint-left-arrow {
+.saint-pager .saint-left-arrow {
 	float: left; }
 
 .saint-left-arrow {
@@ -661,7 +661,7 @@ span.match {
 .saint-left-arrow:hover,.saint-right-arrow:hover {
 	text-decoration: none; }
 
-#saint_navigation_pager .saint-right-arrow {
+.saint-pager .saint-right-arrow {
 	float: right; }
 
 .saint-right-arrow {

@@ -207,8 +207,8 @@ class Saint_Controller_Page {
 						$new_page->setTitle(Saint::getSiteTitle());
 						$new_page->setKeywords(Saint::getSiteKeywords());
 						$new_page->setDescription(Saint::getSiteDescription());
-						$new_page->save(true);
 						$new_page->setModel("Saint_Model_Shop");
+						$new_page->save(true);
 						Saint::setShopPageId($new_page->getId());
 						Saint::logEvent("Added shop page at URI ".$prev_page->getName());
 					}
@@ -248,8 +248,8 @@ class Saint_Controller_Page {
 						$new_page->setTitle(Saint::getSiteTitle());
 						$new_page->setKeywords(Saint::getSiteKeywords());
 						$new_page->setDescription(Saint::getSiteDescription());
-						$new_page->save(true);
 						$new_page->setModel("Saint_Model_Blog");
+						$new_page->save(true);
 						Saint::setBlogPageId($new_page->getId());
 						Saint::logEvent("Added blog page at URI ".$prev_page->getName());
 					}

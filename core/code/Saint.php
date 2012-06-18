@@ -84,6 +84,16 @@ class Saint {
 	}
 	
 	/**
+	 * Get the URL of the blog page for this site.
+	 * @return string URL of blog page.
+	 */
+	public static function getBlogUrl() {
+		$blog_page = new Saint_Model_Page();
+		$blog_page->loadById(Saint::getBlogPageId());		
+		return SAINT_URL.'/'.$blog_page->getName();
+	}
+	
+	/**
 	 * Notices added here are displayed to the user at each page load if supported by the template.
 	 * @param string $notice Contents of notice to be displayed to user.
 	 */
@@ -901,6 +911,16 @@ class Saint {
 	}
 	
 	/**
+	 * Get a model of the Saint shop page.
+	 * @return Saint_Model_Shop Shop page.
+	 */
+	public static function getShop() {
+		$shop = new Saint_Model_Shop();
+		$shop->loadById(Saint::getShopPageId());
+		return $shop;
+	}
+	
+	/**
 	 * Set ID of page used for the Saint blog.
 	 * @param int $id ID of new page to be used for the blog.
 	 * @return boolean True on success, false otherwise.
@@ -1003,7 +1023,12 @@ class Saint {
 				$field .= '<input type="hidden" id="'.$name.'" name="'.$name.'" class="'.$classes.'" value="'.$val.'" />' . "\n";
 				break;
 			case 'text':
-				$field .= $label . '<input type="text" id="'.$name.'" name="'.$name.'" class="'.$classes.'" value="'.$val.'" />' . "\n";
+				if (isset($data['password']) && $data['password']) {
+					$text = "password";
+				} else {
+					$text = "text";
+				}
+				$field .= $label . '<input type="'.$text.'" id="'.$name.'" name="'.$name.'" class="'.$classes.'" value="'.$val.'" />' . "\n";
 				break;
 			case 'textarea':
 				$field .= $label . '<textarea id="'.$name.'" name="'.$name.'" class="'.$classes.'">'.$val.'</textarea>' . "\n";

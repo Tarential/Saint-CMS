@@ -51,7 +51,7 @@
 				<li class="link edit">Edit This Page</li>
 				<li class="link delete">Delete This Page</li>
 			</ul>
-			<?php echo Saint::getLabel("page-list","Pages:"); ?>
+			<h4>Pages:</h4>
 			<ul class="page-list">
 				<?php foreach (Saint::getAllPages() as $ipage): ?>
 				<li><a href="<?php echo SAINT_URL . "/" . $ipage->getName(); ?>" class="sublist"><?php echo $ipage->getTitle(); ?></a></li>
@@ -63,7 +63,7 @@
 			<ul>
 				<li class="link add">Add New User</li>
 			</ul>
-			<?php echo Saint::getLabel("user-list","Users:"); ?>
+			<h4>Users:</h4>
 			<ul class="user-list sublist">
 				<?php foreach (Saint::getAllUsers() as $iuser): ?>
 				<li class="link" id="user-<?php echo $iuser->getId(); ?>"><?php echo $iuser->getUsername(); ?></li>
@@ -93,7 +93,7 @@
 			<form class="categories">
 				<input type="hidden" value="0" name="saint-set-category-id" />
 				<input type="hidden" value="0" name="saint-delete-category" />
-				<?php echo Saint::genField("saint-add-category","text","Name:")?>
+				<?php echo Saint::genField("saint-add-category","text","Name:",array('static'=>true))?>
 				<span id="saint-add-category-submit" class="link">Add</span>
 				<span id="saint-add-category-cancel" class="link hidden">Cancel</span>
 			</form>
@@ -115,25 +115,25 @@
 			<form>
 				<input type="hidden" name="saint-edit-page-id" value="<?php echo $page->getId(); ?>" />
 				<ul>
-					<li><?php echo Saint::genField("saint-edit-page-title","text","Name: ",array('value'=> $page->getTitle())); ?></li>
-					<li><?php echo Saint::genField("saint-edit-page-name","text","Identifier (URI): ",array('value'=> $page->getName())); ?></li>
+					<li><?php echo Saint::genField("saint-edit-page-title","text","Name: ",array('value'=> $page->getTitle(),'static'=>true)); ?></li>
+					<li><?php echo Saint::genField("saint-edit-page-name","text","Identifier (URI): ",array('value'=> $page->getName(),'static'=>true)); ?></li>
 					<?php
 						if (!preg_match('/^.*\/.*$/',$page->getLayout())) {
 						$options = array();
 						foreach (Saint::getLayoutNames() as $layout)
 							$options[$layout] = ucfirst($layout);
 					?>
-					<li><?php echo Saint::genField("saint-edit-page-layout","select","Layout: ",array('options'=>$options,'selected' => $page->getLayout())); ?></li>
+					<li><?php echo Saint::genField("saint-edit-page-layout","select","Layout: ",array('options'=>$options,'selected' => $page->getLayout(),'static'=>true)); ?></li>
 					<?php } ?>
-					<li><?php echo Saint::genField("saint-edit-page-keywords","text","Keywords: ",array('value'=> implode(',',$page->getMetaKeywords()))); ?></li>
-					<li><?php echo Saint::genField("saint-edit-page-description","textarea","Description: ",array('value'=> $page->getMetaDescription())); ?></li>
+					<li><?php echo Saint::genField("saint-edit-page-keywords","text","Keywords: ",array('value'=> implode(',',$page->getMetaKeywords()),'static'=>true)); ?></li>
+					<li><?php echo Saint::genField("saint-edit-page-description","textarea","Description: ",array('value'=> $page->getMetaDescription(),'static'=>true)); ?></li>
 					<?php
 						$options = array();
 						foreach (Saint::getAllCategories() as $category)
 							$options[$category] = $category;
 					?>
 					<li><?php echo Saint::genField("saint-edit-page-categories[]","select","Categories: ",
-						array('options'=>$options,'selected'=>$page->getCategories(),'multiple'=>true)); ?></li>
+						array('options'=>$options,'selected'=>$page->getCategories(),'multiple'=>true,'static'=>true)); ?></li>
 				</ul>
 				<span class="link save">Save</span>
 			</form>

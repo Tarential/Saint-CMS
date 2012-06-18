@@ -10,8 +10,8 @@ if ($block->getId()) {
 	<?php $block->includeImage("main-image"); ?>
 	<?php echo $block->getLabel("description","Enter product description here..."); ?>
 	<div class="ssm meta-links">
-		<a href="<?php echo SAINT_URL; ?>/shop/addtocart.<?php echo $block->getId(); ?>" class="link add-to-cart">Add to Cart</a>
-		<a href="<?php echo SAINT_URL; ?>/shop/addtocart.<?php echo $block->getId(); ?>/buynow.1" class="link buy-now">Buy Now</a>
+		<a href="<?php echo SAINT_URL; ?>/shop/?addtocart=<?php echo $block->getId(); ?>" class="link add-to-cart">Add to Cart</a>
+		<a href="<?php echo SAINT_URL; ?>/shop/?addtocart=<?php echo $block->getId(); ?>&buynow=1" class="link buy-now">Buy Now</a>
 	</div>
 </div>
 <?php } else { ?>

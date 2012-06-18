@@ -1,6 +1,6 @@
 <?php
 /**
- * Shop functions for the Saint framework.
+ * Shop functions and page model for the Saint framework.
  * @author Preston St. Pierre
  * @package Saint
  */

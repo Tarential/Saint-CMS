@@ -94,37 +94,41 @@ class Saint_Controller_User {
 					if (isset($_POST['saint-edit-user-groups'])) {
 						if (is_array($_POST['saint-edit-user-groups'])) {
 							$groups = $_POST['saint-edit-user-groups'];
-						} else
+						} else {
 							$groups = array($_POST['saint-edit-user-groups']);
-							
-						foreach ($groups as $group) {
-							if (!in_array($group,$user->getGroups())) {
-								if ($group == "administrator") {
-									if (Saint::getCurrentUser()->hasPermissionTo("make-administrator"))
-										$user->addToGroup($group);
-								} elseif ($group == "moderator") {
-									if (Saint::getCurrentUser()->hasPermissionTo("make-moderator"))
-										$user->addToGroup($group);
-								} else
-									$user->addToGroup($group);
-							}
 						}
+					} else {
+						$groups = array();
+					}
 						
-						foreach ($user->getGroups() as $ugroup) {
-							if (!in_array($ugroup,$groups)) {
-								if ($ugroup == "administrator") {
-									if (Saint::getCurrentUser()->hasPermissionTo("break-administrator"))
-										$user->removeFromGroup($ugroup);
-									else
-										Saint::logError("You don't have permission to remove administrator status from user $user->getUsername()",__FILE__,__LINE__);
-								} elseif ($ugroup == "moderator") {
-									if (Saint::getCurrentUser()->hasPermissionTo("break-moderator"))
-										$user->removeFromGroup($ugroup);
-									else
-										Saint::logError("You don't have permission to remove moderator status from user $user->getUsername()",__FILE__,__LINE__);
-								} else
+						
+					foreach ($groups as $group) {
+						if (!in_array($group,$user->getGroups())) {
+							if ($group == "administrator") {
+								if (Saint::getCurrentUser()->hasPermissionTo("make-administrator"))
+									$user->addToGroup($group);
+							} elseif ($group == "moderator") {
+								if (Saint::getCurrentUser()->hasPermissionTo("make-moderator"))
+									$user->addToGroup($group);
+							} else
+								$user->addToGroup($group);
+						}
+					}
+					
+					foreach ($user->getGroups() as $ugroup) {
+						if (!in_array($ugroup,$groups)) {
+							if ($ugroup == "administrator") {
+								if (Saint::getCurrentUser()->hasPermissionTo("break-administrator"))
 									$user->removeFromGroup($ugroup);
-							}
+								else
+									Saint::logError("You don't have permission to remove administrator status from user $user->getUsername()",__FILE__,__LINE__);
+							} elseif ($ugroup == "moderator") {
+								if (Saint::getCurrentUser()->hasPermissionTo("break-moderator"))
+									$user->removeFromGroup($ugroup);
+								else
+									Saint::logError("You don't have permission to remove moderator status from user $user->getUsername()",__FILE__,__LINE__);
+							} else
+								$user->removeFromGroup($ugroup);
 						}
 					}
 				

@@ -1,6 +1,7 @@
 <?php
 $cart = Saint::getShoppingCart();
 $items = $cart->getItems();
+$shop = Saint::getShop();
 Saint::includeBlock("notices",false);
 $args = $page->getArgs();
 $products = array();
@@ -16,9 +17,9 @@ foreach ($items as $id=>$number) {
 	<form action="https://<?php echo SAINT_PAYPAL_URL; ?>/cgi-bin/webscr" method="post">
 	<input type="hidden" name="cmd" value="_cart" />
 	<input type="hidden" name="upload" value="1" />
-	<input type="hidden" name="return" value="<?php echo SAINT_URL . "/shop/view.thanks"; ?>" />
-	<input type="hidden" name="cancel_return" value="<?php echo SAINT_URL . "/shop/view.cart"; ?>" />
-	<input type="hidden" name="notify_url" value="<?php echo SAINT_URL . "/shop/view.ipn"; ?>" />
+	<input type="hidden" name="return" value="<?php echo $shop->getUrl() . "?view=thanks"; ?>" />
+	<input type="hidden" name="cancel_return" value="<?php echo $shop->getUrl() . "?view=cart"; ?>" />
+	<input type="hidden" name="notify_url" value="<?php echo $shop->getUrl() . "?view=ipn"; ?>" />
 	<input type="hidden" name="custom" value="<?php echo $cart->getId(); ?>" />
 	<?php $i = 1; foreach ($products as $product): ?>
 	<input type="hidden" name="amount_<?php echo $i; ?>" value="<?php echo $product[0]->getDiscountPrice(); ?>" />
@@ -34,7 +35,7 @@ foreach ($items as $id=>$number) {
 <span class="saint-cart-title link">Checkout Now with PayPal</span>
 <span class="saint-cart-total">Total: $<?php echo $cart->getTotal(); ?></span>
 <?php else: ?>
-<span class="saint-cart-total">You have no items in your cart. <a href="<?php echo SAINT_URL; ?>/shop">Continue Shopping.</a></span>
+<span class="saint-cart-total">You have no items in your cart. <a href="<?php echo $shop->getUrl(); ?>">Continue Shopping.</a></span>
 <?php endif; ?>
 <div class="saint-cart-items">
 <ul>
@@ -53,7 +54,7 @@ if ($discount_price < $product[0]->getPrice()) {
 		<span class="product-price">$<?php echo number_format(round($discount_price,2),2); ?></span>
 		<span class="product-number">(x<?php echo $product[1]; ?>)</span>
 		<span class="remove-from-cart">
-			<a href="<?php echo SAINT_URL; ?>/shop/remfromcart.<?php echo $product[0]->getId(); ?>/num.1/" class="link">(X)</a>
+			<a href="<?php echo $shop->getUrl(); ?>/?remfromcart=<?php echo $product[0]->getId(); ?>&num=1" class="link">(X)</a>
 		</span>
 	</span>
 </li>

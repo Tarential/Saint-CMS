@@ -9,7 +9,6 @@ $(document).ready(function() {
 		cache: false
 	});
 	
-
 	var Saint = {};
 	Saint.connections = new Array();
 	Saint.errors = new Array();
@@ -48,7 +47,7 @@ $(document).ready(function() {
 		'click': function(event) {
 			if (Saint.editing) {
 				target = this;
-				while (!$(target).hasClass('saint-label')) {
+				while (!$(target).hasClass('saint-label') && $(target).prop("tagName") != "BODY") {
 					target = $(target).parent();
 				}
 				if ($(this).hasClass('editing')) {
@@ -61,7 +60,7 @@ $(document).ready(function() {
 				return true;
 			}
 		}
-	},'body:not(body.sle-active) div.editable, body:not(body.sle-active) div.editable *');
+	},'body:not(.sle-active) div.saint-label.editable, body:not(.sle-active) div.saint-label.editable *');
 	
 	/**
 	 * Stop label editor.
@@ -489,7 +488,7 @@ $(document).ready(function() {
 		'click': function(event) {
 			Saint.saveUser();
 		}
-	},'#saint_edit_user_submit');
+	},'.saint-admin-options .user-edit-form .link.submit');
 	
 	$(document).on({
 		'keypress': function(event) {
@@ -499,24 +498,24 @@ $(document).ready(function() {
 				return false;
 			}
 		}
-	},'#saint_user_edit form input');
+	},'.user-edit-form form input');
 	
 	$(document).on({
 		'click': function(event) {
 			Saint.showOptions(".saint-admin-options.user-options");
 		}
-	},'#saint_edit_user_cancel');
+	},'.saint-admin-options .user-edit-form .link.cancel');
 	
 	Saint.editUser = function(uid) {
 		$('.saint-admin-options.dynamic').html('');
 		$('.saint-admin-options.dynamic').addClass("loading");
 		Saint.showOptions(".saint-admin-options.dynamic");
-		var url = '/user/view.edit/id.'+uid;
+		var url = '/user/?view=edit&id='+uid;
 		Saint.callHome(url,null, Saint.loadDynamicOptionsBox);
 	};
 	
 	Saint.saveUser = function() {
-		var postdata = $('#saint_user_edit > form').serialize();
+		var postdata = $('.saint-admin-options .user-edit-form > form').serialize();
 		Saint.callHome('/',postdata,Saint.savedUser);
 	};
 	
@@ -681,14 +680,14 @@ $(document).ready(function() {
 				Saint.startPageEdit();
 			}
 		}
-	},'.saint-admin-options .link.edit, .saint-admin-overlay .saint-logo');
+	},'.saint-admin-options.page-options .link.edit, .saint-admin-overlay .saint-logo');
 
 	$(document).on({
 		'click': function(event) {
 			Saint.stopPageEdit();
 			Saint.showOptions(".saint-admin-options.page-add");
 		}
-	},'.saint-admin-options .link.add');
+	},'.saint-admin-options.page-options .link.add');
 
 	$(document).on({
 		'click': function(event) {
@@ -696,7 +695,7 @@ $(document).ready(function() {
 				Saint.deleteCurrentPage();
 			}
 		}
-	},'.saint-admin-options .link.delete');
+	},'.saint-admin-options.page-options .link.delete');
 	
 	$(document).on({
 		'click': function(event) {
@@ -742,7 +741,7 @@ $(document).ready(function() {
 	
 	Saint.addPage = function() {
 		postdata = $('.saint-admin-options.page-add form').serialize();
-		Saint.callHome('/',postdata,Saint.addedPage);
+		Saint.callHome('/system/',postdata,Saint.addedPage);
 	};
 	
 	Saint.addedPage = function(data) {
@@ -825,7 +824,7 @@ $(document).ready(function() {
 
 	Saint.deleteCurrentPage = function() {
 		var cpid = $('.saint-admin-options.current-page').find('input[name=saint-edit-page-id]').val();
-		Saint.callHome("/system/delpage."+cpid,null,Saint.deletedCurrentPage);
+		Saint.callHome("/system/?delpage="+cpid,null,Saint.deletedCurrentPage);
 	};
 	
 	Saint.deletedCurrentPage = function(data) {
@@ -1125,30 +1124,15 @@ $(document).ready(function() {
 
 	$(document).on({
 		'click': function(event) {
-			/*
-			if (event.currentTarget.parentNode.tagName == "DIV")
-				var filelabel = event.currentTarget.parentNode;
-			else
-				var filelabel = event.currentTarget.parentNode.parentNode;
-			*/
 			if (Saint.fileManagerIsOpen) {
 				Saint.stopEditFile();
 				Saint.closeFileManager();
 			} else {
-				var filelabel = Saint.bubbleGet(event.target,'.saint-image',/^sfl-(.*)$/);
+				var filelabel = Saint.bubbleGet(event.currentTarget,'.saint-image',/^sfl-(.*)$/);
 				var labelid = Saint.bubbleGet(event.currentTarget,'.sfl-image',/^sfid-(.*)$/);
-				Saint.sflWidth = Saint.bubbleGet(event.target,'.sfl-image',/^width-(.*)$/);
-				Saint.sflHeight = Saint.bubbleGet(event.target,'.sfl-image',/^height-(.*)$/);
-				/*
-				var imgClasses = $(filelabel).attr('class').split(/\s+/);
-				$.each( imgClasses, function(index, item){
-					if (item.match(/^width-/g)) {
-						Saint.sflWidth = item.replace(/^width-/g,'');
-					}
-					if (item.match(/^height-/g)) {
-						Saint.sflHeight = item.replace(/^height-/g,'');
-					}
-				});*/
+				Saint.sflWidth = Saint.bubbleGet(event.currentTarget,'.sfl-image',/^width-(.*)$/);
+				Saint.sflHeight = Saint.bubbleGet(event.currentTarget,'.sfl-image',/^height-(.*)$/);
+				
 				Saint.openFileManager(filelabel,labelid);
 			}
 		}
@@ -1273,7 +1257,7 @@ $(document).ready(function() {
 		var callurl = "/filemanager";
 		if (file != null) {
 			Saint.sfmImageToLoad = file;
-			callurl += "/fid."+file;
+			callurl += "/?fid="+file;
 		}
 		Saint.callHome(callurl,'',Saint.loadedFileManager);
 		Saint.sfmAnimationIsComplete = false;
@@ -1312,7 +1296,7 @@ $(document).ready(function() {
 
 	Saint.openShopManager = function() {
 		$('.saint-admin-block.shop-manager').addClass("loading").addClass("active");
-		Saint.callHome('/shop/view.transactions','',Saint.loadedShopManager);
+		Saint.callHome('/shop/?view=transactions','',Saint.loadedShopManager);
 		Saint.shopManagerIsOpen = true;
 	};
 	
@@ -1329,7 +1313,7 @@ $(document).ready(function() {
 	Saint.sfmSelectPage = function(pagenum,postdata) {
 		Saint.sfmcurpage = pagenum;
 		$('#saint-file-manager-data .saint-admin-block .overlay').addClass("loading");
-		Saint.callHome("/system/view.file-list/sfmcurpage."+pagenum, postdata, Saint.sfmLoadPage);
+		Saint.callHome("/system/?view=file-list&sfmcurpage="+pagenum, postdata, Saint.sfmLoadPage);
 	};
 	
 	Saint.sfmLoadPage = function(data) {
@@ -1338,7 +1322,8 @@ $(document).ready(function() {
 			realdata = JSON.parse(data);
 			if (realdata['success']) {
 				if (realdata['url'] && realdata['sfl'] && realdata['sfid']) {
-					$(".sfl-"+realdata['sfl']+" img").attr("src",realdata['url']).attr("id","sfid-"+realdata['sfid']);
+					$(".sfl-"+realdata['sfl']+" img")[0].className = $(".sfl-"+realdata['sfl']+" img")[0].className.replace(/sfid-\d{1,10}/g,'');
+					$(".sfl-"+realdata['sfl']+" img").attr("src",realdata['url']).addClass("sfid-"+realdata['sfid']);
 				}
 			} else {
 				$('.saint-ajax-indicator').addClass("error");

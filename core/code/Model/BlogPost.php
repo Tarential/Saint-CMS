@@ -1,6 +1,15 @@
 <?php
+/**
+ * Blog posts are a bit different than default blocks; you'll find the customizations here.
+ * @author Preston St. Pierre
+ * @package Saint
+ */
 class Saint_Model_BlogPost extends Saint_Model_Block {
 	
+	/**
+	 * Override the loading function to make passing of block name optional.
+	 * @see core/code/Model/Saint_Model_Block::load()
+	 */
 	public function load($id, $name=null) {
 		// Magic so it can accept the arguments in either order.
 		if (!Saint::sanitize($id,SAINT_REG_ID) && Saint::sanitize($name,SAINT_REG_ID)) {
@@ -9,38 +18,66 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 		return parent::load("blog/post",$id);
 	}
 	
+	/**
+	 * Select ID for post matching given URI and load data into model.
+	 * Function will first look for an exact match; if that fails it will try a fuzzy match.
+	 * @param $uri URI to match.
+	 * @return True on success, false otherwise.
+	 */
 	public function loadByUri($uri) {
 		$suri = Saint::sanitize($uri);
-		try {
-			return $this->load(Saint::getOne("SELECT `id` FROM `st_blocks_blog_post` WHERE `uri` LIKE '%$suri%' ORDER BY `postdate` DESC"));
-		} catch (Exception $e) {
-			if ($e->getCode()) {
-				Saint::logError("Unable to select blog post via URI: ".$e->getMessage(),__FILE__,__LINE__); }
-			return 0;
+		for ($i = 0; $i < 2; $i++) {
+			try {
+				$id = Saint::getOne("SELECT `id` FROM `st_blocks_blog_post` WHERE `uri` LIKE '$suri' ORDER BY `postdate` DESC");
+				return $this->load($id);
+			} catch (Exception $e) {
+				if ($e->getCode()) {
+					Saint::logError("Unable to select blog post via URI: ".$e->getMessage(),__FILE__,__LINE__); }
+			}
+			$suri = "%$suri%";
 		}
+		return 0;
 	}
 	
+	/**
+	 * Wrapper to get block setting "postdate".
+	 * @return timestamp Posted time setting of the loaded post.
+	 */
 	public function getPostDate() {
 		return $this->get("postdate");
 	}
 	
+	/**
+	 * Get URL for loaded blog post.
+	 * @return string URL for loaded post.
+	 * @see core/code/Model/Saint_Model_Block::getUrl()
+	 */
 	public function getUrl() {
-		return SAINT_URL.'/blog/'.$this->_settings['uri'];
+		return Saint::getBlogUrl().'/'.$this->_settings['uri'];
 	}
 	
+	/**
+	 * Contrary to the name, this function only returns the main URL for the loaded post.
+	 * Blocks may be found on multiple pages, so the system tracks the URLs. We don't need
+	 * that functionality for the blog posts, so we return the single custom URL instead.
+	 * @return array ID and URL of page.
+	 * @see core/code/Model/Saint_Model_Block::getAllUrls()
+	 */
 	public function getAllUrls() {
-		$blog_page = new Saint_Model_Page();
-		$blog_page->loadByName("blog");
 		return array(
-			array($blog_page->getId(),$this->getUrl()),
+			array(Saint::getBlogPageId(),$this->getUrl()),
 		);
 	}
 	
+	/**
+	 * Customizations for input fields associated with blog posts.
+	 * @see core/code/Model/Saint_Model_Block::renderInput()
+	 */
 	public function renderInput($setting, $options = array()) {
 		switch ($setting) {
 			case "uri":
 				$options['label'] = "URI:";
-				$options['details'] = array(SAINT_URL . "/blog/[URI]");
+				$options['details'] = array(Saint::getBlogUrl()."/[URI]");
 				if ($this->get($setting) == "") {
 					$options['details'][] = "(Leave blank to auto generate)";
 				}
@@ -64,11 +101,20 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 		}
 	}
 	
+	/**
+	 * Set a preview template for editing blog posts.
+	 * @see core/code/Model/Saint_Model_Block::renderPreview()
+	 */
 	public function renderPreview($arguments = array()) {
 		$arguments['view'] = "blog/post-preview";
 		parent::renderPreview($arguments);
 	}
 	
+	/**
+	 * Save post settings.
+	 * Function will auto-generate post URI if field is blank.
+	 * @see core/code/Model/Saint_Model_Block::save()
+	 */
 	public function save() {
 		if ($this->_settings['uri'] == "") {
 			$this->_settings['uri'] = $this->_settings['title'];
