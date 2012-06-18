@@ -90,7 +90,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 * @return float Discounted price of loaded product.
 	 */
 	public function getDiscountPrice() {
-		return Saint::getDiscounter()->getDiscountedPrice($this->_id, $this->getCategories(), $this->_price);
+		return Saint::getDiscounter()->getDiscountedPrice($this->_id, array_keys($this->getCategories()), $this->_price);
 	}
 	
 	/**

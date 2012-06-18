@@ -1,5 +1,5 @@
-<?php	$image = $page->curfile; ?>
-<div class="saint-image editable width-<?php echo $image->getWidth(); ?> height-<?php echo $image->getHeight();
+<?php $image = $page->curfile; ?>
+<div class="saint-image editable width-<?php echo $image->getMaxWidth(); ?> height-<?php echo $image->getMaxHeight();
 ?> sfl-<?php echo Saint::convertNameToWeb($image->getName()); ?>">
 	<?php if ($image->linkToFull()): ?><a href="<?php echo $image->getUrl(); ?>"><?php endif; ?>
 	<img src="<?php echo $image->getResizedUrl(); ?>" class="sfl-image sfid-<?php echo $image->getId(); ?>" alt="<?php echo $image->getTitle(); ?>" />

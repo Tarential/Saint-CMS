@@ -70,8 +70,6 @@ $(function() {
 			<?php echo Saint::genField("saint-file-mode","hidden","",array('value'=>'search')); ?>
 			<?php echo Saint::genField("saint-file-id","hidden"); ?>
 			<?php echo Saint::genField("saint-file-label","hidden"); ?>
-			<?php echo Saint::genField("saint-file-label-height","hidden"); ?>
-			<?php echo Saint::genField("saint-file-label-width","hidden"); ?>
 			<?php echo Saint::genField("saint-file-title","text","Title:"); ?>
 			<?php echo Saint::genField("saint-file-keywords","text","Keywords:"); ?>
 			<?php echo Saint::genField("saint-file-description","textarea","Description:"); ?>

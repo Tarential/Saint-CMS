@@ -431,11 +431,11 @@ class Saint_Controller_Page {
 					if (isset($_POST['saint-file-label-width']) && $_POST['saint-file-label-width'] != "0" 
 						&& isset($_POST['saint-file-label-height']) && $_POST['saint-file-label-height'] != "0" ) {
 						$arguments = array(
-							"width" => $_POST['saint-file-label-width'],
-							"height" => $_POST['saint-file-label-height'],
+							"max-width" => $_POST['saint-file-label-width'],
+							"max-height" => $_POST['saint-file-label-height'],
 						);
-						$img = new Saint_Model_Image($_POST['saint-file-id'],$arguments);
-						$this->_page->jsondata['url'] = $img->getResizedUrl();
+						$img = new Saint_Model_Image($_POST['saint-file-id']);
+						$this->_page->jsondata['url'] = $img->getResizedUrl($arguments);
 					}
 				}
 			}

@@ -1,5 +1,5 @@
 <div class="ssm-discount block-item">
-	<div class="edit-button inline" id="<?php echo $block->getId(); ?>">
+	<div class="edit-button inline sbid-<?php echo $block->getId(); ?>">
 		<?php echo $block->get("name"); ?>
 		<?php if ($block->get("type") == "flat"): ?>$<?php endif; ?>
 		<?php echo $block->get("amount"); ?>

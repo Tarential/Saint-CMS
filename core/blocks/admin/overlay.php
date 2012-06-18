@@ -87,12 +87,12 @@
 			<h4>Categories</h4>
 			<ul class="sublist category-list">
 			<?php foreach (Saint::getAllCategories() as $iid=>$icat): ?>
-				<li class="link category-edit" id="cat-<?php echo $iid; ?>"><?php echo $icat; ?><span class="delete close-button">&nbsp;</span></li>
+				<li class="link category-edit cat-<?php echo $iid; ?>"><?php echo $icat; ?><span class="delete close-button">&nbsp;</span></li>
 			<?php endforeach; ?>
 			</ul>
 			<form class="categories">
-				<input type="hidden" value="0" name="saint-set-category-id" />
-				<input type="hidden" value="0" name="saint-delete-category" />
+				<input type="hidden" value="0" name="saint-set-category-id" id="saint-set-category-id" />
+				<input type="hidden" value="0" name="saint-delete-category" id="saint-delete-category" />
 				<?php echo Saint::genField("saint-add-category","text","Name:",array('static'=>true))?>
 				<span id="saint-add-category-submit" class="link">Add</span>
 				<span id="saint-add-category-cancel" class="link hidden">Cancel</span>

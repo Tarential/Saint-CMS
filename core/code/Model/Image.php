@@ -17,13 +17,7 @@ class Saint_Model_Image extends Saint_Model_File {
 	 * @see core/code/Model/Saint_Model_File::__construct()
 	 */
 	public function __construct($id = null,$arguments = array()) {
-		parent::__construct($id);
-		$this->_arguments = $arguments;
-		if (isset($arguments['link'])) {
-			$this->_linktofull = $arguments['link'];
-		} else {
-			$this->_linktofull = false;
-		}
+		$this->load($id,$arguments);
 	}
 	
 	/**
@@ -39,7 +33,11 @@ class Saint_Model_Image extends Saint_Model_File {
 		} else {
 			$this->_linktofull = false;
 		}
-		parent::load($id);
+		if ($id == null) {
+			parent::__construct();
+		} else {
+			parent::load($id);
+		}
 	}
 	
 	/**
@@ -92,6 +90,28 @@ class Saint_Model_Image extends Saint_Model_File {
 	}
 	
 	/**
+	 * Get the maximum width for the current image.
+	 * @return int Maximum width in pixels for display of current image.
+	 */
+	public function getMaxWidth() {
+		if (isset($this->_arguments['max-width']))
+			return $this->_arguments['max-width'];
+		else
+			return $this->getWidth();
+	}
+		
+	/**
+	 * Get the maximum height for the current image.
+	 * @return int Maximum height in pixels for display of current image.
+	 */
+	public function getMaxHeight() {
+		if (isset($this->_arguments['max-height']))
+			return $this->_arguments['max-height'];
+		else
+			return $this->getHeight();
+	}
+	
+	/**
 	 * Check if the title is to be displayed.
 	 * @return boolean True if title is flagged for display, false otherwise.
 	 */
@@ -125,7 +145,9 @@ class Saint_Model_Image extends Saint_Model_File {
 	 * @param string[] $arguments Options for calculating new image size.
 	 * @return string[] Resized height and width values assigned to keys matching their names.
 	 */
-	private function calcResize($arguments) {
+	public function calcResize($arguments = null) {
+		if ($arguments == null)
+			$arguments = $this->_arguments;
 		$newheight = $this->_height;
 		$newwidth = $this->_width;
 		

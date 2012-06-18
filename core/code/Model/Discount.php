@@ -14,7 +14,7 @@ class Saint_Model_Discount {
 	public function __construct() {
 		$this->_discounts = array();
 		try {
-			$discounts = Saint::getAll("SELECT `Name`,`Type`,`Amount`,`Filters` FROM `st_blocks_shop_admin_discount` WHERE `StartDate` < '".date('Y-m-d H:i:s')."' AND '".date('Y-m-d H:i:s')."' < `EndDate` AND `enabled`='1'");
+			$discounts = Saint::getAll("SELECT `name`,`type`,`amount`,`filters` FROM `st_blocks_shop_admin_discount` WHERE `startdate` < '".date('Y-m-d H:i:s')."' AND '".date('Y-m-d H:i:s')."' < `enddate` AND `enabled`='1'");
 			
 			foreach ($discounts as $discount) {
 				$dc = array_push($this->_discounts,array())-1;

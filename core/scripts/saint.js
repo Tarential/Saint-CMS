@@ -600,18 +600,16 @@ $(document).ready(function() {
 
 	$(document).on({
 		'click': function(event) {
+			var editid = Saint.bubbleGet(event.target,'.category-edit',/^cat-(.*)$/);
 			if ($(event.target).hasClass("delete")) {
-				var editid = $(event.target.parentNode).attr('id').replace(/cat-/mg,"");
-				var editname = $(event.target).text();
 				$('#saint-set-category-id').val(editid);
-				$('#saint-add-category').val(editname);
+				$('#saint-add-category').val("");
 				$('#saint-delete-category').val(1);
-				var postdata = $('.saint-admin-options.site-options form').serialize();
+				var postdata = $('.saint-admin-options.site-options form.categories').serialize();
 				var url = '/system/';
 				Saint.callHome(url, postdata, Saint.savedCategory);
 			} else {
-				var editid = $(event.target).attr('id').replace(/cat-/mg,"");
-				var editname = $(event.target).text().replace(/\s+$/g,"");
+				var editname = $(event.target).text().replace(/\s+$/mg,"");
 				$('#saint-set-category-id').val(editid);
 				$('#saint-add-category').val(editname);
 				$('#saint-add-category-submit').html("Save");
@@ -645,7 +643,7 @@ $(document).ready(function() {
 				$("#saint-add-category").val('');
 				$('.saint-admin-options .category-list li').remove();
 				for (i in realdata['categories']) {
-					$('.saint-admin-options .category-list').append($('<li id="cat-'+realdata['categories'][i][0]+'" class="link category-edit">'
+					$('.saint-admin-options .category-list').append($('<li class="link category-edit cat-'+realdata['categories'][i][0]+'">'
 						+realdata['categories'][i][1]+'<span class="delete close-button">&nbsp;</span></li>'));
 				}
 			} else {
@@ -1128,10 +1126,10 @@ $(document).ready(function() {
 				Saint.stopEditFile();
 				Saint.closeFileManager();
 			} else {
-				var filelabel = Saint.bubbleGet(event.currentTarget,'.saint-image',/^sfl-(.*)$/);
-				var labelid = Saint.bubbleGet(event.currentTarget,'.sfl-image',/^sfid-(.*)$/);
-				Saint.sflWidth = Saint.bubbleGet(event.currentTarget,'.sfl-image',/^width-(.*)$/);
-				Saint.sflHeight = Saint.bubbleGet(event.currentTarget,'.sfl-image',/^height-(.*)$/);
+				var filelabel = Saint.bubbleGet(event.target,'.saint-image',/^sfl-(.*)$/);
+				var labelid = Saint.bubbleGet(event.target,'.sfl-image',/^sfid-(.*)$/);
+				Saint.sflWidth = Saint.bubbleGet(event.target,'.saint-image',/^width-(.*)$/);
+				Saint.sflHeight = Saint.bubbleGet(event.target,'.saint-image',/^height-(.*)$/);
 				
 				Saint.openFileManager(filelabel,labelid);
 			}
@@ -1199,6 +1197,7 @@ $(document).ready(function() {
 	
 	Saint.sfmSubmit = function() {
 		var postdata = $('#saint-file-info form').serialize();
+		postdata += "&saint-file-label-height="+Saint.sflHeight+"&saint-file-label-width="+Saint.sflWidth;
 		Saint.sfmSelectPage(0,postdata);
 		if (Saint.sfmFileToEdit) {
 			Saint.sfmFileToEdit = 0;
@@ -1279,8 +1278,6 @@ $(document).ready(function() {
 	
 	Saint.loadedFileManager = function(data) {
 		$('.saint-admin-block.file-manager .load').html(data);
-		$("#saint-file-label-height").val(Saint.sflHeight);
-		$("#saint-file-label-width").val(Saint.sflWidth);
 		if (Saint.sfmAnimationIsComplete) {
 			Saint.openImage(); }
 	};
