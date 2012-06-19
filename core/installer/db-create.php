@@ -58,7 +58,7 @@ EOT;
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_config` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`installed` BOOLEAN NOT NULL DEFAULT false,
+	`version` DECIMAL(6,4) NOT NULL DEFAULT 0,
 	`title` VARCHAR(255) DEFAULT '',
 	`owner` VARCHAR(255),
 	`keywords` TEXT DEFAULT '',
@@ -299,9 +299,7 @@ CREATE TABLE IF NOT EXISTS `st_shop_downloads` (
 	`linkid` VARCHAR(255) NOT NULL,
 	`remaining` INTEGER UNSIGNED NOT NULL DEFAULT 1,
 	`expires` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	PRIMARY KEY (`id`),
-	CONSTRAINT `st_shop_downloads_productid_id`
-	FOREIGN KEY (`productid`) REFERENCES st_blocks(`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 EOT;
 

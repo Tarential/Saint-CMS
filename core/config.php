@@ -4,6 +4,12 @@
  * @author Preston St. Pierre
  */
 
+# Saint version XX.YYZZ
+# X = Full release
+# Y = Major revision
+# Z = Minor revision
+define('SAINT_VERSION','01.0200');
+
 # Site location
 define('SAINT_BASE_URL',"http://" . $_SERVER['SERVER_NAME'] . "/");
 define('SAINT_SITE_ROOT',chop(getcwd(),'/'));

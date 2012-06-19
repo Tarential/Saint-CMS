@@ -681,28 +681,32 @@ span.match {
 .saint-page-numbers .current {
 	font-weight: bold; }
 
-#saint-search {
+.saint-search {
 	text-align: left;
 }
 
-#saint-search input {
+.saint-search input {
 	margin-bottom: 2px;
 	border: 1px solid #000; 
 	width: 150px;
 	float: left;
 }
 
-#saint-search input.submit {
+.saint-search input.submit {
 	margin-left: 5px;
 	width: 30px;
 	float: left; }
 
-#saint-search span {
+.saint-search .saint-label {
 	display: block;
 	margin-bottom: 5px;
 	font-weight: bold; }
 
-#rss-feed-link {
+.saint-search-form {
+	display: block;
+	height: 40px; }
+
+.rss-feed-link {
 	clear: both;
 }
 
@@ -1443,4 +1447,15 @@ body.sle-active .blackout {
 
 .search-results h3 a:hover {
 	text-decoration: none;
+}
+
+#blog-by-month-nav {
+	margin: 20px 0;
+}
+
+#blog-by-month-nav h4 {
+	margin-left: 5px; }
+
+#blog-by-month-nav h4 a {
+	font-weight: normal;
 }

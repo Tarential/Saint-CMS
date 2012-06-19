@@ -13,9 +13,9 @@ class Saint_Controller_Shop {
 	public static function download($productid,$linkid = null) {
 		$page = Saint::getCurrentPage();
 		if (Saint_Model_Shop::decrementLink($productid,$linkid)) {
-			$filename = Saint::getBlockSetting("shop/product",$productid,"File");
+			$filename = Saint::getBlockSetting("shop/product",$productid,"file");
 			$file = SAINT_SITE_ROOT."/restricted/".$filename;
-			if (file_exists($file)) {
+			if ($filename != "" && file_exists($file)) {
 				$page->setTempLayout("system/system");
 				header('Content-Type: application/force-download');
 				header('Content-Length:' . filesize($file));

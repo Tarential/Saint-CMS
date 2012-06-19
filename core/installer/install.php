@@ -4,13 +4,13 @@ function setInstalled($owner) {
 	try {
 		if (mysql_num_rows(mysql_query("SELECT `id` FROM `st_config`"))) {
 			try {
-				Saint::query("UPDATE `st_config` SET `installed`=1,`owner`='$owner'");
+				Saint::query("UPDATE `st_config` SET `version`=".SAINT_VERSION.",`owner`='$owner'");
 			} catch (Exception $e) {
 				Saint::logError($e->getMessage(),__FILE__,__LINE__);
 			}
 		} else {
 			try {
-				Saint::query("INSERT INTO `st_config` (`installed`,`owner`) VALUES (1,'$owner')");
+				Saint::query("INSERT INTO `st_config` (`version`,`owner`) VALUES (".SAINT_VERSION.",'$owner')");
 			} catch (Exception $e) {
 				Saint::logError($e->getMessage(),__FILE__,__LINE__);
 			}
@@ -43,9 +43,7 @@ if (phpversion() < 5) {
 			$st_linkdb = mysql_select_db(SAINT_DB_NAME);
 		}
 		
-		if (!$st_link || !$st_linkdb) {
-			include SAINT_SITE_ROOT . "/core/installer/db-error.php";
-		} else {
+		if ($st_link && $st_linkdb) {
 			if(!mysql_num_rows(mysql_query("SHOW TABLES LIKE 'st_config'"))) {
 				include SAINT_SITE_ROOT . "/core/installer/db-create.php";
 			}		

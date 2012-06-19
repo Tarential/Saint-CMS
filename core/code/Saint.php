@@ -810,7 +810,7 @@ class Saint {
 	 */
 	public static function getThemeDir() {
 		$themedir = SAINT_SITE_ROOT . "/themes/" . SAINT_THEME;
-		if (file_exists($themedir))
+		if (SAINT_THEME != "" && file_exists($themedir))
 			return $themedir;
 		else
 			return SAINT_SITE_ROOT . "/core";
@@ -822,7 +822,7 @@ class Saint {
 	 */
 	public static function getThemeUrl() {
 		$themedir = SAINT_SITE_ROOT . "/themes/" . SAINT_THEME;
-		if (file_exists($themedir))
+		if (SAINT_THEME != "" && file_exists($themedir))
 			return SAINT_URL . "/themes/" . SAINT_THEME;
 		else
 			return SAINT_URL . "/core";

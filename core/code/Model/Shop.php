@@ -19,10 +19,10 @@ class Saint_Model_Shop extends Saint_Model_Page {
 		$linkid = md5(time().$productid.rand(100,1000));
 		$expires = date( 'Y-m-d H:i:s',strtotime('+'.Saint::sanitize($timeout).' hours'));
 		try {
-			mysql_query("INSERT INTO `st_shop_downloads` (`productid`,`linkid`,`remaining`,`expires`) VALUES ('$spid','$linkid','$sretries','$expires')");
+			Saint::query("INSERT INTO `st_shop_downloads` (`productid`,`linkid`,`remaining`,`expires`) VALUES ('$spid','$linkid','$sretries','$expires')");
 			return $linkid;
 		} catch (Exception $e) {
-			Saint::logError("Unable to create temporary download link: ".$e->getMessage(),__FILE__,__LINE__);
+			Saint::logError("Unable to create temporary download link for product '$spid': ".$e->getMessage(),__FILE__,__LINE__);
 			return 0;
 		}
 	}

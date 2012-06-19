@@ -5,9 +5,6 @@
  * @package Saint
  */
 class Saint_Model_Product extends Saint_Model_Block {
-	protected $_sku;
-	protected $_price;
-	protected $_file;
 	
 	/**
 	 * Create model with default data.
@@ -23,21 +20,6 @@ class Saint_Model_Product extends Saint_Model_Block {
 			}
 		} else {
 			parent::__construct("shop/product",$id,$enabled,$settings);
-			if (isset($settings['price'])) {
-				$this->_price = $settings['price'];
-			} else {
-				$this->_price = 0;
-			}
-			if (isset($settings['sku'])) {
-				$this->_sku = $settings['sku'];
-			} else {
-				$this->_sku = '';
-			}
-			if (isset($settings['file'])) {
-				$this->_file = $settings['file'];
-			} else {
-				$this->_file = '';
-			}
 		}
 	}
 	
@@ -51,14 +33,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 		if (!Saint::sanitize($id,SAINT_REG_ID) && Saint::sanitize($name,SAINT_REG_ID)) {
 			$id = $name;
 		}
-		if (parent::load("shop/product",$id)) {
-			$this->_sku = $this->_settings['sku'];
-			$this->_price = $this->_settings['price'];
-			$this->_file = $this->_settings['file'];
-			return 1;
-		} else {
-			return 0;
-		}
+		return parent::load("shop/product",$id);
 	}
 	
 	/**
@@ -66,7 +41,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 * @return string SKU of loaded product.
 	 */
 	public function getSku() {
-		return $this->_sku;
+		return $this->_settings['sku'];
 	}
 	
 	/**
@@ -74,7 +49,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 * @return float Price of loaded product.
 	 */
 	public function getPrice() {
-		return $this->_price;
+		return $this->_settings['price'];
 	}
 	
 	/**
@@ -82,7 +57,15 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 * @return string File associated with loaded product.
 	 */
 	public function getFile() {
-		return $this->_file;
+		return $this->_settings['file'];
+	}
+	
+	/**
+	 * Get product name.
+	 * @return string Name of loaded product.
+	 */
+	public function getProductName() {
+		return $this->_settings['name'];
 	}
 	
 	/**
@@ -90,7 +73,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 * @return float Discounted price of loaded product.
 	 */
 	public function getDiscountPrice() {
-		return Saint::getDiscounter()->getDiscountedPrice($this->_id, array_keys($this->getCategories()), $this->_price);
+		return Saint::getDiscounter()->getDiscountedPrice($this->_id, array_keys($this->getCategories()), $this->_settings['price']);
 	}
 	
 	/**
@@ -116,7 +99,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 */
 	public function setSku($sku) {
 		$ssku = Saint::sanitize($sku);
-		$this->_sku = $ssku;
+		$this->_settings['sku'] = $ssku;
 	}
 	
 	/**
@@ -125,7 +108,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 */
 	public function setPrice($price) {
 		$sprice = Saint::sanitize($price);
-		$this->_price = $sprice;
+		$this->_settings['price'] = $sprice;
 	}
 	
 	/**
@@ -134,7 +117,7 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 */
 	public function setFile($file) {
 		$sfile = Saint::sanitize($file);
-		$this->_file = $sfile;
+		$this->_settings['file'] = $sfile;
 	}
 	
 	/**

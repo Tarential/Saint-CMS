@@ -94,7 +94,7 @@ EOT;
 				);
 			if ($prod->getFile() != '') {
 					$linkid = Saint_Model_Shop::createDownload($itemid);
-					$item_vars[$itemid]['link'] = SAINT_URL . "/shop/view.download/id.$itemid/linkid.$linkid";
+					$item_vars[$itemid]['link'] = SAINT_URL . "/shop/?view=download&id=$itemid&linkid=$linkid";
 				}
 			}
 			

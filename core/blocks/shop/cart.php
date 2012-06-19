@@ -23,7 +23,7 @@ foreach ($items as $id=>$number) {
 	<input type="hidden" name="custom" value="<?php echo $cart->getId(); ?>" />
 	<?php $i = 1; foreach ($products as $product): ?>
 	<input type="hidden" name="amount_<?php echo $i; ?>" value="<?php echo $product[0]->getDiscountPrice(); ?>" />
-	<input type="hidden" name="item_name_<?php echo $i; ?>" value="<?php echo $product[0]->getName(); ?>" />
+	<input type="hidden" name="item_name_<?php echo $i; ?>" value="<?php echo $product[0]->getProductName(); ?>" />
 	<input type="hidden" name="quantity_<?php echo $i; ?>" value="<?php echo $product[1]; ?>" />
 	<input type="hidden" name="item_number_<?php echo $i; ?>" value="<?php echo $product[0]->getId(); ?>" />
 	<?php $i++; endforeach; ?>
@@ -49,7 +49,7 @@ if ($discount_price < $product[0]->getPrice()) {
 }
 ?>
 <li<?php if ($sale) echo ' class="sale"'; ?>>
-	<span class="product-name"><?php echo $product[0]->get("name"); ?></span>
+	<span class="product-name"><?php echo $product[0]->getProductName(); ?></span>
 	<span class="product-meta">
 		<span class="product-price">$<?php echo number_format(round($discount_price,2),2); ?></span>
 		<span class="product-number">(x<?php echo $product[1]; ?>)</span>

@@ -162,8 +162,7 @@ if (!($st_linkdb = mysql_select_db(SAINT_DB_NAME))) {
 	Saint::logError(mysql_error()); }
 
 try {
-	$result = Saint::getOne("SELECT `installed` FROM `st_config`");
-	$installed = $result;
+	$installed = Saint::getOne("SELECT `version` FROM `st_config`");
 } catch (Exception $e) {
 	$installed = false;
 	Saint::logError("Could not verify installation: ".$e->getMessage());

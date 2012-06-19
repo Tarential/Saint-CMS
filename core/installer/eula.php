@@ -35,5 +35,5 @@
 	<p class="section">6. LIMITATION OF LIABILITY</p>
 	<p>In no event shall Aparadine Software be liable for any damages (including, without limitation, lost profits, business interruption, or lost information) rising out of 'Authorized Users' use of or inability to use the Saint Content Management System, even if Aparadine Software has been advised of the possibility of such damages. In no event will Aparadine Software be liable for loss of data or for indirect, special, incidental, consequential (including lost profit), or other damages based in contract, tort or otherwise. Aparadine Software shall have no liability with respect to the content of the Saint Content Management System or any part thereof, including but not limited to errors or omissions contained therein, libel, infringements of rights of publicity, privacy, trademark rights, business interruption, personal injury, loss of privacy, moral rights or the disclosure of confidential information.</p>
 	
-	<p class="section links"><a href="<?php echo SAINT_URL; ?>/saint-eula-accept.yes">I accept</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://www.google.com/">I do not accept</a></p>
+	<p class="section links"><a href="<?php echo SAINT_URL; ?>/?saint-eula-accept=yes">I accept</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://www.google.com/">I do not accept</a></p>
 </div>
