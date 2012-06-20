@@ -1,0 +1,1 @@
+<?php Saint::includeBlock("blog/post",$page->getPostArgs()); ?>

@@ -67,12 +67,13 @@ class Saint_Controller_Page {
 		}
 		
 		$args = $this->_page->getArgs();
+		$this->_page->process();
 		
 		/*
 		 * Page controls
 		 */
 		
-		if(isset($_POST['saint-add-page-name']) && isset($_POST['saint-add-page-layout']) && isset($_POST['saint-add-page-title'])) {
+		if (isset($_POST['saint-add-page-name']) && isset($_POST['saint-add-page-layout']) && isset($_POST['saint-add-page-title'])) {
 			if (isset($_POST['saint-add-page-keywords']))
 				$keywords = $_POST['saint-add-page-keywords'];
 			else
@@ -521,7 +522,6 @@ class Saint_Controller_Page {
 			}
 		}
 		
-		$this->_page->process();
 		$this->_page->render();
 	}
 }

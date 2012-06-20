@@ -58,14 +58,23 @@ class Saint_Model_Layout {
 	 * @param string $page Name of page to render.
 	 * @return boolean True if page found, false otherwise.
 	 */
-	public function render($page) {
+	public function render($page, $options = array()) {
 		$this->_page = $page;
+		if (isset($options['get'])) {
+			$get = $options['get'];
+		} else {
+			$get = false;
+		}
 		if ($this->_name == "") {
 			Saint::includeBlock("layouts/system/404");
 			return 0;
 		} else {
-			Saint::includeBlock("layouts/".$this->_name);
-			return 1;
+			if ($get) {
+				return Saint::getBlock("layouts/".$this->_name);
+			} else {
+				Saint::includeBlock("layouts/".$this->_name);
+				return 0;
+			}
 		}
 	}
 }

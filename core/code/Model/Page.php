@@ -837,25 +837,25 @@ class Saint_Model_Page {
 	 * @param boolean Default true to reindex block usage, false to retain cached data.
 	 * @return boolean True on success, false otherwise.
 	 */
-	public function render($indexblocks = true) {
+	public function render($options = array()) {
+		if (isset($options['indexblocks'])) {
+			$indexblocks = $options['indexblocks'];
+		} else {
+			$indexblocks = true;
+		}
 		if (isset($this->_templayout))
 			$lname = $this->_templayout;
 		else
 			$lname = $this->_layout;
 		if ($layout = Saint::getLayout($lname)) {
-			try {
-				if ($layout->render($this)) {
-					if ($indexblocks) {
-						$this->_blocks = $this->_newblocks;
-						$this->saveBlocks();
-					}
-					return 1;
-				} else {
-					return 0;
+			if ($result = $layout->render($this, $options)) {
+				if ($indexblocks) {
+					$this->_blocks = $this->_newblocks;
+					$this->saveBlocks();
 				}
-			}
-			catch (Exception $e) {
-				Saint::logError("Could not render page $this->_name: " . $e->getMessage(),__FILE__,__LINE__);
+				return $result;
+			} else {
+				Saint::logError("Unable to render page $this->_name.",__FILE__,__LINE__);
 				return 0;
 			}
 		} else {

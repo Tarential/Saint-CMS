@@ -123,7 +123,7 @@ class Saint_Model_Block {
 	 */
 	public static function includeBlock($block_name, $arguments = array()) {
 		if (isset($arguments['repeat']) && $arguments['repeat'] > 0) {
-			Saint::includeRepeatingBlock($block_name,$arguments);
+			return Saint::includeRepeatingBlock($block_name,$arguments);
 		} else {
 			if (isset($arguments['container']) && $arguments['container'] != "")
 				$container = $arguments['container'];
@@ -133,15 +133,20 @@ class Saint_Model_Block {
 				$view = Saint::sanitize($arguments['view'],SAINT_REG_NAME);
 			else
 				$view = false;
+			if (isset($arguments['get']) && $arguments['get'] != "")
+				$get = Saint::sanitize($arguments['get'],SAINT_REG_BOOL);
+			else
+				$get = false;
 			$page = Saint::getCurrentPage();
 			$block_name = Saint::sanitize($block_name,SAINT_REG_NAME);
+			$block_model = Saint_Model_Block::getBlockModel($block_name);
 			if ($block_name) {
 				$page->addBlock($block_name);
 				$id = $page->getBlockId();
 				if (isset($arguments['block'])) {
 					$block = $arguments['block'];
 				} else {
-					$block = new Saint_Model_Block();
+					$block = new $block_model();
 				}
 				if (!$view)
 					$view = $block_name;
@@ -152,6 +157,8 @@ class Saint_Model_Block {
 				else {
 					Saint::logError("Cannot find view $view.",__FILE__,__LINE__); 
 					return 0; }
+				if ($get) {
+					ob_start(); }
 				if (preg_match('/^layouts/',$view))
 					include $incfile;
 				else {
@@ -162,7 +169,12 @@ class Saint_Model_Block {
 					} else
 						include $incfile;
 				}
-				return 1;
+				if ($get) {
+					$return = ob_get_clean();
+				} else {
+					$return = 1;
+				}
+				return $return;
 			} else {
 				Saint::logError("Block name '$block_name' could not be validated.",__FILE__,__LINE__);
 				return 0;
@@ -358,6 +370,10 @@ EOT;
 				$paging = $arguments['paging'];
 			else
 				$paging = false;
+			if (isset($arguments['get']))
+				$get = $arguments['get'];
+			else
+				$get = false;
 			if (isset($arguments['container']))
 				$container = $arguments['container'];
 			else
@@ -380,6 +396,10 @@ EOT;
 			if ($numresults > ($start+$repeat)) {
 				$page->crbmore = true;
 			}
+	
+			# If requested, cache the block output for return
+			if ($get) {
+			 ob_start(); }
 			
 			# Display the block
 			if ($container) {
@@ -431,9 +451,15 @@ EOT;
 						Saint::includeBlock("navigation/pager");
 				}
 			}
+
 			if ($container) {
 				echo "</div>"; }
-			return 1;
+			if ($get) {
+				$return = ob_get_clean();
+			} else {
+				$return = 1;
+			}
+			return $return;
 		} else {
 			Saint::logError("Invalid block name '$block'.",__FILE__,__LINE__);
 			return 0;

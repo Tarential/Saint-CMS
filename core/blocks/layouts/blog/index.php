@@ -12,6 +12,6 @@ if (sizeof($posts) == 1) {
 
 <?php Saint::includeBlock("middle"); ?>
 
-<?php Saint::includeBlock("blog/post",$page->getPostArgs()); ?>
+<?php Saint::includeBlock("blog/index"); ?>
 
 <?php Saint::includeBlock("bottom"); ?>

@@ -51,7 +51,6 @@ class Saint_Controller_Block {
 		if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
 			$page = Saint::getCurrentPage();
 			$args = $page->getArgs();
-			$page->setTempLayout("system/json");
 			$bname = Saint_Model_Block::convertNameFromWeb($_POST['saint-block-setting-saintname']);
 			$model = Saint_Model_Block::getBlockModel($bname);
 			$block = new $model();
@@ -89,9 +88,47 @@ class Saint_Controller_Block {
 			$page->setLayout("error");
 			$page->error = "You do not have access to edit data which belongs to other users. This attempt has been logged.";
 		}
+		$webname = Saint_Model_Block::convertNameToWeb($bname);
+		$page->process();
+		$output = $page->render(array('get'=>true));
+		//$output = preg_replace('/^.*<div class="saint-block repeating sbn-'.$webname.'">/s','',$output);
+		$str_to_match = '<div class="saint-block repeating sbn-'.$webname.'">';
+		$init_pos = strpos($output,$str_to_match);
+		if ($init_pos === false) {
+			$output = false;
+		} else {
+			$output = substr($output,$init_pos+strlen($str_to_match));
+			$done = false;
+			$cur_pos = 0;
+			$num_divs = 0;
+			while (!$done) {
+				$end_pos = strpos($output,'</div>',$cur_pos);
+				$start_pos = strpos($output,'<div',$cur_pos);
+				if ($end_pos === false) {
+					$done = true;
+				} else {
+					if ($start_pos === false || $start_pos > $end_pos) {
+						if ($num_divs <= 0) {
+							$output = substr($output,0,$end_pos);
+							$done = true;
+						} else {
+							$num_divs -= 1;
+							$cur_pos = $end_pos+6;
+						}
+					} else {
+						$num_divs += 1;
+						$cur_pos = $start_pos+5;
+					}
+				}
+			}
+		}
+
+		$page->setTempLayout("system/json");
 		$page->jsondata = array(
 			'success' => $success,
 			'actionlog' => Saint::getActionLog(),
+			'data' => $output,
+			'block' => $webname,
 		);
 		return $success;
 	}

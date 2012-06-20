@@ -814,11 +814,18 @@ class Saint {
 	 * @param Saint_Model_Page $page Page label is being called from
 	 * @param string $lang Request label in this language
 	 */
-	public static function getLabel($name, $default = '',$options = array()) {
+	public static function getLabel($name, $default = '', $options = array()) {
 		$options['default'] = $default;
 		$label = new Saint_Model_Label();
 		$label->loadByName($name);
 		return $label->getLabel($options);
+	}
+	
+	/**
+	 * Wrapper function to auto-output labels.
+	 */
+	public static function includeLabel($name, $default = '', $options = array()) {
+		echo Saint::getLabel($name, $default, $options);
 	}
 	
 	/**
@@ -903,6 +910,14 @@ class Saint {
 	 */
 	public static function includeBlock($block, $arguments = array()) {
 		return Saint_Model_Block::includeBlock($block, $arguments);
+	}
+	
+	/**
+	 * Shortcut function to give command to buffer output to string and return value.
+	 */
+	public static function getBlock($block, $arguments = array()) {
+		$arguments['get'] = true;
+		return Saint_Model_Block::includeBlock($block,$arguments);
 	}
 	
 	/**

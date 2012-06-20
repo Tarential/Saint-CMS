@@ -313,6 +313,9 @@ $(document).ready(function() {
 	};
 	
 	Saint.sleStart = function(label) {
+		// Contract admin overlay
+		Saint.contractOverlay();
+		
 		// Flag editor as running.
 		$('body').addClass('sle-active');
 		label.addClass('sle-editing');
@@ -1021,7 +1024,11 @@ $(document).ready(function() {
 	Saint.saveAddBox = function() {
 		$('.saint-admin-block.add-block').addClass("loading");
 		postdata = $('#saint-add-block-settings').serialize();
-		Saint.callHome("/system/edit."+$('#saint-block-setting-id').val(),postdata,Saint.savedAddBox);
+		if (window.location.search.match(/\?/)) {
+			indicator = '&';
+		} else {
+			indicator = '?'; }
+		Saint.callHome(window.location.pathname+window.location.search+indicator+"edit="+$('#saint-block-setting-id').val(),postdata,Saint.savedAddBox);
 	};
 	
 	Saint.savedAddBox = function(data) {
@@ -1029,7 +1036,11 @@ $(document).ready(function() {
 		try {
 			realdata = JSON.parse(data);
 			if (realdata['success']) {
-				Saint.refreshPage();
+				if (realdata['data']) {
+					$(".sbn-"+realdata['block']).html(realdata['data']);
+				} else {
+					Saint.refreshPage();
+				}
 			} else {
 				$('.saint-ajax-indicator').addClass("error");
 				Saint.setActionLog(realdata.actionlog);
