@@ -306,17 +306,17 @@ class Saint_Controller_Page {
 				} else {
 					$revision = 0;
 				}
+				$labelargs = array(
+					'rev'
+				);
 				$this->_page->jsondata = array(
 					'success' => true,
 					'revision' => $revision,
 					'label' => Saint::getLabel(
 						Saint::convertNameFromWeb(preg_replace('/^saint_/','',$args['getlabel'])),
 						'',
-						false,
-						null,
-						false,
-						$revision
-					)
+						array('revision'=>$revision,'container'=>false)
+					),
 				);
 			}
 		}

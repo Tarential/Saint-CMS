@@ -26,7 +26,6 @@ class Saint_Controller_Label {
 					$language = $_POST['label-language'];
 				else
 					$language = $user->getLanguage();
-				//$label->setLabel(nl2br(strip_tags($lval,'<a><i><b>')));
 				$label->setLabel($lval);
 				$label->save();
 				Saint::logEvent("Set label ".Saint_Model_Label::formatForDisplay($labelName).".");

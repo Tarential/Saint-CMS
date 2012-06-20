@@ -830,7 +830,7 @@ EOT;
 	 */
 	public function getLabel($name, $default = '', $options = array()) {
 		$name = "block/" . $this->_id . "/" . $this->_name . "/n/" . $name;
-		return Saint::getLabel($name,$default);
+		return Saint::getLabel($name,$default,$options);
 	}
 	
 	/**

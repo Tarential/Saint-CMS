@@ -559,7 +559,7 @@ class Saint {
 	public static function getOne($query) {
 		if (!preg_match('/LIMIT/',$query))
 			$query .= " LIMIT 1";
-		$result = @mysql_query($query);
+		$result = Saint::queryDb($query);
 		if (!$result)
 			throw new Exception(mysql_error(),1);
 		if (!mysql_num_rows($result))
@@ -577,7 +577,7 @@ class Saint {
 	public static function getRow($query) {
 		if (!preg_match('/LIMIT/',$query))
 			$query .= " LIMIT 1";
-		$result = @mysql_query($query);
+		$result = Saint::queryDb($query);
 		if (!$result)
 			throw new Exception(mysql_error(),1);
 		if (!mysql_num_rows($result))
@@ -593,7 +593,7 @@ class Saint {
 	 * @return string[] Array containing arrays of data for each row.
 	 */
 	public static function getAll($query) {
-		$result = @mysql_query($query);
+		$result = Saint::queryDb($query);
 		if (!$result)
 			throw new Exception(mysql_error(),1);
 		if (!mysql_num_rows($result))
@@ -615,7 +615,7 @@ class Saint {
 	 * @return int Number of rows of results.
 	 */
 	public static function getNumRows($query) {
-		$result = @mysql_query($query);
+		$result = Saint::queryDb($query);
 		if (!$result)
 			throw new Exception(mysql_error(),1);
 		return mysql_num_rows($result);
@@ -628,11 +628,49 @@ class Saint {
 	 * @throws Exception Database error on failure.
 	 */
 	public static function query($query) {
-		$result = @mysql_query($query);
+		if (SAINT_PROFILING) {
+			$mtime = microtime();
+			$mtime = explode(" ",$mtime);
+			$mtime = $mtime[1] + $mtime[0];
+			$starttime = $mtime;
+		}
+		$result = Saint::queryDb($query);
+		if (SAINT_PROFILING && Saint::getCurrentPage()->getLayout() != "system/json") {
+			$mtime = microtime();
+			$mtime = explode(" ",$mtime);
+			$mtime = $mtime[1] + $mtime[0];
+			$endtime = $mtime;
+			$totaltime = ($endtime - $starttime);
+			echo "$query<br />\n";
+			echo "Executed in $totaltime.";
+		}
 		if (!$result)
 			throw new Exception(mysql_error(),1);
 		else
 			return 1;	
+	}
+	
+	/**
+	 * Wrapper for mysql_query with profiling code added.
+	 * @param string $query
+	 */
+	private static function queryDb($query) {
+		if (SAINT_PROFILING) {
+			$mtime = microtime();
+			$mtime = explode(" ",$mtime);
+			$mtime = $mtime[1] + $mtime[0];
+			$starttime = $mtime;
+		}
+		$result = @mysql_query($query);
+		if (SAINT_PROFILING) {
+			$mtime = microtime();
+			$mtime = explode(" ",$mtime);
+			$mtime = $mtime[1] + $mtime[0];
+			$endtime = $mtime;
+			$totaltime = ($endtime - $starttime)*1000;
+			Saint::logEvent("$query\nExecuted in $totaltime ms.");
+		}
+		return $result;
 	}
 	
 	/**
@@ -776,16 +814,11 @@ class Saint {
 	 * @param Saint_Model_Page $page Page label is being called from
 	 * @param string $lang Request label in this language
 	 */
-	public static function getLabel($name, $default = '', $container = true, $lang = null, $wysiwyg = false, $revision = 0) {
-		$page = Saint::getCurrentPage();
+	public static function getLabel($name, $default = '',$options = array()) {
+		$options['default'] = $default;
 		$label = new Saint_Model_Label();
-		if ($label->loadByName($name)) {
-			return $label->getLabel($container,$default, $lang, $revision);
-		} else {
-			$label->setLabel($default, $lang);
-			$label->save();
-			return $label->getLabel($container, $lang);
-		}
+		$label->loadByName($name);
+		return $label->getLabel($options);
 	}
 	
 	/**

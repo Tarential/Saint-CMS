@@ -112,16 +112,6 @@ CREATE TABLE IF NOT EXISTS `st_blocks` (
 ) ENGINE=InnoDB;
 EOT;
 
-$sql[] = <<<EOT
-CREATE TABLE IF NOT EXISTS `st_wysiwyg` (
-	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(255) NOT NULL,
-	`content` longtext NOT NULL,
-	PRIMARY KEY (`id`),
-	UNIQUE INDEX `st_wysiwyg` (`name`)
-) ENGINE=InnoDB;
-EOT;
-
 # Pages
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_pages` (

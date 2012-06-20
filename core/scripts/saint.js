@@ -209,10 +209,10 @@ $(document).ready(function() {
 			}
 			return false;
 		}
-	},'.sle.active .wysiwyg .toolbar .link.revision');
+	},'.sle.active .toolbar .link.revision');
 		
 	/**
-	 * Hotkeys for bold/italic/underline.
+	 * Hotkeys for rich text editor.
 	 */
 	$(document).on({
 		'keypress': function(event) {
@@ -226,11 +226,6 @@ $(document).ready(function() {
 			    event.preventDefault();
 			    return false;
 		    }
-		    if (event.ctrlKey && (event.which == 115 || event.which == 83)) {
-			    Saint.sleSave($('.sle.active').parent());
-			    event.preventDefault();
-			    return false;
-		    }
 		    if (event.ctrlKey && (event.which == 117 || event.which == 85)) {
 			    Saint.sleExecute('underline',null);
 			    event.preventDefault();
@@ -239,6 +234,20 @@ $(document).ready(function() {
 		    return true;
 		}
 	},'.sle.active .wysiwyg');
+	
+	/**
+	 * Hotkeys for both editors.
+	 */
+	$(document).on({
+		'keypress': function(event) {
+		    if (event.ctrlKey && (event.which == 115 || event.which == 83)) {
+			    Saint.sleSave($('.sle.active').parent());
+			    event.preventDefault();
+			    return false;
+		    }
+		    return true;
+		}
+	},'.sle.active');
 	
 	/**
 	 * Automatically resize editor frame when textarea size is changed.
@@ -291,6 +300,7 @@ $(document).ready(function() {
 		$('.sle.active div.source').show();
 		Saint.sleResizeSourceEditor();
 		$('.sle.active .wysiwyg').hide();
+		Saint.sleRepopulateRevisions();
 		Saint.sleWysiwygActive = false;
 	};
 	
@@ -298,6 +308,7 @@ $(document).ready(function() {
 		$('.sle.active .wysiwyg .label-value').html($('.sle.active div.source .label-value').val())
 		$('.sle.active .wysiwyg').show();
 		$('.sle.active div.source').hide();
+		Saint.sleRepopulateRevisions();
 		Saint.sleWysiwygActive = true;
 	};
 	
@@ -305,29 +316,50 @@ $(document).ready(function() {
 		// Flag editor as running.
 		$('body').addClass('sle-active');
 		label.addClass('sle-editing');
+		
 		// Create a label editor and fill it with data.
 		var labelForm = $('.saint-templates > .sle.template.hidden').clone().removeClass('template').removeClass('hidden').addClass('active');
 		labelForm.find('.cache').html(label.html());
 		labelForm.find('input[name=label-name]').val(Saint.bubbleGet(label,'.saint-label',/^sln-(.*)$/));
 		labelForm.find('div.label-value').html(label.html());
 		labelForm.find('textarea[name=label-value]').val(label.html());
+		
 		// Add our new label editor to the dom.
 		$('body').prepend(labelForm);
+		
 		// Calculate size and position for editor based on label.
 		var margin = 10;
 		var paddingX = 16;
 		var paddingY = 54;
+		var minX = 200;
+		var minY = 50;
+
+		// WYSIWYG labels need more room for the interface
+		if (label.hasClass("wysiwyg")) {
+			paddingY = 200;
+			minX = 700;
+			minY = 500;
+		}
+		
 		var offset = label.offset();
 		var initX = offset.left + (label.width()/2);
 		var initY = offset.top-$(window).scrollTop();
-		if (label.width()+paddingX > labelForm.width()) {
-			labelForm.width(label.width()-1+paddingX);
+		var newX = minX;
+		var newY = minY;
+		if (label.width()+paddingX > minX) {
+			newX = label.width()+paddingX;
+		}
+		if (newX > labelForm.width()) {
+			labelForm.width(newX-1);
 			if (labelForm.width() > $(window).width()-(margin*2)) {
 				labelForm.width($(window).width()-(margin*2));
 			}
 		}
-		if (label.height()+paddingY > labelForm.height()) {
-			labelForm.height(label.height()+paddingY);
+		if (label.height()+paddingY > minY) {
+			newY = label.height()+paddingY;
+		}
+		if (newY > labelForm.height()) {
+			labelForm.height(newY);
 			if (labelForm.height() > $(window).height()-(margin*2)) {
 				labelForm.height($(window).height()-(margin*2));
 			}
@@ -353,8 +385,18 @@ $(document).ready(function() {
 		// Tell the browser to use traditional tags (b, i, u) instead of styles.
 		Saint.sleExecute('styleWithCSS',false);
 		
-		// Finally, focus on the editor.
-		labelForm.find('div.label-value').focus();
+		// If it is a WYSIWYG block...
+		if (label.hasClass("wysiwyg")) {
+			// Set up the environment
+			$('.sle.active').addClass("wysiwyg");
+			Saint.sleToggleSource();
+			$('.sle.active .link.switch.visual').hide()
+			// Then start TinyMCE
+			Saint.sleStartMCE($('.sle.active div.source textarea'),labelForm.width(),labelForm.height());
+		} else {
+			// Otherwise, just focus on the editor.
+			labelForm.find('div.label-value').focus();
+		}
 	};
 	
 	Saint.sleStop = function() {
@@ -413,7 +455,7 @@ $(document).ready(function() {
 			realdata = JSON.parse(data);
 			if (realdata['success']) {
 				$('.sle.active div.label-value').html(realdata['label']);
-				$('.sle.active textarea[name=label-value]').val(realdata['label']);
+				$('.sle.active textarea.label-value').val(realdata['label']);
 				Saint.sleActiveRevision = realdata['revision'];
 			} else {
 				$('.saint-ajax-indicator').addClass("error");
@@ -428,10 +470,14 @@ $(document).ready(function() {
 	Saint.sleSave = function() {
 		var stripped;
 		var allowed_tags = '<a><i><b><u><p><ul><ol><li><img><h1><h2><h3><h4><h5><h6>';
-		if (Saint.sleWysiwygActive) {
-			stripped = Saint.stripTags($('.sle.active div.label-value').html(),allowed_tags);
+		if ($('.sle.active').hasClass("wysiwyg")) {
+			stripped = $('.sle.active textarea[name=label-value]').val();
 		} else {
-			stripped = Saint.stripTags($('.sle.active textarea[name=label-value]').val(),allowed_tags);
+			if (Saint.sleWysiwygActive) {
+				stripped = Saint.stripTags($('.sle.active div.label-value').html(),allowed_tags);
+			} else {
+				stripped = Saint.stripTags($('.sle.active textarea[name=label-value]').val(),allowed_tags);
+			}
 		}
 		$('.sle.active textarea[name=label-value]').val(stripped);
 		$('.sle.active .cache').html(stripped);
@@ -455,6 +501,47 @@ $(document).ready(function() {
 			Saint.addError("Error saving label. Please check the server error log for further information.");
 		}
 	};
+	
+	Saint.sleStartMCE = function(mcetarget) {
+		$(mcetarget).tinymce({
+			// Location of TinyMCE script
+			script_url : '/core/scripts/tinymce/tiny_mce.js',
+
+			// General options
+			theme : "advanced",
+			plugins : "autolink,lists,pagebreak,style,layer,table,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,advlist",
+
+			// Theme options
+			theme_advanced_buttons1 : "bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
+			theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
+			theme_advanced_buttons3 : "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
+			theme_advanced_buttons4 : "insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak",
+			theme_advanced_toolbar_location : "top",
+			theme_advanced_toolbar_align : "left",
+			theme_advanced_statusbar_location : "bottom",
+			theme_advanced_resizing : true,
+			// Example content CSS (should be your site CSS)
+			content_css : "/core/styles/saint.css",
+
+			// Drop lists for link/image/media/template dialogs
+			template_external_list_url : "lists/template_list.js",
+			external_link_list_url : "lists/link_list.js",
+			external_image_list_url : "lists/image_list.js",
+			media_external_list_url : "lists/media_list.js",
+			oninit: Saint.sleResizeMCE
+			/*
+			// Replace values for the template plugin
+			template_replace_values : {
+				username : "Some User",
+				staffid : "991234"
+			}*/
+		});
+	};
+	
+	Saint.sleResizeMCE = function() {
+		$('.sle.active iframe').height($('.sle.active').height()-150);
+		$('.sle.active iframe').width($('.sle.active').width()-2);
+	}
 	
 	/* END Label Editor */
 	
@@ -801,8 +888,8 @@ $(document).ready(function() {
 		Saint.editing = true;
 		$('.saint-admin-options .link.edit').html("Stop Editing");
 		$('.saint-admin-options.current-page').addClass("visible");
-		$('.editable').addClass("editnow");
-		$('.repeating').addClass("editnow");
+		//$('.editable').addClass("editnow");
+		//$('.repeating').addClass("editnow");
 		Saint.contractOverlay();
 	};
 	
@@ -1134,7 +1221,7 @@ $(document).ready(function() {
 				Saint.openFileManager(filelabel,labelid);
 			}
 		}
-	},'.saint-image.editable.editnow img');
+	},'.editing .saint-image.editable img');
 
 	$(document).on({
 		'click': function(event) {
@@ -1344,96 +1431,6 @@ $(document).ready(function() {
 	};
 
 	/* END File Manager */
-
-	/* START WYSIWYG Editor */
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.loadWysiwyg(event.currentTarget.id);
-		}
-	},'.editing .saint-wysiwyg');
-
-	$(document).on({
-		'click': function(event) {
-			Saint.saveWysiwyg();
-		}
-	},'.wysiwyg-form .link.save');
-
-	Saint.loadWysiwyg = function(target) {
-		Saint.openAddBox();
-		Saint.wysiwygTarget = '#'+target;
-		var wysiwygForm = $('.saint-templates > .wysiwyg-form').clone().removeClass('template').removeClass('hidden');
-		wysiwygForm.find('input[name=saint-wysiwyg-name]').val(target);
-		wysiwygForm.find('textarea[name=saint-wysiwyg-content]').val($('#'+target).html());
-		$('.saint-admin-block.add-block .load').html(wysiwygForm);
-		wysiwygForm.find('textarea[name=saint-wysiwyg-content]').focus();
-		Saint.startMCE(".saint-admin-block.add-block .wysiwyg-editable");
-		$('.saint-admin-block.add-block').removeClass("loading");
-	};
-	
-	Saint.saveWysiwyg = function() {
-		$('.saint-admin-block.add-block').addClass("loading");
-		postdata = $('.saint-admin-block.add-block form').serialize();
-		Saint.callHome("/system/",postdata,Saint.savedWysiwyg);
-		Saint.closeAddBox();
-	};
-	
-	Saint.savedWysiwyg = function(data) {
-		try {
-			realdata = JSON.parse(data);
-			if (realdata['success']) {
-				$(Saint.wysiwygTarget).html($('.saint-admin-block.add-block .load').find('textarea[name=saint-wysiwyg-content]').val());
-				$('.saint-admin-block.add-block .load').html('');
-			} else {
-				Saint.addError("There was a problem saving your changes. Please check the error log for further information.",0);
-				$('.saint-ajax-indicator').addClass("error");
-			}
-			Saint.setActionLog(realdata.actionlog);
-		} catch (e) {
-			$('.saint-ajax-indicator').addClass("error");
-			Saint.addError("There was a problem saving your changes. Please check the error log for further information.",0);
-		}
-	};
-	
-	Saint.startMCE = function(mcetarget) {
-		$(mcetarget).tinymce({
-			// Location of TinyMCE script
-			script_url : '/core/scripts/tinymce/tiny_mce.js',
-
-			// General options
-			theme : "advanced",
-			plugins : "autolink,lists,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template,advlist",
-
-			// Theme options
-			theme_advanced_buttons1 : "save,newdocument,|,bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,styleselect,formatselect,fontselect,fontsizeselect",
-			theme_advanced_buttons2 : "cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo,|,link,unlink,anchor,image,cleanup,help,code,|,insertdate,inserttime,preview,|,forecolor,backcolor",
-			theme_advanced_buttons3 : "tablecontrols,|,hr,removeformat,visualaid,|,sub,sup,|,charmap,emotions,iespell,media,advhr,|,print,|,ltr,rtl,|,fullscreen",
-			theme_advanced_buttons4 : "insertlayer,moveforward,movebackward,absolute,|,styleprops,|,cite,abbr,acronym,del,ins,attribs,|,visualchars,nonbreaking,template,pagebreak",
-			theme_advanced_toolbar_location : "top",
-			theme_advanced_toolbar_align : "left",
-			theme_advanced_statusbar_location : "bottom",
-			theme_advanced_resizing : true,
-			height: "500",
-			length: "900",
-			// Example content CSS (should be your site CSS)
-			content_css : "/core/styles/saint.css",
-
-			// Drop lists for link/image/media/template dialogs
-			template_external_list_url : "lists/template_list.js",
-			external_link_list_url : "lists/link_list.js",
-			external_image_list_url : "lists/image_list.js",
-			media_external_list_url : "lists/media_list.js",
-
-			/*
-			// Replace values for the template plugin
-			template_replace_values : {
-				username : "Some User",
-				staffid : "991234"
-			}*/
-		});
-	};
-	
-	/* END WYSIWYG Editor */
 	
 	/* START Shop Manager */
 

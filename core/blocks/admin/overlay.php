@@ -190,6 +190,9 @@
 				<div class="toolbar">
 					<button class="link save" title="Save">&nbsp;</button>
 					<button class="link switch visual" title="View Rich Text">&nbsp;</button>
+					<select name="revision" class="link revision">
+						<option selected="selected" value="load" class="null">Loading...</option>
+					</select>
 					<div class="link close-button" title="Close">&nbsp;</div>
 				</div>
 				<form>
@@ -197,14 +200,6 @@
 					<textarea class="label-value" name="label-value"></textarea>
 				</form>
 			</div>
-		</div>
-	
-		<div class="template wysiwyg-form hidden">
-			<form>
-				<input type="hidden" name="saint-wysiwyg-name" value="" />
-				<textarea name="saint-wysiwyg-content" class="wysiwyg-editable"></textarea>
-			</form>
-			<span class="link save">Save</span>
 		</div>
 	</div>
 </div>

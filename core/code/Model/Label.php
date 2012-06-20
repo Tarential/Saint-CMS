@@ -118,13 +118,33 @@ class Saint_Model_Label {
 	 * @param int $revision Optional previous revision to use (null/0 uses highest revision, 1 is previous, 2 is 2 back, etc).
 	 * @return string Label code.
 	 */
-	public function getLabel($container = true, $default = '', $lang = null, $revision = null) {
+	public function getLabel($options = array()) {
 		$label = '';
-		if ($lang == null)
+		if (isset($options['default'])) {
+			$default = $options['default'];
+		} else {
+			$default = 'This is a blank label.';
+		}
+		if (isset($options['container'])) {
+			$container = $options['container'];
+		} else {
+			$container = true;
+		}
+		if (isset($options['lang']) && $options['lang'] != null) {
+			$lang = Saint::sanitize($options['lang'],SAINT_REG_NAME);
+		} else {
 			$lang = Saint::getCurrentLanguage();
-		else
-			$lang = Saint::sanitize($lang,SAINT_REG_NAME);
-		$revision = Saint::sanitize($revision,SAINT_REG_ID);
+		}
+		if (isset($options['wysiwyg'])) {
+			$wysiwyg = $options['wysiwyg'];
+		} else {
+			$wysiwyg = false;
+		}
+		if (isset($options['revision'])) {
+			$revision = Saint::sanitize($options['revision'],SAINT_REG_ID);
+		} else {
+			$revision = 0;
+		}
 		$revcode = " ORDER BY `revision` DESC";
 		if ($revision) {
 			$revision = $this->getNumRevisions() - $revision;
@@ -133,22 +153,22 @@ class Saint_Model_Label {
 			$revcode = " AND `revision`='$revision'";
 		}
 		
-		if ($lang && $revcode) {
-			try {
-				$label = Saint::getOne("SELECT `label` FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'" . $revcode);
-			} catch (Exception $e) {
-				if ($e->getCode()) {
-					Saint::logError("Unable to select label '$this->_name': ".$e->getMessage());
-				}
-				$label = $default;
+		try {
+			$label = Saint::getOne("SELECT `label` FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'" . $revcode);
+		} catch (Exception $e) {
+			if ($e->getCode()) {
+				Saint::logError("Unable to select label '$this->_name': ".$e->getMessage());
 			}
+			$label = $default;
 		}
+		
+		$styles = "";
 		if (Saint::getCurrentUser()->hasPermissionTo("edit-label"))
-			$editable = " editable";
-		else
-			$editable = "";
+			$styles .= " editable";
+		if ($wysiwyg)
+			$styles .= " wysiwyg";
 		if ($container)
-			$label = "<div class=\"sln-".preg_replace('/\//','_',$this->_name)." saint-label$editable\">" . stripslashes($label) . "</div>";
+			$label = "<div class=\"sln-".preg_replace('/\//','_',$this->_name)." saint-label$styles\">" . stripslashes($label) . "</div>";
 		else
 			$label = stripslashes($label);
 		return $label;

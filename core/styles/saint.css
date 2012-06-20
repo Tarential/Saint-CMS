@@ -593,39 +593,43 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	cursor: pointer;
 }
 
-.editnow .block-item > .edit-button {
+.editing .block-item > .edit-button {
 	display: block;
 	z-index: 50;
 }
 
-.editnow.saint-image img {
+.editing .saint-image.editable img {
 	border: 1px dotted red;
 }
 
-.editnow .block-item {
+.editing .block-item {
 	margin-bottom: 2px; }
 
-.editnow > .add-button {
+.editing .saint-block > .add-button {
 	display: block;
 }
 
-.saint-label.editnow, .saint-label.editnow * {
-	border-bottom: 1px dotted red; }
+#saint-add-block-data .add-button, #saint-add-block-data .edit-button {
+	display: none;
+} 
 
-.editnow > .block-item {
+#saint-add-block-data .block-item {
+	border: none; }
+
+.editing .saint-label.editable {
+	border: 1px dotted red; }
+
+.editing .block-item {
 	border: 1px dotted #000; }
 
 .block-item {
 	position: relative; }
 
-.saint-label.editnow:hover {
+.editing .saint-label.editable:hover {
 	cursor: pointer; }
 
 .block-name {
 	font-style: italic; }
-
-.editing {
-	border: none; }
 
 .saint-block .new {
 	display: none; }
@@ -1244,6 +1248,12 @@ span.match {
 	height: 176px;
 }
 
+.sle.active .mceEditor {
+	position: absolute;
+	top: 20px;
+	left: 0px;
+}
+
 /*
 .sle.active .toolbar ul {
 	padding: 0;
@@ -1420,7 +1430,7 @@ body.sle-active .blackout {
 }
 
 .sle div.label-value * {
-	color #000;
+	color: #000;
 }
 
 .sle.active .blackout {

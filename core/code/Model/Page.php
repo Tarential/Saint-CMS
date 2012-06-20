@@ -203,7 +203,7 @@ class Saint_Model_Page {
 	 */
 	public function getLabel($name, $default = '', $options = array()) {
 		$name = "page/" . $this->_id . "/n/" . $name;
-		return Saint::getLabel($name,$default);
+		return Saint::getLabel($name,$default,$options);
 	}
 	
 	/**

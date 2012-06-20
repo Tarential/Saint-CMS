@@ -98,9 +98,9 @@ loss of privacy, moral rights or the disclosure of confidential information.
  */
 session_start();
 
-$profiling = false;
+define("SAINT_PROFILING",false);
 
-if ($profiling) {
+if (SAINT_PROFILING) {
 	$mtime = microtime();
 	$mtime = explode(" ",$mtime);
 	$mtime = $mtime[1] + $mtime[0];
@@ -168,6 +168,8 @@ try {
 	Saint::logError("Could not verify installation: ".$e->getMessage());
 }
 
+define('SAINT_DB_VERSION',$installed);
+
 $argument_pattern = '/[\/]*([^\/\.]+\.[^\/\.]+)\/*/';
 $args = array();
 
@@ -198,16 +200,20 @@ if (Saint::getCurrentUsername() == "guest" && isset($_COOKIE['saintcookie'])) {
 	Saint_Model_User::loginViaCookie($_COOKIE['saintcookie']);
 }
 
-if ($installed)
+if (SAINT_DB_VERSION) {
+	if (SAINT_CODE_VERSION > SAINT_DB_VERSION) {
+		include_once(SAINT_SITE_ROOT."/core/installer/db-upgrade.php");
+	}
 	Saint::callPage($pid,$args);
-else
+} else {
 	Saint::runInstall();
+}
 
-if ($profiling && Saint::getCurrentPage()->getLayout() != "system/json") {
+if (SAINT_PROFILING) {
 	$mtime = microtime();
 	$mtime = explode(" ",$mtime);
 	$mtime = $mtime[1] + $mtime[0];
 	$endtime = $mtime;
-	$totaltime = ($endtime - $starttime);
-	echo "This page was created in ".$totaltime." seconds using " . memory_get_peak_usage() . " bytes.";
+	$totaltime = ($endtime - $starttime)*1000;
+	Saint::logEvent("Page ".Saint::getCurrentPage()->getName()." was created in ".$totaltime." ms using " . memory_get_peak_usage() . " bytes.");
 }

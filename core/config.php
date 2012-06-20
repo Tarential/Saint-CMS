@@ -8,7 +8,7 @@
 # X = Full release
 # Y = Major revision
 # Z = Minor revision
-define('SAINT_VERSION','01.0200');
+define('SAINT_CODE_VERSION','1.0300');
 
 # Site location
 define('SAINT_BASE_URL',"http://" . $_SERVER['SERVER_NAME'] . "/");
