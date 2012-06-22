@@ -13,40 +13,81 @@ if ($user->getUsername() == "guest")
 else
 	$username = $user->getUsername();
 ?>
-<div class="user-edit-form">
+<div class="user-edit-form <?php if ($user->getId()): ?>edit-user<?php else: ?>add-user<?php endif; ?>">
 	<form>
 		<input type="hidden" name="saint-edit-user-id" value="<?php echo $user->getId(); ?>" />
 		<ul>
-			<li><?php echo Saint::genField("saint-edit-user-username","text","Username: ",array('value'=>$username)); ?></li>
-			<li><?php echo Saint::genField("saint-edit-user-firstname","text","First Name: ",array('value'=>$user->getFirstName())); ?></li>
-			<li><?php echo Saint::genField("saint-edit-user-lastname","text","Last Name: ",array('value'=>$user->getLastName())); ?></li>
-			<li><?php echo Saint::genField("saint-edit-user-email","text","E-Mail Address: ",array('value'=>$user->getEmail())); ?></li>
+			<li><?php echo Saint::genField("saint-edit-user-username","text","Username: ",
+				array(
+					'value'=>$username,
+					'static'=>true,
+					'rules'=>'required',
+				)); ?></li>
+			<li><?php echo Saint::genField("saint-edit-user-firstname","text","First Name: ",
+				array(
+					'value'=>$user->getFirstName(),
+					'static'=>true,
+				)); ?></li>
+			<li><?php echo Saint::genField("saint-edit-user-lastname","text","Last Name: ",
+				array(
+					'value'=>$user->getLastName(),
+					'static'=>true,
+				)); ?></li>
+			<li><?php echo Saint::genField("saint-edit-user-email","text","E-Mail Address: ",
+				array(
+					'value'=>$user->getEmail(),
+					'static'=>true,
+					'rules'=>'required email',
+				)); ?></li>
 			<?php if (!$user->getId()): ?>
-			<li><?php echo Saint::genField("saint-edit-user-newpassone","text","Password: ",array('value'=>'','password'=>true)); ?></li>
-			<li><?php echo Saint::genField("saint-edit-user-newpasstwo","text","Confirm Password: ",array('value'=>'','password'=>true)); ?></li>
+			<li><?php echo Saint::genField("saint-edit-user-newpassone","text","Password: ",
+				array(
+					'value'=>'',
+					'password'=>true,
+					'static'=>true,
+					'rules'=>'required',
+				)); ?></li>
+			<li><?php echo Saint::genField("saint-edit-user-newpasstwo","text","Confirm Password: ",
+				array(
+					'value'=>'',
+					'password'=>true,
+					'static'=>true,
+					'rules'=>'required',
+				)); ?></li>
 			<?php endif; ?>
 			<?php if (sizeof($options) > 0): ?>
 			<li><?php echo Saint::genField("saint-edit-user-groups[]","select","Groups: ",
-				array('options'=>$options,'selected'=>$user->getGroups(),'multiple'=>true)); ?></li>
+				array(
+					'options'=>$options,
+					'selected'=>$user->getGroups(),
+					'multiple'=>true,
+					'static'=>true,
+				)); ?></li>
 			<?php endif; ?>
 		</ul>
 		<?php if ($user->getId()): ?>
 		<div class="password_change saint-list-contracted">
 			<p class="link trigger">Change Password</p>
 			<ul>
-				<li><?php echo Saint::genField("saint-edit-user-oldpass","text","Current Password: ",array('value'=>'','password'=>true)); ?></li>
-				<li><?php echo Saint::genField("saint-edit-user-newpassone","text","New Password: ",array('value'=>'','password'=>true)); ?></li>
-				<li><?php echo Saint::genField("saint-edit-user-newpasstwo","text","Confirm New: ",array('value'=>'','password'=>true)); ?></li>
+				<li><?php echo Saint::genField("saint-edit-user-oldpass","text","Current Password: ",array('password'=>true,'static'=>true)); ?></li>
+				<li><?php echo Saint::genField("saint-edit-user-newpassone","text","New Password: ",array('password'=>true,'static'=>true)); ?></li>
+				<li><?php echo Saint::genField("saint-edit-user-newpasstwo","text","Confirm New: ",array('password'=>true,'static'=>true)); ?></li>
 			</ul>
 		</div>
 		<?php endif;?>
 		<?php if ($user->getId()): ?>
 		<?php echo Saint::genField("saint-edit-user-delete","select","Delete User: ",
-				array('options'=>array(0=>'No',1=>'Yes'),'selected'=>'No','multiple'=>false)); ?>
+				array(
+					'options'=>array(0=>'No',1=>'Yes'),
+					'selected'=>'No',
+					'multiple'=>false,
+					'static'=>true,
+				)); ?>
 		<input type="hidden" name="saint-edit-user-ajax" value="true" />
 		<?php endif; ?>
 		<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
 		<input type="hidden" name="saint-edit-user-ajax" value="1" />
+		<div class="error_display error">&nbsp;</div>
 		<div class="save_options">
 			<span class="link submit">Save</span> &nbsp;&nbsp;&nbsp;
 			<span class="link cancel">Cancel</span>

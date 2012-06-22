@@ -280,7 +280,7 @@ EOT;
 				}
 			}
 			
-			// Category filtering
+			# Category filtering
 			if ($category != '') {
 				$cattables = ",`st_blocks` as `u`,`st_blocktypes` as `t`,`st_blockcats` as `bc`,`st_categories` as `c`";
 				$catwhere = "AND `b`.`id`=`u`.`blockid` AND `u`.`id`=`bc`.`blockid` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$sblock' AND `c`.`id`=`bc`.`catid` AND `c`.`name`='$category'";
@@ -433,17 +433,15 @@ EOT;
 						}
 					}
 					$cur = 0;
+					$mark = "?";
 					foreach ($args as $key=>$val) {
-						if ($key != "pnum" && $key != "btid" && $key != "subids") {
-							if ($cur == 0)
-								$mark = "?";
-							else
-								$mark = "&";
+						if ($key != "pnum" && $key != "btid" && $key != "subids" && $key != "edit") {
 							$url .= $mark."$key=$val";
+							$mark = "&";
 						}
 					}
 					$btid = Saint_Model_Block::getBlockTypeId($page->crb);
-					$page->crburl = chop($url,'/')."/?btid=$btid&pnum=";
+					$page->crburl = chop($url,'/').$mark."btid=$btid&pnum=";
 					$page->crbpstart = Saint::getStartingNumber($btid)-1;
 					$page->crbnstart = Saint::getStartingNumber($btid)+1;
 					$page->crbnumpages = ceil($numresults / $repeat);
@@ -1039,7 +1037,7 @@ EOT;
 	public function setCategories($newcats) {
 		if (!is_array($newcats))
 			$newcats = explode(',',$newcats);
-		foreach (Saint::getAllCategories() as $cat) {
+		foreach (Saint::getCategories() as $cat) {
 			if (in_array($cat,$newcats)) {
 				$this->addToCategory($cat);
 			} else {

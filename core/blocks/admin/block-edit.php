@@ -11,7 +11,7 @@
 		<?php echo Saint::genField("saint-block-setting-enabled","hidden","",array("value"=>1)); ?>
 		<?php
 			$options = array();
-			foreach (Saint::getAllCategories() as $category)
+			foreach (Saint::getCategories() as $category)
 				$options[$category] = $category;
 			$data = array(
 				"options" => $options,

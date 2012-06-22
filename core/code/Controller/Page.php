@@ -95,7 +95,7 @@ class Saint_Controller_Page {
 			else
 				$success = false;
 			
-			$pages = Saint::getAllPages();
+			$pages = Saint::getPages();
 			$sp = array();
 			foreach ($pages as $page) {
 				$sp[] = array($page->getName(),$page->getTitle());
@@ -353,7 +353,7 @@ class Saint_Controller_Page {
 						$this->_page->usertoedit = new Saint_Model_User();
 						$this->_page->usertoedit->loadById($args['id']);
 					}
-					$this->_page->setTempLayout("user/edit");
+					$this->_page->setTempLayout("system/user-edit");
 					break;
 			}
 		}
@@ -403,7 +403,7 @@ class Saint_Controller_Page {
 		
 		if (isset($args['view']) && $args['view'] == 'file-list') {
 			if (Saint::getCurrentUser()->hasPermissionTo("manage-files")) {
-				$this->_page->setTempLayout("file-manager/list");
+				$this->_page->setTempLayout("system/file-manager-list");
 			}
 		}
 		

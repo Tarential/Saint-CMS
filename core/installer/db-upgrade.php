@@ -8,6 +8,11 @@ EOT;
 
 $upgrades['1.0200'] = <<<EOT
 DROP TABLE IF EXISTS `st_wysiwyg`;
+UPDATE `st_pages` SET `layout`='system/user-edit' WHERE `layout`='user/edit';
+UPDATE `st_pages` SET `layout`='system/user-login' WHERE `layout`='user/login';
+UPDATE `st_pages` SET `layout`='system/search-results' WHERE `layout`='search/results';
+UPDATE `st_pages` SET `layout`='system/file-manager' WHERE `layout`='file-manager/index';
+UPDATE `st_pages` SET `layout`='system/upload' WHERE `layout`='file-manager/upload';
 UPDATE `st_config` SET `version`='1.0300';
 EOT;
 

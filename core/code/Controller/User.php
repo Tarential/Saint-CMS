@@ -139,7 +139,7 @@ class Saint_Controller_User {
 			
 			if (isset($_POST['saint-edit-user-ajax']) && $_POST['saint-edit-user-ajax']) {
 				$page->setTempLayout("system/json");
-				$users = Saint::getAllUsers();
+				$users = Saint::getUsers();
 				$su = array();
 				foreach ($users as $user) {
 					$su[] = array($user->getId(),$user->getUsername());
@@ -159,7 +159,7 @@ class Saint_Controller_User {
 					$page->setTempLayout("system/error");
 					$page->error = "Registration Successful.";
 				} else {
-					$page->setTempLayout("user/register");
+					$page->setTempLayout("system/user-register");
 					$page->error = $errors;
 				}
 			}

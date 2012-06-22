@@ -306,15 +306,15 @@ INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('home','Home'
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('user','User','user/edit','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('user','User','system/user-edit','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('login','Login','user/login','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('login','Login','system/user-login','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('search','Search','search/results','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('search','Search','system/search-results','NOW()');
 EOT;
 
 $sql[] = <<<EOT
@@ -322,11 +322,11 @@ INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('system','Sai
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('filemanager','Saint','file-manager/index','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('filemanager','Saint','system/file-manager','NOW()');
 EOT;
 
 $sql[] = <<<EOT
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('upload','Saint','file-manager/upload','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('upload','Saint','system/upload','NOW()');
 EOT;
 
 $sql[] = <<<EOT

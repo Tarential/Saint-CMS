@@ -7,15 +7,6 @@
 	<div class="link submit"><?php echo $page->getLabel("submit","Submit Message"); ?></div>
 </form>
 <script type="text/javascript">
-$(document).on({
-	'click': function(event) {
-		$('#saint-contact-form').submit();
-	}
-},'#saint-contact-form .link.submit');
-</script>
-<?php
-/* To be enabled once problem with jquery-validate and Saint label system is resolved
-<script type="text/javascript">
 $(document).ready(function() {
 	var submitEnabled = true;
 	var rules = {
@@ -56,10 +47,8 @@ $(document).ready(function() {
 	
 	$(document).on({
 		'click': function(event) {
-			if (submitEnabled)
-				$('#saint-contact-form').submit();
+			$('#saint-contact-form').submit();
 		}
-	},'#saint-contact-submit');
+	},'#saint-contact-form .link.submit');
 });
 </script>
-*/ ?>

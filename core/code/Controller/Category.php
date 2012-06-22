@@ -73,7 +73,7 @@ class Saint_Controller_Category {
 	}
 	
 	public static function prepareReply($success = false) {
-		$cats = Saint::getAllCategories();
+		$cats = Saint::getCategories();
 		$cu = array();
 		foreach ($cats as $id=>$cat) {
 			$cu[] = array($id,$cat);

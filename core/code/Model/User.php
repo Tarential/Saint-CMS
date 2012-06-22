@@ -16,25 +16,38 @@ class Saint_Model_User {
 	protected $_scid;
 	
 	/**
-	 * Get all users in the database.
-	 * @return Saint_Model_User[] Models of users.
-	 * @todo Modify function to allow selection of subsets of users.
+	 * Get matching usernames from the database.
+	 * @param array Filters to match.
+	 * @return string Usernames of matching users.
 	 */
-	public static function getAllUsers() {
+	public static function getUsernames($filters = array()) {
+		$options = array('id','username','password','email','fname','lname','phone','language');
+		$sql = Saint::makeConditions($filters,$options);
 		try {
-			$usernames = Saint::getAll("SELECT `username` FROM `st_users`");
-			if ($usernames == null)
-				throw new Exception("No users.");
-			$users = array();
-			foreach ($usernames as $username) {
-				$user = new Saint_Model_User();
-				if ($user->loadByUsername($username))
-					$users[] = $user;
-			}
-			return $users;
+			return Saint::getAll("SELECT `username` FROM `st_users`$sql");
 		} catch (Exception $e) {
-			Saint::logError("Your site has no users... how did that happen? Reinstall the cms or see the documentation to add a user manually.",__FILE__,__LINE__);
+			if ($e->getCode()) {
+				Saint::logError("Unable to select users: ".$e->getMessage(),__FILE__,__LINE__);
+			}
+			return array();
 		}
+	}
+	
+	/**
+	 * Get matching users from the database.
+	 * @param array Filters to match.
+	 * @return Saint_Model_User[] Models of matching users.
+	 */	
+	public static function getUsers($filters = array()) {
+		$usernames = Saint_Model_User::getUsernames($filters);
+		$users = array();
+		foreach ($usernames as $username) {
+			$user = new Saint_Model_User();
+			if ($user->loadByUsername($username)) {
+				$users[] = $user;
+			}
+		}
+		return $users;
 	}
 	
 	/**

@@ -10,12 +10,15 @@
 		<script type="text/javascript">
 			google.load("jquery", "1");
 		</script>
-		<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
+		<?php if (Saint::getCurrentUser()->getId() || Saint::getCurrentPage()->getName() == "register"): ?>
 			<script type="text/javascript" src="<?php echo SAINT_URL; ?>/core/scripts/tinymce/jquery.tinymce.js"></script>
+			<?php Saint::includeScript("jquery.validate.min"); ?>
+			<?php Saint::includeScript("saint"); ?>
+		<?php endif; ?>
+		<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
 			<!-- Third party scripts for BrowserPlus runtime, Plupload -->
 			<script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
 			<script type="text/javascript" src="<?php echo SAINT_URL; ?>/core/scripts/plupload/plupload.full.js"></script>
 		<?php endif; ?>
 		<?php Saint::includeStyle("saint"); ?>
-		<?php Saint::includeScript("saint"); ?>
-		<?php Saint::includeScript("slides.min.jquery"); ?>
+		

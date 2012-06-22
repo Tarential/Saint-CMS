@@ -32,7 +32,7 @@
 					<li><?php echo Saint::genField("saint-add-page-description","textarea","Description: "); ?></li>
 					<?php
 						$options = array();
-						foreach (Saint::getAllCategories() as $category)
+						foreach (Saint::getCategories() as $category)
 							$options[$category] = $category;
 					?>
 					<li><?php echo Saint::genField("saint-add-page-categories[]","select","Categories: ",
@@ -53,7 +53,13 @@
 			</ul>
 			<h4>Pages:</h4>
 			<ul class="page-list">
-				<?php foreach (Saint::getAllPages() as $ipage): ?>
+				<?php $page_filters = array(
+					'layout' => array(
+						'comparison_operator' => 'NOT LIKE',
+						'match_all' => array('system/%'),
+					),
+				); ?>
+				<?php foreach (Saint::getPages($page_filters) as $ipage): ?>
 				<li><a href="<?php echo SAINT_URL . "/" . $ipage->getName(); ?>" class="sublist"><?php echo $ipage->getTitle(); ?></a></li>
 				<?php endforeach; ?>
 			</ul>
@@ -65,7 +71,7 @@
 			</ul>
 			<h4>Users:</h4>
 			<ul class="user-list sublist">
-				<?php foreach (Saint::getAllUsers() as $iuser): ?>
+				<?php foreach (Saint::getUsers() as $iuser): ?>
 				<li class="link" id="user-<?php echo $iuser->getId(); ?>"><?php echo $iuser->getUsername(); ?></li>
 				<?php endforeach; ?>
 			</ul>
@@ -86,7 +92,7 @@
 			
 			<h4>Categories</h4>
 			<ul class="sublist category-list">
-			<?php foreach (Saint::getAllCategories() as $iid=>$icat): ?>
+			<?php foreach (Saint::getCategories() as $iid=>$icat): ?>
 				<li class="link category-edit cat-<?php echo $iid; ?>"><?php echo $icat; ?><span class="delete close-button">&nbsp;</span></li>
 			<?php endforeach; ?>
 			</ul>
@@ -129,7 +135,7 @@
 					<li><?php echo Saint::genField("saint-edit-page-description","textarea","Description: ",array('value'=> $page->getMetaDescription(),'static'=>true)); ?></li>
 					<?php
 						$options = array();
-						foreach (Saint::getAllCategories() as $category)
+						foreach (Saint::getCategories() as $category)
 							$options[$category] = $category;
 					?>
 					<li><?php echo Saint::genField("saint-edit-page-categories[]","select","Categories: ",

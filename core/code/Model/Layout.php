@@ -73,7 +73,7 @@ class Saint_Model_Layout {
 				return Saint::getBlock("layouts/".$this->_name);
 			} else {
 				Saint::includeBlock("layouts/".$this->_name);
-				return 0;
+				return 1;
 			}
 		}
 	}

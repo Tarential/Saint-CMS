@@ -173,27 +173,27 @@ class Saint {
 	}
 	
 	/**
-	 * Shortcut for Saint_Model_User::getAllUsers().
-	 * @return Saint_Model_User[] Array of all site users.
+	 * Shortcut for Saint_Model_User::getUsers().
+	 * @return Saint_Model_User[] Array of site users.
 	 */
-	public static function getAllUsers() {
-		return Saint_Model_User::getAllUsers();
+	public static function getUsers($filters = array()) {
+		return Saint_Model_User::getUsers($filters);
 	}
 	
 	/**
-	 * Shortcut for Saint_Model_Page::getAllPages().
+	 * Shortcut for Saint_Model_Page::getPages().
 	 * @return Saint_Model_Page[] Array of all site pages.
 	 */
-	public static function getAllPages() {
-		return Saint_Model_Page::getAllPages();
+	public static function getPages($filters = array()) {
+		return Saint_Model_Page::getPages($filters);
 	}
 	
 	/**
 	 * Shortcut for Saint_Model_Category::getCategories()
 	 * @return string[] Array with keys matching category ID and values matching category name.
 	 */
-	public static function getAllCategories() {
-		return Saint_Model_Category::getCategories();
+	public static function getCategories($filters = array()) {
+		return Saint_Model_Category::getCategories($filters);
 	}
 	
 	/**
@@ -749,7 +749,7 @@ class Saint {
 	public static function includeSlideshow($arguments = array()) {
 		$page = Saint::getCurrentPage();
 		$page->sfmarguments = $arguments;
-		Saint::includeBlock("gallery/slideshow");
+		Saint::includeBlock("slideshow/slideshow");
 	}
 	
 	/**
@@ -759,7 +759,7 @@ class Saint {
 	public static function includeGallery($arguments = array()) {
 		$page = Saint::getCurrentPage();
 		$page->sfmarguments = $arguments;
-		Saint::includeBlock("gallery/list");
+		Saint::includeBlock("gallery/gallery");
 	}
 	
 	/**
@@ -1039,14 +1039,136 @@ class Saint {
 	}
 	
 	/**
+	 * Match given filters against available option types to create the conditional part of an SQL query.
+	 * @param array $filters Conditions to match.
+	 * @param array $options Allowable settings to filter by.
+	 * @return string Conditional statement in SQL.
+	 */
+	public static function makeConditions($filters = array(), $options = array()) {
+		/* Example of possible filter content.
+		$filters = array(
+			'model' => 'Saint_Model_Page',
+			'updated' => array(
+				'logical_operator' => 'OR',
+				'comparison_operator' => '>=',
+				'match_all' => '2012-06-20 13:18:15',
+				'match_one' => array('2012-06-20 13:18:15','2052-06-20 13:18:15'),
+			),
+		); */
+		$sql = '';
+		$and_results = array();
+		$or_results = array();
+		
+		# Cycle through available options and add check each for matching filters.
+		foreach ($options as $opt) {
+			
+			# If a filter is set, generate an SQL condition
+			if (isset($filters[$opt])) {
+				$co = '=';
+				$lo = 'AND';
+				
+				# If our filter is an array there optional settings to use.
+				if (is_array($filters[$opt])) {
+					
+					# Choose the logical operator (AND, OR, AND NOT, OR NOT)
+					if (isset($filters[$opt]['logical_operator'])) {
+						$lo = strtoupper(Saint::sanitize($filters[$opt]['logical_operator']));
+					}
+					
+					# Choose the comparison operator (>, =, <, IS, LIKE, NOT LIKE, etc)
+					if (isset($filters[$opt]['comparison_operator'])) {
+						$co = Saint::sanitize($filters[$opt]['comparison_operator']);
+					}
+					
+					# Match all of the given match_all values.
+					if (isset($filters[$opt]['match_all'])) {
+						if (is_array($filters[$opt]['match_all'])) {
+							$match_all = $filters[$opt]['match_all'];
+						} else {
+							$match_all = array($filters[$opt]['match_all']);
+						}
+					} else {
+						$match_all = array();
+					}
+					
+					# Match at least one of the given match_one values.
+					if (isset($filters[$opt]['match_one'])) {
+						if (is_array($filters[$opt]['match_one'])) {
+							$match_one = $filters[$opt]['match_one'];
+						} else {
+							$match_one = array($filters[$opt]['match_one']);
+						}
+					} else {
+						$match_one = array();
+					}
+					
+				} else {
+					# Since no sub-array of options was passed we simply use the given scalar to match.
+					$match_one = array($filters[$opt]);
+					$match_all = array();
+				}
+				
+				if (preg_match('/AND/',$lo)) {
+					$and_results[] = array($opt,$co,$lo,$match_one,$match_all);
+				} else {
+					$or_results[] = array($opt,$co,$lo,$match_one,$match_all);
+				}
+			}
+		}
+		
+		$results = array($and_results,$or_results);
+		
+		for ($r = 0; $r < 2; $r++) {
+			foreach ($results[$r] as $cond) {
+				$opt = $cond[0];
+				$co = $cond[1];
+				$lo = $cond[2];
+				$match_one = $cond[3];
+				$match_all = $cond[4];
+				
+				# Add a wrapper if there are values to match.
+				if (sizeof($match_one) || sizeof($match_all)) {
+					$sql .= " $lo (";
+					
+					$i = 0;
+					
+					# Now we add each value to the query.
+					foreach ($match_one as $val) {
+						if ($i != 0) {
+							$sql .= " OR ";
+						}
+						$sql .= "`$opt` $co '$val'";
+						$i++;
+					}
+					foreach ($match_all as $val) {
+						if ($i != 0) {
+							$sql .= " AND ";
+						}
+						$sql .= "`$opt` $co '$val'";
+						$i++;
+					}
+					
+					$sql .= ")";
+				}
+			}
+		}
+		
+		# If conditions were added we'll need to clean up the edges of the query.
+		if (strlen($sql) > 0) {
+			$sql = preg_replace('/^\s+(AND|OR)\s*(.*)$/',' WHERE $2',$sql);
+		}
+		
+		return $sql;
+	}
+	
+	/**
 	 * Generates and returns a form field with the given parameters.
 	 * @param string $name Name of input field.
 	 * @param string $type Type of input field.
 	 * @param string $label Optional label for input field.
 	 * @param string[] $data Optional data for input field (value, select options, etc).
-	 * @param string $rules Optional jQuery validation rules for input field.
 	 */
-	public static function genField ($name,$type,$label = '',$data = null,$rules = '') {
+	public static function genField ($name,$type,$label = '',$data = null) {
 		$field = '';
 		if (!isset($data['static']) || $data['static'] == false)
 			$label = Saint::getCurrentPage()->getLabel("sff-".preg_replace('/[\[\]]*/','',$name),$label);
@@ -1060,6 +1182,8 @@ class Saint {
 			$classes = $data['classes'];
 		else
 			$classes = '';
+		if (isset($data['rules']))
+			$classes .= " " . $data['rules'];
 		switch ($type) {
 			case 'radio':
 				$field .= $label . '<input type="radio" id="'.$name.'" name="'.$name.'" value="'.$val.'" class="'.$classes.'" />'."\n";
@@ -1101,7 +1225,7 @@ class Saint {
 					$multiple = '';
 				$field .= $label . "\n";
 				$selid = preg_replace('/\[\]$/','',$name);
-				$field .= "<select id=\"$selid\" name=\"$name\" class=\"$rules\"$multiple>\n";
+				$field .= "<select id=\"$selid\" name=\"$name\" class=\"$classes\"$multiple>\n";
 				foreach ($data['options'] as $opt=>$label) {
 					if (in_array($opt,$selected))
 						$sel = ' selected="selected"';

@@ -7,24 +7,35 @@
 class Saint_Model_Page {
 	/**
 	 * Get all the page names from the database.
-	 * @return string[] Names of all pages in the database.
+	 * @return string[] Names of all matching pages in the database.
 	 */
-	public static function getAllPages() {
+	public static function getPageNames($filters = array()) {
+		$options = array('id','enabled','name','title','layout','model','meta_keywords','meta_description','allow_robots','created','updated');
+		$where = Saint::makeConditions($filters,$options);
 		try {
-			$pagenames = Saint::getAll("SELECT `name` FROM `st_pages`");
-			if ($pagenames == null)
-				throw new Exception("No pages.");
-			$pages = array();
-			foreach ($pagenames as $curpage) {
-				$newpage = new Saint_Model_Page();
-				if ($newpage->loadByName($curpage))
-					$pages[] = $newpage;
-			}
-			return $pages;
+			return Saint::getAll("SELECT `name` FROM `st_pages`$where");
 		} catch (Exception $e) {
-			Saint::logError("Your site has no pages... how did that happen? Reinstall the cms or see the documentation to add a page manually.",__FILE__,__LINE__);
+			if ($e->getCode()) {
+				Saint::logError("Unable to select pages from the database: ".$e->getMessage(),__FILE__,__LINE__);
+			}
 			return array();
 		}
+	}
+	
+	/**
+	 * Get all the pages from the database.
+	 * @param $filters Filters to match.
+	 * @return Saint_Model_Page All matching pages.
+	 */
+	public static function getPages($filters = array()) {
+		$pagenames = Saint_Model_Page::getPageNames($filters);
+		$pages = array();
+		foreach ($pagenames as $curpage) {
+			$newpage = new Saint_Model_Page();
+			if ($newpage->loadByName($curpage))
+				$pages[] = $newpage;
+		}
+		return $pages;
 	}
 	
 	/**

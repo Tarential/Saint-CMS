@@ -472,7 +472,7 @@ $(document).ready(function() {
 	
 	Saint.sleSave = function() {
 		var stripped;
-		var allowed_tags = '<a><i><b><u><p><ul><ol><li><img><h1><h2><h3><h4><h5><h6>';
+		var allowed_tags = '<a><i><b><u><p><ul><ol><li><img><center><h1><h2><h3><h4><h5><h6>';
 		if ($('.sle.active').hasClass("wysiwyg")) {
 			stripped = $('.sle.active textarea[name=label-value]').val();
 		} else {
@@ -605,8 +605,13 @@ $(document).ready(function() {
 	};
 	
 	Saint.saveUser = function() {
-		var postdata = $('.saint-admin-options .user-edit-form > form').serialize();
-		Saint.callHome('/',postdata,Saint.savedUser);
+		if ($('.saint-admin-options .user-edit-form > form').valid()) {
+			var postdata = $('.saint-admin-options .user-edit-form > form').serialize();
+			Saint.callHome('/',postdata,Saint.savedUser);
+		} else {
+			$('.saint-admin-options.dynamic .error_display').html("Please correct the errors in red to continue.").show();
+			setTimeout("$('.saint-admin-options.dynamic .error_display').hide()",5000);
+		}
 	};
 	
 	Saint.savedUser = function(data) {
@@ -650,7 +655,7 @@ $(document).ready(function() {
 		try {
 			realdata = JSON.parse(data);
 			if (realdata['success']) {
-				Saint.notify("Saved settings.");
+				Saint.addEvent("Saved settings.");
 			} else {
 				Saint.addError("There was a problem saving the selected category.");
 				$('.saint-ajax-indicator').addClass("error");
@@ -1176,6 +1181,8 @@ $(document).ready(function() {
 	Saint.loadDynamicOptionsBox = function(data) {
 		$('.saint-admin-options.dynamic').html(data);
 		$('.saint-admin-options.dynamic').removeClass("loading");
+		$('.saint-admin-options.dynamic form').validate();
+		$('.saint-admin-options.dynamic .error_display').hide();
 	};
 	
 	/* END Admin Overlay */
@@ -1554,10 +1561,6 @@ $(document).ready(function() {
 			}
 		}
 		return id;
-	};
-	
-	Saint.notify = function(notice) {
-		alert(notice);
 	};
 	
 	/* END World Events */

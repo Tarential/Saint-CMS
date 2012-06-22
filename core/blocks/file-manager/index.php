@@ -75,7 +75,7 @@ $(function() {
 			<?php echo Saint::genField("saint-file-description","textarea","Description:"); ?>
 			<?php
 				$options = array();
-				foreach (Saint::getAllCategories() as $category)
+				foreach (Saint::getCategories() as $category)
 					$options[$category] = $category;
 			?>
 			<?php echo Saint::genField("saint-file-categories[]","select","Categories: ",
@@ -94,5 +94,3 @@ $(function() {
 	<?php Saint::includeBlock("file-manager/list"); ?>
 </div>
 </div>
-
-

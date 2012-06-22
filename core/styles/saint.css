@@ -24,6 +24,7 @@ p {
 	display: none; }
 
 .error {
+	font-weight: bold;
 	color: red; }
 
 .link {
@@ -767,7 +768,7 @@ span.match {
 
 #saint-contact-form label, #saint-contact-form .saint-label {
 	display: block;
-	width: 200px;
+	width: 352px;
 	font-weight: bold;
 	margin-bottom: 1px;
 }

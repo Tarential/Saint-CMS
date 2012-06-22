@@ -122,9 +122,9 @@ else
 $subdir = substr(SAINT_SITE_ROOT,strlen($_SERVER['DOCUMENT_ROOT']));
 define('SAINT_URL',chop(SAINT_BASE_URL . $subdir,'/'));
 if ($get_start = strpos($_SERVER['REQUEST_URI'],'?'))
-	$uri_sans_get = rtrim(trim(substr($_SERVER['REQUEST_URI'],0,$get_start),'/'),'/');
+	$uri_sans_get = trim(substr($_SERVER['REQUEST_URI'],0,$get_start),'/');
 else
-	$uri_sans_get = rtrim(trim($_SERVER['REQUEST_URI'],'/'),'/');
+	$uri_sans_get = trim($_SERVER['REQUEST_URI'],'/');
 $uri = trim(substr($uri_sans_get,strlen($subdir)),'/');
 
 /**
@@ -181,7 +181,7 @@ if (preg_match_all($argument_pattern,$uri,$matches)) {
 }
 
 foreach ($_GET as $key=>$val) {
-	if (trim(rtrim($key,'/'),'/') != $uri) {
+	if (trim($key,'/') != $uri) {
 		$args[$key] = $val;
 	}
 }

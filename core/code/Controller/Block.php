@@ -30,7 +30,7 @@ class Saint_Controller_Block {
 				return 0;
 			}
 			
-			$page->setTempLayout("system/editblock");
+			$page->setTempLayout("system/block-edit");
 		} else {
 			Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$block."-".$_POST['blockid'].
 				" from IP $_SERVER[REMOTE_ADDR] but was denied access.");

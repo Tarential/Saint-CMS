@@ -1,15 +1,9 @@
 <?php Saint::includeBlock("top"); ?>
 
+<?php Saint::includeScript("slides.min.jquery"); ?>
+
 <?php Saint::includeBlock("middle"); ?>
 
-<?php
-$arguments = array(
-	"categories" => array('Saint'),
-	"width" => '400',
-	"height" => '200',
-	"label" => "This slideshow will display all images which are in the category 'Saint'. Open the file manager in the Saint menu to edit image categories.",
-);
-Saint::includeSlideshow($arguments);
-?>
+<?php Saint::includeBlock("slideshow/index"); ?>
 
 <?php Saint::includeBlock("bottom"); ?>

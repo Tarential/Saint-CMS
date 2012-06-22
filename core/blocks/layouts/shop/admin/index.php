@@ -1,0 +1,1 @@
+<?php includeBlock("shop/admin/index"); ?>
