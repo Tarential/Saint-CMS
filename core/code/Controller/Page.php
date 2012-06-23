@@ -358,6 +358,16 @@ class Saint_Controller_Page {
 			}
 		}
 		
+		if (isset($args['check-username'])) {
+			$this->_page->setTempLayout("system/json");
+			$this->_page->jsondata = array('success'=>true);
+			if (Saint_Model_User::nameAvailable($args['check-username'])) {
+				$this->_page->jsondata['available'] = true;
+			} else {
+				$this->_page->jsondata['available'] = false;
+			}
+		}
+		
 		/*
 		 * Category controls
 		 */

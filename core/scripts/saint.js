@@ -550,6 +550,8 @@ $(document).ready(function() {
 	
 	/* START User Administration */
 	
+	Saint.checkUsernameTimer = 0;
+	
 	$(document).on({
 		'click': function(event) {
 			window.location.replace("/action.logout");
@@ -589,12 +591,26 @@ $(document).ready(function() {
 			}
 		}
 	},'.user-edit-form form input');
-	
+
 	$(document).on({
 		'click': function(event) {
 			Saint.showOptions(".saint-admin-options.user-options");
 		}
 	},'.saint-admin-options .user-edit-form .link.cancel');
+
+	$(document).on({
+		'keypress': function(event) {
+			if (Saint.checkUsernameTimer) {
+				clearTimeout(Saint.checkUsernameTimer);
+				Saint.checkUsernameTimer = 0;
+			}
+			if ($('#saint-edit-user-username').val() == "") {
+				$('.hud.username').hide();
+			} else {
+				Saint.checkUsernameTimer = setTimeout(Saint.checkUsername,1500);
+			}
+		}
+	},'#saint-edit-user-username');
 	
 	Saint.editUser = function(uid) {
 		$('.saint-admin-options.dynamic').html('');
@@ -609,7 +625,7 @@ $(document).ready(function() {
 			var postdata = $('.saint-admin-options .user-edit-form > form').serialize();
 			Saint.callHome('/',postdata,Saint.savedUser);
 		} else {
-			$('.saint-admin-options.dynamic .error_display').html("Please correct the errors in red to continue.").show();
+			$('.saint-admin-options.dynamic .error_display.submit').html("Please correct the errors in red to continue.").show();
 			setTimeout("$('.saint-admin-options.dynamic .error_display').hide()",5000);
 		}
 	};
@@ -632,6 +648,33 @@ $(document).ready(function() {
 		} catch (e) {
 			$('.saint-ajax-indicator').addClass("error");
 			Saint.addError("There was a problem editing selected user. Please check the server error log for further information.",0);
+		}
+	};
+	
+	Saint.checkUsername = function() {
+		if ($('#saint-edit-user-username').val() == $('#saint-edit-user-original-username').val()) {
+			$('.hud.username').hide();
+		} else {
+			Saint.callHome('/system/?check-username='+$('#saint-edit-user-username').val(),null,Saint.checkedUsername);
+		}
+	};
+	
+	Saint.checkedUsername = function(data) {
+		try {
+			realdata = JSON.parse(data);
+			if (realdata['success']) {
+				if (realdata['available']) {
+					$('.hud.username').removeClass("error").html("That username is available.").show();
+				} else {
+					$('.hud.username').addClass("error").html("Sorry, that username is taken. Please choose another.").show();
+				}
+			} else {
+				Saint.addError("There was a problem checking the availability of the given username. Check the error log for details.");
+				$('.saint-ajax-indicator').addClass("error");
+			}
+		} catch (e) {
+			$('.saint-ajax-indicator').addClass("error");
+			Saint.addError("There was a problem checking the availability of the given username. Check the error log for details.");
 		}
 	};
 	
@@ -1142,6 +1185,7 @@ $(document).ready(function() {
 			$('.saint-ajax-indicator').addClass("error");
 		if (severity == 0)
 			alert(error);
+		$('.saint-action-log').prepend(error);
 		return esize-1;
 	};
 	

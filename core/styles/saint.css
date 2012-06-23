@@ -320,6 +320,15 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	border-right: 1px solid #000;
 }
 
+.hud {
+	color: #0d8a00;
+	font-weight: bold;
+}
+
+.hud.error {
+	color: red;
+}
+
 .saint-admin-options .page-list, .saint-admin-options .user-list {
 	margin: 0 0 2px;
 }
