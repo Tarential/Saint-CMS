@@ -191,7 +191,7 @@ class Saint_Controller_Page {
 						} else {
 							$success = false;
 							$errors[] = "Name is already in use.";
-							Saint::logEvent("The page name you requested to use for the shop is already taken. Either rename or delete the page then try again.");
+							Saint::logError("The page name you chose for the shop is already in use. Either rename or delete the page then try again.");
 						}
 					} elseif ($prev_page->getId()) {
 						if ($prev_page->setName($_POST['saint-shop-uri'])) {
@@ -199,10 +199,9 @@ class Saint_Controller_Page {
 						} else {
 							$success = false;
 							$errors[] = "Unable to change the name of the shop page.";
-							Saint::logEvent("Unable to change the name of the shop page. See the error log for more details.");
+							Saint::logError("Unable to change the name of the shop page.");
 						}
 					} else {
-						Saint::logError("Adding new shop page.");
 						$new_page = new Saint_Model_Page();
 						$new_page->setName($_POST['saint-shop-uri']);
 						$new_page->setLayout("shop/index");
@@ -220,11 +219,8 @@ class Saint_Controller_Page {
 			if (isset($_POST['saint-blog-uri'])) {
 				$prev_page = new Saint_Model_Page();
 				$prev_page->loadById(Saint::getBlogPageId());
-				Saint::logError("Blog Start");
 				if ($prev_page->getName() != $_POST['saint-blog-uri']) {
-					Saint::logError("Working");
 					if ($_POST['saint-blog-uri'] == "") {
-						Saint::logError("Deleting");
 						$prev_page->delete();
 						Saint::setBlogPageId(0);
 						Saint::logEvent("Disabled Saint blog.");
@@ -234,22 +230,18 @@ class Saint_Controller_Page {
 						if ($test_page->getLayout() == "blog/index") {
 							Saint::setBlogPageId($test_page->getId());
 						} else {
-							Saint::logError("Name taken.");
 							$success = false;
 							$errors[] = "Name is already in use.";
-							Saint::logEvent("The page name you requested to use for the blog is already taken. Either rename or delete the page then try again.");
+							Saint::logError("The page name you chose for the blog is already in use. Either rename or delete the page then try again.");
 						}
 					} elseif ($prev_page->getId()) {
-						Saint::logError("Altering existing blog page.");
 						if ($prev_page->setName($_POST['saint-blog-uri'])) {
 							$prev_page->save();
 						} else {
 							$success = false;
 							$errors[] = "Unable to change the name of the blog page.";
-							Saint::logEvent("Unable to change the name of the blog page. See the error log for more details.");
 						}
 					} else {
-						Saint::logError("Adding new blog page.");
 						$new_page = new Saint_Model_Page();
 						$new_page->setName($_POST['saint-blog-uri']);
 						$new_page->setLayout("blog/index");

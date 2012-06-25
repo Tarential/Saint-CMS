@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Saint - <?php echo $page->getTitle(); ?></title>
+		<title><?php echo Saint::getSiteTitle(); ?> - <?php echo $page->getTitle(); ?></title>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<meta name="robots" content="<?php if ($page->allowsRobots()): ?>index,follow<?php else: ?>noindex,nofollow<?php endif; ?>" />
 		<meta name="keywords" content="<?php echo implode(',',$page->getMetaKeywords()); ?>" />
@@ -10,7 +10,7 @@
 		<script type="text/javascript">
 			google.load("jquery", "1");
 		</script>
-		<?php if (Saint::getCurrentUser()->getId() || Saint::getCurrentPage()->getName() == "register"): ?>
+		<?php if (Saint::getCurrentUser()->getId() || $page->getName() == "register"): ?>
 			<script type="text/javascript" src="<?php echo SAINT_URL; ?>/core/scripts/tinymce/jquery.tinymce.js"></script>
 			<?php Saint::includeScript("jquery.validate.min"); ?>
 			<?php Saint::includeScript("saint"); ?>

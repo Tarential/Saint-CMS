@@ -489,6 +489,7 @@ $(document).ready(function() {
 	};
 	
 	Saint.sleSaved = function(data) {
+		alert(data);
 		try {
 			realdata = JSON.parse(data);
 			if (realdata['success']) {

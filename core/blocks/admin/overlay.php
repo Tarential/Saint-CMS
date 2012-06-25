@@ -20,23 +20,38 @@
 		<div class="saint-admin-options page-add hidden">
 			<form>
 				<ul>
-					<li><?php echo Saint::genField("saint-add-page-title","text","Name: "); ?></li>
-					<li><?php echo Saint::genField("saint-add-page-name","text","Identifier: "); ?></li>
+					<li><?php echo Saint::genField("saint-add-page-title","text","Name: ", array(
+						'static' => true,
+					)); ?></li>
+					<li><?php echo Saint::genField("saint-add-page-name","text","Identifier: ", array(
+						'static' => true,
+						'rules' => 'required',
+					)); ?></li>
 					<?php
 						$options = array();
 						foreach (Saint::getLayoutNames() as $layout)
 							$options[$layout] = ucfirst($layout);
 					?>
-					<li><?php echo Saint::genField("saint-add-page-layout","select","Layout: ",array('options'=>$options)); ?></li>
-					<li><?php echo Saint::genField("saint-add-page-keywords","text","Keywords: "); ?></li>
-					<li><?php echo Saint::genField("saint-add-page-description","textarea","Description: "); ?></li>
+					<li><?php echo Saint::genField("saint-add-page-layout","select","Layout: ", array(
+						'options' => $options,
+						'static' => true,
+					)); ?></li>
+					<li><?php echo Saint::genField("saint-add-page-keywords","text","Keywords: ", array(
+						'static' => true,
+					)); ?></li>
+					<li><?php echo Saint::genField("saint-add-page-description","textarea","Description: ", array(
+						'static' => true,
+					)); ?></li>
 					<?php
 						$options = array();
 						foreach (Saint::getCategories() as $category)
 							$options[$category] = $category;
 					?>
-					<li><?php echo Saint::genField("saint-add-page-categories[]","select","Categories: ",
-						array('options'=>$options,'selected'=>array(),'multiple'=>true)); ?></li>
+					<li><?php echo Saint::genField("saint-add-page-categories[]","select","Categories: ", array(
+						'options' => $options,
+						'selected' => array(),
+						'multiple' => true,
+					)); ?></li>
 				</ul>
 			</form>
 			<ul>
@@ -80,13 +95,37 @@
 		<div class="saint-admin-options site-options hidden">
 			<h4>Settings</h4>
 			<form class="settings">
-				<?php echo Saint::genField("saint-site-title","text","Title:",array("static"=>true,"value"=>Saint::getSiteTitle())); ?>
-				<?php echo Saint::genField("saint-site-keywords","text","Keywords:",array("static"=>true,"value"=>Saint::getSiteKeywords())); ?>
-				<?php echo Saint::genField("saint-site-description","textarea","Description:",array("static"=>true,"value"=>Saint::getSiteDescription())); ?>
-				<?php $tp = new Saint_Model_Page(); if ($tp->loadById(Saint::getShopPageId())) $shopuri = $tp->getName(); else $shopuri = ""; ?>
-				<?php echo Saint::genField("saint-shop-uri","text","Shop URI: (leave blank to disable)",array("static"=>true,"value"=>$shopuri)); ?>
-				<?php if ($tp->loadById(Saint::getBlogPageId())) $bloguri = $tp->getName(); else $bloguri = ""; ?>
-				<?php echo Saint::genField("saint-blog-uri","text","Blog URI: (leave blank to disable)",array("static"=>true,"value"=>$bloguri)); ?>
+				<?php echo Saint::genField("saint-site-title","text","Title:",array(
+					"static" => true,
+					"value" => Saint::getSiteTitle(),
+				)); ?>
+				<?php echo Saint::genField("saint-site-keywords","text","Keywords:",array(
+					"static" => true,
+					"value" => Saint::getSiteKeywords(),
+				)); ?>
+				<?php echo Saint::genField("saint-site-description","textarea","Description:",array(
+					"static" => true,
+					"value" => Saint::getSiteDescription(),
+				)); ?>
+				<?php	$tp = new Saint_Model_Page();
+				if ($tp->loadById(Saint::getShopPageId())) {
+					$shopuri = $tp->getName();
+				} else {
+					$shopuri = "";
+				} ?>
+				<?php echo Saint::genField("saint-shop-uri","text","Shop URI: (leave blank to disable)",array(
+					"static" => true,
+					"value" => $shopuri,
+				)); ?>
+				<?php if ($tp->loadById(Saint::getBlogPageId())) {
+					$bloguri = $tp->getName();
+				} else {
+					$bloguri = "";
+				}?>
+				<?php echo Saint::genField("saint-blog-uri","text","Blog URI: (leave blank to disable)",array(
+					"static" => true,
+					"value" => $bloguri,
+				)); ?>
 				<span class="submit link">Save Settings</span>
 			</form>
 			
@@ -99,7 +138,9 @@
 			<form class="categories">
 				<input type="hidden" value="0" name="saint-set-category-id" id="saint-set-category-id" />
 				<input type="hidden" value="0" name="saint-delete-category" id="saint-delete-category" />
-				<?php echo Saint::genField("saint-add-category","text","Name:",array('static'=>true))?>
+				<?php echo Saint::genField("saint-add-category","text","Name:",array(
+					'static' => true,
+				)); ?>
 				<span id="saint-add-category-submit" class="link">Add</span>
 				<span id="saint-add-category-cancel" class="link hidden">Cancel</span>
 			</form>

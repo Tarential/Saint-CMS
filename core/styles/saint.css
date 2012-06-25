@@ -369,7 +369,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	border: 1px solid #333;
 	width: 100%; }
 
-.saint-action-log span.labelname {
+.saint-action-log span.name {
 	font-weight: bold; }
 
 .sublist .link {

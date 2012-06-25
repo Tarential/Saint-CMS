@@ -16,14 +16,37 @@ class Saint_Model_Label {
 	 * @return string Formatted name.
 	 */
 	public static function formatForDisplay($name) {
-		$name = preg_replace('/[^\/]+\/(.*)$/','$1',$name);
-		$name = preg_replace('/[\/-]/',' ',$name);
-		$name = preg_replace('/\sn\s/',' ',$name);
-		$names = explode(' ',$name);
-		for ($i = 0; $i < sizeof($names); $i++)
-			$names[$i] = ucfirst($names[$i]);
-		$name = implode(' ',$names);
-		return $name;
+			# Clean up the dashes and slashes
+			$name = preg_replace('/[\/-]/',' ',$name);
+			
+			# Capitalize the first letter of each word in the name
+			$names = explode(' ',$name);
+			$capitalized = '';
+			foreach ($names as $curname) {
+				$capitalized .= ucfirst($curname) . " ";
+			}
+			$name = trim($capitalized);
+			return $name;
+	}
+	
+	
+	public static function parseName($name) {
+		$data = array();
+		# Check if it is a global, page or block label
+		if (preg_match('/^page\/(\d)+\/n\/(.*)$/',$name,$matches)) {
+			# Page labels
+			$data['label_name'] = $matches[2];
+			$data['page_id'] = $matches[1];
+		} elseif (preg_match('/^block\/(\d)+\/(.*)\/n\/(.*)$/',$name,$matches)) {
+			# Block labels
+			$data['block_id'] = $matches[1];
+			$data['block_name'] = $matches[2];
+			$data['label_name'] = $matches[3];
+		} else {
+			$data['label_name'] = $name;
+		}
+		
+		return $data;
 	}
 	
 	/**
@@ -61,7 +84,7 @@ class Saint_Model_Label {
 	 * @return string Name of the owner of the loaded label.
 	 */
 	public function getOwner() {
-		// Loading of owner information moved to this function to optimize display times
+		# Loading of owner information moved to this function to optimize display times
 		if (!isset($this->_owner) || $this->_owner == "") {
 			try {
 				return Saint::getOne("SELECT `owner` FROM `st_labels` WHERE `name`='$name' ORDER BY `revision` DESC LIMIT 1");
@@ -205,7 +228,8 @@ class Saint_Model_Label {
 				foreach($this->_new_labels as $lang=>$label) {
 					if (Saint::sanitize($this->getLabel($lang)) != $label) {
 						$this->newEntry($label,$lang);
-						Saint::logEvent("Added new label entry for '$this->_name'."); }
+						# Saint::logEvent("Added new label entry for '$this->_name'.");
+					}
 				}
 				
 				$query = "UPDATE `st_labels` SET `owner`='$this->_owner' WHERE `name`='$this->_name'";
@@ -221,7 +245,7 @@ class Saint_Model_Label {
 					}
 				}
 				
-				// Strip the delimiters off the config name pattern to match block names within the label name.
+				# Strip the delimiters off the config name pattern to match block names within the label name.
 				$spn = trim(rtrim(SAINT_REG_NAME,'/'),'/');
 				$spn = trim(rtrim($spn,'$'),'^');
 				$block_pattern = '/^block\/[\d]+\/('.$spn.')\/n\//';
