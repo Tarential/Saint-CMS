@@ -210,11 +210,23 @@ class Saint_Model_Page {
 	/**
 	 * Get label of given name unique to this page.
 	 * @param string $name Name of label to retrieve.
+	 * @param string $default Default contents for label.
+	 * @param array $options Options to apply to label.
 	 * @return string Contents of label.
 	 */
 	public function getLabel($name, $default = '', $options = array()) {
 		$name = "page/" . $this->_id . "/n/" . $name;
 		return Saint::getLabel($name,$default,$options);
+	}
+
+	/**
+	 * Include blocks of given name unique to this page.
+	 * @param string $name Name of blocks to retrieve.
+	 * @param array $options Options to apply to block inclusion.
+	 */
+	public function includeBlock($name, $options = array()) {
+		$options['page_id'] = Saint::getCurrentPage()->getId();
+		Saint_Model_Block::includeBlock($name,$options);
 	}
 	
 	/**
@@ -438,25 +450,6 @@ class Saint_Model_Page {
 	public function disableRobots() {
 		$this->_disallow_robots = false;
 		return 1;
-	}
-
-	/**
-	 * Add block association to page.
-	 * 
-	 * To avoid the necessity of developers registering which blocks are used in which page the system tracks them automatically.
-	 * 
-	 * @param string $block Block name.
-	 */
-	public function addBlock($block) {
-		$this->_newblocks[] = $block;
-	}
-
-	/**
-	 * Remove block from being associated with page.
-	 * @param string $block Block name.
-	 */
-	public function remBlock($block) {
-		unset($this->_newblocks[array_search($block,$this->_newblocks)]);
 	}
 	
 	/**
@@ -755,47 +748,6 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Save index of used blocks to DB.
-	 */
-	public function saveBlocks() {
-		if ($this->_id) {
-			# Add any new blocks
-			foreach ($this->_blocks as $block) {
-				try {
-					Saint::getAll("SELECT `id` FROM `st_pageblocks` WHERE `block`='$block'");
-				} catch (Exception $f) {
-					if ($f->getCode()) {
-						Saint::logError("Problem selecting page's block IDs: ".$f->getError());
-					}
-					try {
-						$url = Saint::sanitize($_SERVER['REQUEST_URI']);
-						Saint::query("INSERT INTO `st_pageblocks` (`pageid`,`block`,`url`) VALUES ('$this->_id','$block','$url')");
-					} catch (Exception $g) {
-						Saint::logError("Problem adding block '$block' to page '$this->_name': ".$g->getMessage(),__FILE__,__LINE__);
-					}
-				}
-			}
-			# Remove any obsolete blocks
-			try {
-				$dbblocks = Saint::getAll("SELECT `id`,`block` FROM `st_pageblocks` WHERE `pageid`='$this->_id'");
-				foreach ($dbblocks as $curblock) {
-					if (!in_array($curblock[1],$this->_blocks)) {
-						try {
-							Saint::query("DELETE FROM `st_pageblocks` WHERE `id`='$curblock[0]'");
-						} catch (Exception $g) {
-							Saint::logError("Problem deleting block with id '$curblock[0]': ".$g->getMessage(),__FILE__,__LINE__);
-						}
-					}
-				}
-			} catch (Exception $n) {
-				if ($n->getCode()) {
-					Saint::logError("Unable to select page block information: ".$n->getMessage(),__FILE__,__LINE__);
-				}
-			}
-		}
-	}
-	
-	/**
 	 * Save model details to database.
 	 * @param boolean Default true to log save event, false otherwise.
 	 * @return boolean True on success, false otherwise.
@@ -849,21 +801,12 @@ class Saint_Model_Page {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function render($options = array()) {
-		if (isset($options['indexblocks'])) {
-			$indexblocks = $options['indexblocks'];
-		} else {
-			$indexblocks = true;
-		}
 		if (isset($this->_templayout))
 			$lname = $this->_templayout;
 		else
 			$lname = $this->_layout;
 		if ($layout = Saint::getLayout($lname)) {
 			if ($result = $layout->render($this, $options)) {
-				if ($indexblocks) {
-					$this->_blocks = $this->_newblocks;
-					$this->saveBlocks();
-				}
 				return $result;
 			} else {
 				Saint::logError("Unable to render page $this->_name.",__FILE__,__LINE__);

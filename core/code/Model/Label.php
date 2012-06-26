@@ -186,12 +186,12 @@ class Saint_Model_Label {
 		}
 		
 		$styles = "";
-		if (Saint::getCurrentUser()->hasPermissionTo("edit-label"))
+		if (Saint::getCurrentUser()->hasPermissionTo("edit-label") || Saint::getCurrentUsername() == $this->_owner)
 			$styles .= " editable";
 		if ($wysiwyg)
 			$styles .= " wysiwyg";
 		if ($container)
-			$label = "<div class=\"sln-".preg_replace('/\//','_',$this->_name)." saint-label$styles\">" . stripslashes($label) . "</div>";
+			$label = '<div class="sln-'.preg_replace('/\//','_',$this->_name).' saint-label'.$styles.'">'.stripslashes($label).'</div>';
 		else
 			$label = stripslashes($label);
 		return $label;
@@ -232,8 +232,7 @@ class Saint_Model_Label {
 					}
 				}
 				
-				$query = "UPDATE `st_labels` SET `owner`='$this->_owner' WHERE `name`='$this->_name'";
-				Saint::query($query);
+				Saint::query("UPDATE `st_labels` SET `owner`='$this->_owner' WHERE `name`='$this->_name'");
 				
 				if (preg_match('/^page\/([\d]+)\/n\//',$this->_name,$matches)) {
 					try {

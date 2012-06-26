@@ -175,6 +175,7 @@ class Saint_Controller_Page {
 				$errors[] = "Invalid keywords.";
 			}
 			
+			/*
 			if (isset($_POST['saint-shop-uri'])) {
 				$prev_page = new Saint_Model_Page();
 				$prev_page->loadById(Saint::getShopPageId());
@@ -254,7 +255,7 @@ class Saint_Controller_Page {
 						Saint::logEvent("Added blog page at URI ".$prev_page->getName());
 					}
 				}
-			}
+			}*/
 			
 			$this->_page->jsondata = array(
 				"success" => $success,

@@ -107,7 +107,7 @@
 					"static" => true,
 					"value" => Saint::getSiteDescription(),
 				)); ?>
-				<?php	$tp = new Saint_Model_Page();
+				<?php	/* $tp = new Saint_Model_Page();
 				if ($tp->loadById(Saint::getShopPageId())) {
 					$shopuri = $tp->getName();
 				} else {
@@ -121,11 +121,11 @@
 					$bloguri = $tp->getName();
 				} else {
 					$bloguri = "";
-				}?>
+				} ?>
 				<?php echo Saint::genField("saint-blog-uri","text","Blog URI: (leave blank to disable)",array(
 					"static" => true,
 					"value" => $bloguri,
-				)); ?>
+				)); */ ?>
 				<span class="submit link">Save Settings</span>
 			</form>
 			

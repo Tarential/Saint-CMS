@@ -65,8 +65,6 @@ CREATE TABLE IF NOT EXISTS `st_config` (
 	`description` TEXT DEFAULT '',
 	`allow_robots` BOOLEAN NOT NULL,
 	`allow_registration` BOOLEAN NOT NULL,
-	`blog_page` INTEGER DEFAULT 0,
-	`shop_page` INTEGER DEFAULT 0,
 	PRIMARY KEY (`id`),
 	CONSTRAINT `st_config_owner_username`
 	FOREIGN KEY (`owner`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE RESTRICT
@@ -104,6 +102,7 @@ EOT;
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_blocks` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`page_id` INTEGER UNSIGNED NOT NULL DEFAULT 0,
 	`blocktypeid` INTEGER UNSIGNED NOT NULL,
 	`blockid` INTEGER UNSIGNED NOT NULL,
 	PRIMARY KEY (`id`),
@@ -127,21 +126,7 @@ CREATE TABLE IF NOT EXISTS `st_pages` (
 	`created` DATETIME,
 	`updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX `st_pages_name` (`name`)
-) ENGINE=InnoDB;
-EOT;
-
-$sql[] = <<<EOT
-CREATE TABLE IF NOT EXISTS `st_pageblocks` (
-	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-	`pageid` INTEGER UNSIGNED NOT NULL,
-	`block` VARCHAR(255) NOT NULL,
-	`url` VARCHAR(255) NOT NULL,
-	PRIMARY KEY (`id`),
-	INDEX(`pageid`),
-	INDEX(`block`),
-	CONSTRAINT `st_pageblocks_pageid_id`
-	FOREIGN KEY (`pageid`) REFERENCES st_pages(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+	INDEX `st_pages_name` (`name`)
 ) ENGINE=InnoDB;
 EOT;
 

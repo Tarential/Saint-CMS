@@ -53,20 +53,7 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 	 * @see core/code/Model/Saint_Model_Block::getUrl()
 	 */
 	public function getUrl() {
-		return Saint::getBlogUrl().'/'.$this->_settings['uri'];
-	}
-	
-	/**
-	 * Contrary to the name, this function only returns the main URL for the loaded post.
-	 * Blocks may be found on multiple pages, so the system tracks the URLs. We don't need
-	 * that functionality for the blog posts, so we return the single custom URL instead.
-	 * @return array ID and URL of page.
-	 * @see core/code/Model/Saint_Model_Block::getAllUrls()
-	 */
-	public function getAllUrls() {
-		return array(
-			array(Saint::getBlogPageId(),$this->getUrl()),
-		);
+		return $this->getPageUrl() . '/' . $this->_settings['uri'];
 	}
 	
 	/**
@@ -77,7 +64,7 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 		switch ($setting) {
 			case "uri":
 				$options['label'] = "URI:";
-				$options['details'] = array(Saint::getBlogUrl()."/[URI]");
+				$options['details'] = array($this->getPageUrl()."/[URI]");
 				if ($this->get($setting) == "") {
 					$options['details'][] = "(Leave blank to auto generate)";
 				}

@@ -84,16 +84,6 @@ class Saint {
 	}
 	
 	/**
-	 * Get the URL of the blog page for this site.
-	 * @return string URL of blog page.
-	 */
-	public static function getBlogUrl() {
-		$blog_page = new Saint_Model_Page();
-		$blog_page->loadById(Saint::getBlogPageId());		
-		return SAINT_URL.'/'.$blog_page->getName();
-	}
-	
-	/**
 	 * Notices added here are displayed to the user at each page load if supported by the template.
 	 * @param string $notice Contents of notice to be displayed to user.
 	 */
@@ -895,15 +885,6 @@ class Saint {
 	public static function getBlockUrl($blockname,$blockid,$page = null) {
 		return Saint_Model_Block::getBlockUrl($blockname,$blockid, $page);
 	}
-	
-	/**
-	 * Get the URL used for the blog RSS feed.
-	 * @todo Update blog feed URL to be CMS-editable.
-	 * @return string URL for the RSS feed.
-	 */
-	public static function getBlogRssUrl() {
-		return SAINT_URL . '/feed';
-	}
 
 	/**
 	 * Shortcut for Saint_Model_Block::includeBlock($block,$container, $view).
@@ -918,94 +899,6 @@ class Saint {
 	public static function getBlock($block, $arguments = array()) {
 		$arguments['get'] = true;
 		return Saint_Model_Block::includeBlock($block,$arguments);
-	}
-	
-	/**
-	 * Get ID of page used for the Saint blog.
-	 * @return int ID of page used for the blog or 0 if disabled.
-	 */
-	public static function getBlogPageId() {
-		try {
-			$blog_page = new Saint_Model_Page();
-			if (!$blog_page->loadById(Saint::getOne("SELECT `blog_page` FROM `st_config`"))) {
-				Saint::setBlogPageId(0);
-			}
-			return $blog_page->getId();
-		} catch (Exception $e) {
-			if ($e->getCode()) {
-				Saint::logError("Unable to select blog page ID: ".$e->getMessage(),__FILE__,__LINE__);
-			}
-			return 0;
-		}
-	}
-	
-	/**
-	 * Get ID of page used for the Saint shop.
-	 * @return int ID of page used for the shop or 0 if disabled.
-	 */
-	public static function getShopPageId() {
-		try {
-			$shop_page = new Saint_Model_Page();
-			if (!$shop_page->loadById(Saint::getOne("SELECT `shop_page` FROM `st_config`"))) {
-				Saint::setShopPageId(0);
-			}
-			return $shop_page->getId();
-		} catch (Exception $e) {
-			if ($e->getCode()) {
-				Saint::logError("Unable to select shop page ID: ".$e->getMessage(),__FILE__,__LINE__);
-			}
-			return 0;
-		}
-	}
-	
-	/**
-	 * Get a model of the Saint shop page.
-	 * @return Saint_Model_Shop Shop page.
-	 */
-	public static function getShop() {
-		$shop = new Saint_Model_Shop();
-		$shop->loadById(Saint::getShopPageId());
-		return $shop;
-	}
-	
-	/**
-	 * Set ID of page used for the Saint blog.
-	 * @param int $id ID of new page to be used for the blog.
-	 * @return boolean True on success, false otherwise.
-	 */
-	public static function setBlogPageId($id) {
-		$new_page = new Saint_Model_Page();
-		if ($id == 0 || $new_page->loadById($id)) {
-			try {
-				Saint::query("UPDATE `st_config` SET `blog_page`='".$new_page->getId()."'");
-				return 1;
-			} catch (Exception $e) {
-				Saint::logError("Unable to update blog page ID: ".$e->getMessage(),__FILE__,__LINE__);
-				return 0;
-			}
-		} else {
-			return 0;
-		}
-	}	
-	
-	/**
-	 * Set ID of page used for the Saint shop.
-	 * @param int $id ID of new page to be used for the shop.
-	 * @return boolean True on success, false otherwise.
-	 */
-	public static function setShopPageId($id) {
-		$new_page = new Saint_Model_Page();
-		if ($id == 0 || $new_page->loadById($id)) {
-			try {
-				Saint::query("UPDATE `st_config` SET `shop_page`='".$new_page->getId()."'");
-				return 1;
-			} catch (Exception $e) {
-				Saint::logError("Unable to update shop page ID: ".$e->getMessage(),__FILE__,__LINE__);
-				return 0;
-			}
-		} else {
-			return 0;
-		}
 	}
 	
 	/**
@@ -1241,7 +1134,6 @@ class Saint {
 	
 	/**
 	 * Search the labels in the database for content.
-	 * @todo Update search to include WYSIWYG labels and block settings.
 	 * @param string $phrase Phrase for which to search.
 	 * @return array[] Matching labels and URLs of pages on which the label can be found.
 	 */

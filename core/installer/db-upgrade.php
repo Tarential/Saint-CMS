@@ -13,6 +13,12 @@ UPDATE `st_pages` SET `layout`='system/user-login' WHERE `layout`='user/login';
 UPDATE `st_pages` SET `layout`='system/search-results' WHERE `layout`='search/results';
 UPDATE `st_pages` SET `layout`='system/file-manager' WHERE `layout`='file-manager/index';
 UPDATE `st_pages` SET `layout`='system/upload' WHERE `layout`='file-manager/upload';
+ALTER TABLE `st_config` DROP COLUMN `blog_page`;
+ALTER TABLE `st_config` DROP COLUMN `shop_page`;
+ALTER TABLE `st_blocks` ADD COLUMN `page_id` INTEGER UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `st_pages` DROP INDEX `st_pages_name`;
+ALTER TABLE `st_pages` ADD INDEX `st_pages_name` (`name`);
+DROP TABLE IF EXISTS `st_pageblocks`;
 UPDATE `st_config` SET `version`='1.0300';
 EOT;
 

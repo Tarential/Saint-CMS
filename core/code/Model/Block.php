@@ -141,7 +141,6 @@ class Saint_Model_Block {
 			$block_name = Saint::sanitize($block_name,SAINT_REG_NAME);
 			$block_model = Saint_Model_Block::getBlockModel($block_name);
 			if ($block_name) {
-				$page->addBlock($block_name);
 				$id = $page->getBlockId();
 				if (isset($arguments['block'])) {
 					$block = $arguments['block'];
@@ -195,9 +194,9 @@ class Saint_Model_Block {
 			$paging = false;
 			$repeat = 3;
 			$order = "DESC";
-			$orderby = "id";
-			$where = '';
+			$orderby = "`b`.`id`";			
 			$name = Saint_Model_Block::formatForTable($sblock);
+			$where = "WHERE `b`.`id`=`u`.`blockid` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$sblock'";
 			$category = '';
 			$collection = false;
 			
@@ -226,29 +225,26 @@ class Saint_Model_Block {
 								$eq = "=";
 							$lsm = Saint::sanitize($match[0]);
 							$rsm = Saint::sanitize($match[1]);
-							$where .= " `$lsm`$eq'$rsm' AND";
+							$where .= " AND `b`.`$lsm`$eq'$rsm'";
 						}
 					} else {
 						if(isset($arguments['matches'][2]))
 								$eq = Saint::sanitize($arguments['matches'][2]);
 							else
 								$eq = "=";
-						$where .= " `".Saint::sanitize($arguments['matches'][0])."`$eq'".Saint::sanitize($arguments['matches'][1])."' AND";
+						$where .= " AND `b`.`".Saint::sanitize($arguments['matches'][0])."`$eq'".Saint::sanitize($arguments['matches'][1])."'";
 					}
 				}
 				if (isset($arguments['search'])) {
 					if (is_array($arguments['search'][0])) {
 						foreach ($arguments['search'] as $match)
-							$where .= " `".Saint::sanitize($match[0])."` LIKE '".Saint::sanitize($match[1])."' AND";
+							$where .= " AND `b`.`".Saint::sanitize($match[0])."` LIKE '".Saint::sanitize($match[1])."'";
 					} else
-						$where .= " `".Saint::sanitize($arguments['search'][0])."` LIKE '".Saint::sanitize($arguments['search'][1])."' AND";
+						$where .= " AND `b`.`".Saint::sanitize($arguments['search'][0])."` LIKE '".Saint::sanitize($arguments['search'][1])."'";
 				}
 			}
 			
 			# Set up query
-			if ($where != '')
-			$where = "WHERE ".preg_replace('/\s*AND$/','',$where);
-			
 			if ($paging)
 				$sp = Saint::getStartingNumber(Saint_Model_Block::getBlockTypeId(Saint_Model_Block::convertNameFromWeb($name)),$start);
 			else
@@ -273,27 +269,26 @@ CREATE TABLE IF NOT EXISTS `st_blocks_$name` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 EOT;
-				try {
+			try {
 					$create = Saint::query($ctq);
 				} catch (Exception $e) {
 					Saint::logError("Couldn't create table st_blocks_$name " . $e->getMessage(),__FILE__,__LINE__);
 				}
 			}
 			
-			# Category filtering
-			if ($category != '') {
-				$cattables = ",`st_blocks` as `u`,`st_blocktypes` as `t`,`st_blockcats` as `bc`,`st_categories` as `c`";
-				$catwhere = "AND `b`.`id`=`u`.`blockid` AND `u`.`id`=`bc`.`blockid` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$sblock' AND `c`.`id`=`bc`.`catid` AND `c`.`name`='$category'";
-			} else {
-				$cattables = '';
-				$catwhere = '';
-			}
 			if ($collection) {
 				$sel = "*";
 			} else {
 				$sel = "`id`";
 			}
-			return "SELECT `b`.$sel FROM `st_blocks_$name` as `b`$cattables $where $catwhere $obs $ls";
+			$tables = "`st_blocks_$name` as `b`,`st_blocks` as `u`,`st_blocktypes` as `t`";
+			# Category filtering
+			if ($category != '') {
+				$tables .= ",`st_blockcats` as `bc`,`st_categories` as `c`";
+				$where .= " AND `u`.`id`=`bc`.`blockid` AND `c`.`id`=`bc`.`catid` AND `c`.`name`='$category'";
+			}
+			
+			return "SELECT `b`.$sel,`u`.`id`,`u`.`page_id` FROM $tables $where $obs $ls";
 		} else {
 			Saint::logError("Invalid block name '$block'.",__FILE__,__LINE__);
 			return 0;
@@ -326,6 +321,8 @@ EOT;
 					for ($i = 2; $i < sizeof($setting_names); $i++) {
 						$settings[$setting_names[$i][0]] = $sb[$i];
 					}
+					$settings['uid'] = $sb[sizeof($setting_names)];
+					$settings['page_id'] = $sb[sizeof($setting_names)+1];
 					$real_blocks[] = new $model($block,$sb[0],$sb[1],$settings);
 				}
 				$saved_blocks = $real_blocks;
@@ -352,6 +349,7 @@ EOT;
 			} else {
 				$saved_blocks = Saint_Model_Block::getBlocks($block,$arguments);
 			}
+			
 			$page = Saint::getCurrentPage();
 			$args = $page->getArgs();
 			$page->crb = $block;
@@ -711,9 +709,11 @@ EOT;
 	protected $_categories;
 	protected $_cats_to_delete;
 	protected $_cats_to_add;
+	protected $_page_id;
 	
 	/**
 	 * Create a dynamic block model.
+	 * By passing initial settings to the constructor we can load fixed values (such as ID) directly into the model.
 	 * @param string $name Name of block template.
 	 * @param int $id ID of individual block.
 	 * @return boolean True if product is loaded, false otherwise.
@@ -730,6 +730,16 @@ EOT;
 				$this->_name = Saint::sanitize($name,SAINT_REG_NAME);
 				$this->_settingnames = array();
 				$this->_categories = null;
+				if (isset($settings['page_id'])) {
+					$this->_page_id = $settings['page_id'];
+				} else {
+					$this->_page_id = 0;
+				}
+				if (isset($settings['uid'])) {
+					$this->_uid = $settings['uid'];
+				} else {
+					$this->_uid = 0;
+				}
 				foreach ($settings as $key=>$val) {
 					$sname = Saint::sanitize($key);
 					$this->_settingnames[] = $sname;
@@ -737,15 +747,17 @@ EOT;
 				}
 				return 1;
 			}
+		} else {
+			$this->_id = 0;
+			$this->_uid = 0;
+			$this->_page_id = 0;
+			$this->_settings = array();
+			$this->_settingnames = array();
+			$this->_categories = array();
+			$this->_cats_to_add = array();
+			$this->_cats_to_delete = array();
+			return 0;
 		}
-		$this->_id = 0;
-		$this->_uid = 0;
-		$this->_settings = array();
-		$this->_settingnames = array();
-		$this->_categories = array();
-		$this->_cats_to_add = array();
-		$this->_cats_to_delete = array();
-		return 0;
 	}
 	
 	/**
@@ -763,32 +775,34 @@ EOT;
 			if (is_array($settings)) {
 				$columns = '';
 				foreach ($settings as $setting) {
-					$columns .= "`$setting[0]`,";
+					$columns .= "`b`.`$setting[0]`,";
 					$settingnames[] = $setting[0];
 				}
 				$columns = chop($columns,',');
 			} else
-				$columns = "`id`,`enabled`";
+				$columns = "`b`.`id`,`b`.`enabled`";
 			try {
 				$bname = Saint_Model_Block::formatForTable($name);
-				$info = Saint::getRow("SELECT $columns FROM `st_blocks_$bname` WHERE `id`='$id'");
+				$info = Saint::getRow("SELECT `u`.`id`,`u`.`page_id`,$columns FROM `st_blocks_$bname` as `b`, `st_blocks` as `u`, `st_blocktypes` as `t` WHERE `b`.`id`='$id' AND `u`.`blockid`=`b`.`id` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$name'");
 				$this->_id = $id;
-				$this->_enabled = $info[1];
+				$this->_uid = $info[0];
+				$this->_page_id = $info[1];
+				$this->_enabled = $info[3];
 				$this->_name = $name;
 				$this->_settingnames = $settingnames;
 				$this->_categories = null;
 				$this->_cats_to_add = array();
 				$this->_cats_to_delete = array();
 				for ($i = 0; $i < sizeof($settingnames); $i++)
-					$this->_settings[$settingnames[$i]]=$info[$i];
+					$this->_settings[$settingnames[$i]]=$info[$i+2];
 				
 				return 1;
 			} catch (Exception $e) {
-				Saint::logError("Cannot load Block model with name $name and ID $id. Error: " . $e->getMessage(),__FILE__,__LINE__);
+				Saint::logError("Cannot load Block model with name '$name' and ID '$id'. Error: " . $e->getMessage(),__FILE__,__LINE__);
 				return 0;
 			}
 		} else {
-			Saint::logError("Invalid block name/id $name / $id.",__FILE__,__LINE__);
+			Saint::logError("Invalid block name/id '$name' / '$id'.",__FILE__,__LINE__);
 			return 0;
 		}
 	}
@@ -880,7 +894,7 @@ EOT;
 	 * @return int Unique ID for the loaded block.
 	 */
 	public function getUid() {
-		return Saint_Model_Block::getBlockUid($this->_name,$this->_id);
+		return $this->_uid;
 	}
 	
 	/**
@@ -892,35 +906,26 @@ EOT;
 	}
 	
 	/**
-	 * Get URL on which given block can be found.
-	 * @param string $block Name of block template.
-	 * @param int $id ID of individual block.
-	 * @return string URL to view block.
+	 * Get URL on which block can be found.
+	 * Until overridden by a child class, this function uses the base page URL.
+	 * @return string URL to access block.
 	 */
 	public function getUrl() {
-		try {
-			return Saint::getOne("SELECT `url` FROM `st_pageblocks` WHERE `block`='$this->_name'");
-		} catch (Exception $t) {
-			if ($t->getCode()) {
-				Saint::logWarning("Problem selecting block URL: ".$t->getMessage(),__FILE__,__LINE__);
-			}
-			return SAINT_URL;
-		}
+		return $this->getPageUrl();
 	}
 	
 	/**
-	 * Get all URLs which result in this block being rendered.
-	 * @return array 2d array with inner containing page IDs and URLs.
+	 * Get URL for page on which block was added.
+	 * @return string URL for page.
 	 */
-	public function getAllUrls() {
-		try {
-			return Saint::getAll("SELECT `pageid`,`url` FROM `st_pageblocks` WHERE `block`='$this->_name'");
-		} catch (Exception $t) {
-			if ($t->getCode()) {
-				Saint::logWarning("Problem selecting block URLs: ".$t->getMessage(),__FILE__,__LINE__);
+	public function getPageUrl() {
+		if ($this->_page_id) {
+			$bp = new Saint_Model_Page();
+			if ($bp->loadById($this->_page_id)) {
+				return $bp->getUrl();
 			}
-			return array();
 		}
+		return SAINT_URL;
 	}
 	
 	/**
@@ -1185,6 +1190,11 @@ EOT;
 					$this->dbAddToCategory($cat); }
 				foreach ($this->_cats_to_delete as $cat) {
 					$this->dbRemoveFromCategory($cat); }
+				
+				$bp = new Saint_Model_Page();
+				if (!$bp->loadById($this->_page_id) && Saint::getCurrentPage()->getId() != 0) {
+					Saint::query("UPDATE `st_blocks` SET `page_id`='".Saint::getCurrentPage()->getId()."' WHERE `id`='$this->_uid'");
+				}
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Failed to save block $name with id $id because ".$e->getMessage(),__FILE__,__LINE__);

@@ -1,4 +1,4 @@
-<a href="<?php echo Saint::getBlogUrl(); ?>/feed" class="rss-feed-link">Subscribe via RSS</a>
+<a href="<?php echo $page->getUrl(); ?>/feed" class="rss-feed-link">Subscribe via RSS</a>
 
 <div id="blog-by-month-nav" class="nav">
 
@@ -31,7 +31,7 @@
 	<div id="blog-by-cat-nav" class="nav">
 		<h3>Categories</h3>
 		<?php foreach (Saint::getCategories() as $category): ?>
-			<h4><a href="<?php echo SAINT_URL . "/" .$page->getName(); ?>/category/<?php echo $category; ?>/"><?php echo $category; ?></a></h4>
+			<h4><a href="<?php echo $page->getUrl(); ?>/category/<?php echo $category; ?>/"><?php echo $category; ?></a></h4>
 		<?php endforeach; ?>
 	</div>
 
