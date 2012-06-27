@@ -18,7 +18,7 @@ class Saint_Controller_Label {
 		$labelName = preg_replace('/^saint_/','',$lname);
 		$labelName = preg_replace('/_/','/',$labelName);
 		$page->setTempLayout("system/json");
-		$page->jsondata = array();
+		$jsondata = array();
 		$success = false;
 		if ($label->loadByName($labelName)) {
 			if ($user->hasPermissionTo("edit-label") || $user->getUsername() == $label->getOwner()) {
@@ -45,21 +45,24 @@ class Saint_Controller_Label {
 					Saint::logEvent($message.".");
 					$success = true;
 				}
-				$page->jsondata['success'] = $success;
-				$page->jsondata['actionlog'] = Saint::getActionLog();
+				$jsondata['success'] = $success;
+				$jsondata['actionlog'] = Saint::getActionLog();
+				$page->setJsonData($jsondata);
 				return 1;
 			} else {
 				Saint::logError("User ".$user->getUsername()." attempted to set label ".$label->getName().
 					" from IP $_SERVER[REMOTE_ADDR] but was denied access.");
-				$page->jsondata['success'] = false;
-				$page->jsondata['actionlog'] = Saint::getActionLog();
+				$jsondata['success'] = false;
+				$jsondata['actionlog'] = Saint::getActionLog();
+				$page->setJsonData($jsondata);
 				return 0;
 			}
 		} else {
 			Saint::logError("User ".$user->getUsername()." attempted to set label ".
 				Saint::sanitize($labelName)." but that label was not found.");
-			$page->jsondata['success'] = false;
-			$page->jsondata['actionlog'] = Saint::getActionLog();
+			$jsondata['success'] = false;
+			$jsondata['actionlog'] = Saint::getActionLog();
+			$page->setJsonData($jsondata);
 			return 0;
 		}
 	}

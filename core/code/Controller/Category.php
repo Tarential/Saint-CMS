@@ -23,7 +23,7 @@ class Saint_Controller_Category {
 		}
 		$page = Saint::getCurrentPage();
 		$page->setTempLayout("system/json");
-		$page->jsondata = Saint_Controller_Category::prepareReply($success);
+		$page->setJsonData(Saint_Controller_Category::prepareReply($success));
 		return $success;
 	}
 
@@ -45,7 +45,7 @@ class Saint_Controller_Category {
 		}
 		$page = Saint::getCurrentPage();
 		$page->setTempLayout("system/json");
-		$page->jsondata = Saint_Controller_Category::prepareReply($success);
+		$page->setJsonData(Saint_Controller_Category::prepareReply($success));
 		return $success;
 	}
 	
@@ -68,7 +68,7 @@ class Saint_Controller_Category {
 		}
 		$page = Saint::getCurrentPage();
 		$page->setTempLayout("system/json");
-		$page->jsondata = Saint_Controller_Category::prepareReply($success);
+		$page->setJsonData(Saint_Controller_Category::prepareReply($success));
 		return $success;
 	}
 	

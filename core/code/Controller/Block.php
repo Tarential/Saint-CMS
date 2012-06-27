@@ -124,12 +124,12 @@ class Saint_Controller_Block {
 		}
 
 		$page->setTempLayout("system/json");
-		$page->jsondata = array(
+		$page->setJsonData(array(
 			'success' => $success,
 			'actionlog' => Saint::getActionLog(),
 			'data' => $output,
 			'block' => $webname,
-		);
+		));
 		return $success;
 	}
 }

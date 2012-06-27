@@ -60,7 +60,8 @@ class Saint_Controller_Page {
 	 */
 	public function process() {
 		if(!SAINT_CACHING) {
-			Saint_Model_Block::processSettings();
+			Saint_Model_Layout::updateLayouts();
+			Saint_Model_Block::updateBlocks();
 			if (Saint::getCurrentUser()->hasPermissionTo("manage-files")) {
 				Saint_Model_FileManager::processFiles();
 			} 
@@ -101,11 +102,11 @@ class Saint_Controller_Page {
 				$sp[] = array($page->getName(),$page->getTitle());
 			}
 			
-			$this->_page->jsondata = array(
+			$this->_page->setJsonData(array(
 				'success' => $success,
 				'pages' => $sp,
 				'actionlog' => Saint::getActionLog(),
-			);
+			));
 		}
 				
 		if(isset($_POST['saint-edit-page-id']) && isset($_POST['saint-edit-page-title']) 
@@ -145,10 +146,23 @@ class Saint_Controller_Page {
 				$success = false;
 			}
 			
-			$this->_page->jsondata = array(
+			$this->_page->setJsonData(array(
 				'success' => $success,
 				'actionlog' => Saint::getActionLog(),
-			);
+			));
+		}
+		
+		if (isset($args['delpage'])) {
+			$this->_page->setTempLayout("system/json");
+			if (Saint::getCurrentUser()->hasPermissionTo("delete-page")) {
+				$success = Saint::deletePage($val);
+			} else {
+				$success = false;
+			}
+			$this->_page->setJsonData(array(
+				'success' => $success,
+				'actionlog' => Saint::getActionLog(),
+			));
 		}
 
 		/*
@@ -175,92 +189,10 @@ class Saint_Controller_Page {
 				$errors[] = "Invalid keywords.";
 			}
 			
-			/*
-			if (isset($_POST['saint-shop-uri'])) {
-				$prev_page = new Saint_Model_Page();
-				$prev_page->loadById(Saint::getShopPageId());
-				if ($prev_page->getName() != $_POST['saint-shop-uri']) {
-					if ($_POST['saint-shop-uri'] == "") {
-						$prev_page->delete();
-						Saint::setShopPageId(0);
-						Saint::logEvent("Disabled Saint shop.");
-					} elseif (!Saint_Model_Page::nameAvailable($_POST['saint-shop-uri'])) {
-						$test_page = new Saint_Model_Page();
-						$test_page->loadByName($_POST['saint-shop-uri']);
-						if ($test_page->getLayout() == "shop/index") {
-							Saint::setShopPageId($test_page->getId());
-						} else {
-							$success = false;
-							$errors[] = "Name is already in use.";
-							Saint::logError("The page name you chose for the shop is already in use. Either rename or delete the page then try again.");
-						}
-					} elseif ($prev_page->getId()) {
-						if ($prev_page->setName($_POST['saint-shop-uri'])) {
-							$prev_page->save();
-						} else {
-							$success = false;
-							$errors[] = "Unable to change the name of the shop page.";
-							Saint::logError("Unable to change the name of the shop page.");
-						}
-					} else {
-						$new_page = new Saint_Model_Page();
-						$new_page->setName($_POST['saint-shop-uri']);
-						$new_page->setLayout("shop/index");
-						$new_page->setTitle(Saint::getSiteTitle());
-						$new_page->setKeywords(Saint::getSiteKeywords());
-						$new_page->setDescription(Saint::getSiteDescription());
-						$new_page->setModel("Saint_Model_Shop");
-						$new_page->save();
-						Saint::setShopPageId($new_page->getId());
-						Saint::logEvent("Added shop page at URI ".$prev_page->getName());
-					}
-				}
-			}
-			
-			if (isset($_POST['saint-blog-uri'])) {
-				$prev_page = new Saint_Model_Page();
-				$prev_page->loadById(Saint::getBlogPageId());
-				if ($prev_page->getName() != $_POST['saint-blog-uri']) {
-					if ($_POST['saint-blog-uri'] == "") {
-						$prev_page->delete();
-						Saint::setBlogPageId(0);
-						Saint::logEvent("Disabled Saint blog.");
-					} elseif (!Saint_Model_Page::nameAvailable($_POST['saint-blog-uri'])) {
-						$test_page = new Saint_Model_Page();
-						$test_page->loadByName($_POST['saint-blog-uri']);
-						if ($test_page->getLayout() == "blog/index") {
-							Saint::setBlogPageId($test_page->getId());
-						} else {
-							$success = false;
-							$errors[] = "Name is already in use.";
-							Saint::logError("The page name you chose for the blog is already in use. Either rename or delete the page then try again.");
-						}
-					} elseif ($prev_page->getId()) {
-						if ($prev_page->setName($_POST['saint-blog-uri'])) {
-							$prev_page->save();
-						} else {
-							$success = false;
-							$errors[] = "Unable to change the name of the blog page.";
-						}
-					} else {
-						$new_page = new Saint_Model_Page();
-						$new_page->setName($_POST['saint-blog-uri']);
-						$new_page->setLayout("blog/index");
-						$new_page->setTitle(Saint::getSiteTitle());
-						$new_page->setKeywords(Saint::getSiteKeywords());
-						$new_page->setDescription(Saint::getSiteDescription());
-						$new_page->setModel("Saint_Model_Blog");
-						$new_page->save(true);
-						Saint::setBlogPageId($new_page->getId());
-						Saint::logEvent("Added blog page at URI ".$prev_page->getName());
-					}
-				}
-			}*/
-			
-			$this->_page->jsondata = array(
+			$this->_page->setJsonData(array(
 				"success" => $success,
 				"actionlog" => Saint::getActionLog(),
-			);
+			));
 		}
 		
 		/*
@@ -303,7 +235,7 @@ class Saint_Controller_Page {
 				$labelargs = array(
 					'rev'
 				);
-				$this->_page->jsondata = array(
+				$this->_page->setJsonData(array(
 					'success' => true,
 					'revision' => $revision,
 					'label' => Saint::getLabel(
@@ -311,7 +243,7 @@ class Saint_Controller_Page {
 						'',
 						array('revision'=>$revision,'container'=>false)
 					),
-				);
+				));
 			}
 		}
 		
@@ -320,16 +252,21 @@ class Saint_Controller_Page {
 				$this->_page->setTempLayout("system/json");
 				$label = new Saint_Model_Label();
 				$label->loadByName(Saint::convertNameFromWeb(preg_replace('/^saint_/','',$args['getlabelnumrevs'])));
-				$this->_page->jsondata = array(
+				$this->_page->setJsonData(array(
 					'success' => true,
 					'revisions' => $label->getNumRevisions(),
-				);
+				));
 			}
 		}
 		
 		/*
 		 * User controls
 		 */
+		
+		if (isset($args['action']) && $args['action'] == "logout") {
+			Saint_Model_User::logout();
+			header("Location: " .SAINT_BASE_URL);
+		}
 		
 		if (isset($_POST['saint-edit-user-id'])) {
 			Saint_Controller_User::saveUser($_POST['saint-edit-user-id']);
@@ -353,12 +290,13 @@ class Saint_Controller_Page {
 		
 		if (isset($args['check-username'])) {
 			$this->_page->setTempLayout("system/json");
-			$this->_page->jsondata = array('success'=>true);
+			$jsondata = array('success'=>true);
 			if (Saint_Model_User::nameAvailable($args['check-username'])) {
-				$this->_page->jsondata['available'] = true;
+				$jsondata['available'] = true;
 			} else {
-				$this->_page->jsondata['available'] = false;
+				$jsondata['available'] = false;
 			}
+			$page->setJsonData($jsondata);
 		}
 		
 		/*
@@ -434,7 +372,7 @@ class Saint_Controller_Page {
 					}
 					
 					$this->_page->setTempLayout("system/json");
-					$this->_page->jsondata = array(
+					$jsondata = array(
 						"success" => $success,
 						"sfl" => $_POST['saint-file-label'],
 						"sfid" => $_POST['saint-file-id'],
@@ -446,8 +384,9 @@ class Saint_Controller_Page {
 							"max-height" => $_POST['saint-file-label-height'],
 						);
 						$img = new Saint_Model_Image($_POST['saint-file-id']);
-						$this->_page->jsondata['url'] = $img->getResizedUrl($arguments);
+						$jsondata['url'] = $img->getResizedUrl($arguments);
 					}
+					$page->setJsonData($jsondata);
 				}
 			}
 		}
@@ -497,34 +436,7 @@ class Saint_Controller_Page {
 					break;
 			}
 		}
-		
-		/*
-		 * Parse arguments for potential commands
-		 * @todo Split this section into functional categories.
-		 */
-		foreach ($this->_page->getArgs() as $key=>$val) {
-			switch ($key) {
-				case "delpage":
-					$this->_page->setTempLayout("system/json");
-					if (Saint::getCurrentUser()->hasPermissionTo("delete-page")) {
-						$success = Saint::deletePage($val);
-					} else {
-						$success = false;
-					}
-					$this->_page->jsondata = array(
-						'success' => $success,
-						'actionlog' => Saint::getActionLog(),
-					);
-					break;
-				case "action":
-					if ($val == "logout") {
-						Saint_Model_User::logout();
-						header("Location: " .SAINT_BASE_URL);
-					}
-					break;
-			}
-		}
-		
+
 		$this->_page->render();
 	}
 }

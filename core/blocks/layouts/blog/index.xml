@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<name>blog/index</name>
+	<model>Saint_Model_Blog</model>
+	<title>Blog</title>
+</layout>

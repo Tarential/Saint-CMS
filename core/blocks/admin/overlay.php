@@ -29,8 +29,8 @@
 					)); ?></li>
 					<?php
 						$options = array();
-						foreach (Saint::getLayoutNames() as $layout)
-							$options[$layout] = ucfirst($layout);
+						foreach (Saint::getLayoutNames() as $name=>$title)
+							$options[$name] = $title;
 					?>
 					<li><?php echo Saint::genField("saint-add-page-layout","select","Layout: ", array(
 						'options' => $options,
@@ -107,25 +107,6 @@
 					"static" => true,
 					"value" => Saint::getSiteDescription(),
 				)); ?>
-				<?php	/* $tp = new Saint_Model_Page();
-				if ($tp->loadById(Saint::getShopPageId())) {
-					$shopuri = $tp->getName();
-				} else {
-					$shopuri = "";
-				} ?>
-				<?php echo Saint::genField("saint-shop-uri","text","Shop URI: (leave blank to disable)",array(
-					"static" => true,
-					"value" => $shopuri,
-				)); ?>
-				<?php if ($tp->loadById(Saint::getBlogPageId())) {
-					$bloguri = $tp->getName();
-				} else {
-					$bloguri = "";
-				} ?>
-				<?php echo Saint::genField("saint-blog-uri","text","Blog URI: (leave blank to disable)",array(
-					"static" => true,
-					"value" => $bloguri,
-				)); */ ?>
 				<span class="submit link">Save Settings</span>
 			</form>
 			
@@ -165,13 +146,11 @@
 					<li><?php echo Saint::genField("saint-edit-page-title","text","Name: ",array('value'=> $page->getTitle(),'static'=>true)); ?></li>
 					<li><?php echo Saint::genField("saint-edit-page-name","text","Identifier (URI): ",array('value'=> $page->getName(),'static'=>true)); ?></li>
 					<?php
-						if (!preg_match('/^.*\/.*$/',$page->getLayout())) {
 						$options = array();
-						foreach (Saint::getLayoutNames() as $layout)
-							$options[$layout] = ucfirst($layout);
+						foreach (Saint::getLayoutNames() as $name=>$title)
+							$options[$name] = $title;
 					?>
 					<li><?php echo Saint::genField("saint-edit-page-layout","select","Layout: ",array('options'=>$options,'selected' => $page->getLayout(),'static'=>true)); ?></li>
-					<?php } ?>
 					<li><?php echo Saint::genField("saint-edit-page-keywords","text","Keywords: ",array('value'=> implode(',',$page->getMetaKeywords()),'static'=>true)); ?></li>
 					<li><?php echo Saint::genField("saint-edit-page-description","textarea","Description: ",array('value'=> $page->getMetaDescription(),'static'=>true)); ?></li>
 					<?php

@@ -111,7 +111,18 @@ CREATE TABLE IF NOT EXISTS `st_blocks` (
 ) ENGINE=InnoDB;
 EOT;
 
-# Pages
+$sql[] = <<<EOT
+CREATE TABLE IF NOT EXISTS `st_layouts` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`enabled` BOOLEAN NOT NULL DEFAULT 1,
+	`name` VARCHAR(255) NOT NULL,
+	`title` VARCHAR(255) NOT NULL DEFAULT '',
+	`model` VARCHAR(255) DEFAULT 'Saint_Model_Page',
+	PRIMARY KEY (`id`),
+	INDEX `st_layouts_name` (`name`)
+) ENGINE=InnoDB;
+EOT;
+
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_pages` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -119,18 +130,17 @@ CREATE TABLE IF NOT EXISTS `st_pages` (
 	`name` VARCHAR(255) NOT NULL,
 	`title` VARCHAR(255) NOT NULL DEFAULT '',
 	`layout` VARCHAR(255) NOT NULL DEFAULT '',
-	`model` VARCHAR(255) DEFAULT 'Saint_Model_Page',
 	`meta_keywords` TEXT DEFAULT '',
 	`meta_description` TEXT DEFAULT '',
 	`allow_robots` BOOLEAN NOT NULL,
 	`created` DATETIME,
 	`updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	`parent` INTEGER UNSIGNED NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id`),
 	INDEX `st_pages_name` (`name`)
 ) ENGINE=InnoDB;
 EOT;
 
-# Pages
 $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_files` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -166,6 +176,7 @@ $sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_categories` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
+	`title` VARCHAR(255) NOT NULL DEFAULT '',
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `st_categories_name` (`name`)
 ) ENGINE=InnoDB;
@@ -332,6 +343,10 @@ EOT;
 
 $sql[] = <<<EOT
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('404','Page Not Found','system/404','NOW()');
+EOT;
+
+$sql[] = <<<EOT
+INSERT INTO `st_categories` (`name`,`title`) VALUES ('main-menu','Main Menu');
 EOT;
 
 # END CONTENT SECTION

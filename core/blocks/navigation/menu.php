@@ -1,6 +1,11 @@
 			<nav>
 				<div id="menu-center">
 					<ul class="toplevel">
+						<?php $menu_items = Saint::getPages(array('categories'=>'main-menu')); ?>
+						<?php foreach ($menu_items as $item): ?>
+							<li><a href="/<?php echo $item->getName(); ?>"><?php echo $item->getTitle(); ?></a></li>
+						<?php endforeach; ?>
+						<?php /* ?>
 						<li><a href="<?php echo SAINT_URL; ?>/"<?php if ($page->getName() == "home"): ?> class="current"<?php endif; ?>><?php echo Saint::getLabel("menu/home","Home"); ?></a></li>
 						<li><a href="<?php echo SAINT_URL; ?>/blog"<?php if ($page->getName() == "blog"): ?> class="current"<?php endif; ?>><?php echo Saint::getLabel("menu/blog","Blog"); ?></a></li>
 						<li class="toplevel"><a href="<?php echo SAINT_URL; ?>/shop"<?php if ($page->getName() == "shop"): ?> class="current"<?php endif; ?>><?php echo Saint::getLabel("menu/shop","Shop"); ?></a>
@@ -18,6 +23,7 @@
 						</li>
 						
 						<li><a href="<?php echo SAINT_URL; ?>/contact"<?php if ($page->getName() == "contact"): ?> class="current"<?php endif; ?>><?php echo Saint::getLabel("menu/contact","Contact"); ?></a></li>
+						<?php */ ?>
 					</ul>
 				</div>
 			</nav>

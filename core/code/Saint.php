@@ -393,15 +393,7 @@ class Saint {
 	 * @return string[] Array of layout names.
 	 */
 	public static function getLayoutNames() {
-		$layouts = array();
-		$user = glob(Saint::getThemeDir()."/blocks/layouts/*.php");
-		$core = glob(SAINT_SITE_ROOT."/core/blocks/layouts/*.php");
-		foreach (array_merge($user,$core) as $name) {
-			$name = preg_replace('/^.*\/([^\/]*)\.php$/','$1',$name);
-			if (!in_array($name,$layouts))
-				$layouts[] = $name;
-		}
-		return $layouts;
+		return Saint_Model_Layout::getLayoutNames();
 	}
 	
 	/**
@@ -935,9 +927,10 @@ class Saint {
 	 * Match given filters against available option types to create the conditional part of an SQL query.
 	 * @param array $filters Conditions to match.
 	 * @param array $options Allowable settings to filter by.
+	 * @param string $table Table alias to which to apply conditions.
 	 * @return string Conditional statement in SQL.
 	 */
-	public static function makeConditions($filters = array(), $options = array()) {
+	public static function makeConditions($filters = array(), $options = array(), $table = '') {
 		/* Example of possible filter content.
 		$filters = array(
 			'model' => 'Saint_Model_Page',
@@ -951,6 +944,11 @@ class Saint {
 		$sql = '';
 		$and_results = array();
 		$or_results = array();
+		
+		if ($table == "")
+			$pre = "";
+		else
+			$pre = "`".Saint::sanitize($table)."`.";
 		
 		# Cycle through available options and add check each for matching filters.
 		foreach ($options as $opt) {
@@ -1030,14 +1028,14 @@ class Saint {
 						if ($i != 0) {
 							$sql .= " OR ";
 						}
-						$sql .= "`$opt` $co '$val'";
+						$sql .= "$pre`$opt` $co '$val'";
 						$i++;
 					}
 					foreach ($match_all as $val) {
 						if ($i != 0) {
 							$sql .= " AND ";
 						}
-						$sql .= "`$opt` $co '$val'";
+						$sql .= "$pre`$opt` $co '$val'";
 						$i++;
 					}
 					

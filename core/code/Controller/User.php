@@ -144,16 +144,17 @@ class Saint_Controller_User {
 				foreach ($users as $user) {
 					$su[] = array($user->getId(),$user->getUsername());
 				}
-				$page->jsondata = array(
+				$jsondata = array(
 					'actionlog' => Saint::getActionLog(),
 					'users' => $su,
 				);
 				if (sizeof($errors) > 0) {
-					$page->jsondata['success'] = false;
-					$page->jsondata['error'] = $errors;
+					$jsondata['success'] = false;
+					$jsondata['error'] = $errors;
 				} else {
-					$page->jsondata['success'] = true;
+					$jsondata['success'] = true;
 				}
+				$page->setJsonData($jsondata);
 			} else {
 				if (sizeof($errors) == 0) {
 					$page->setTempLayout("system/error");

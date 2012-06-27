@@ -11,9 +11,15 @@ class Saint_Model_Page {
 	 */
 	public static function getPageNames($filters = array()) {
 		$options = array('id','enabled','name','title','layout','model','meta_keywords','meta_description','allow_robots','created','updated');
-		$where = Saint::makeConditions($filters,$options);
+		$page_where = preg_replace('/^\s*WHERE\s*/',' AND ',Saint::makeConditions($filters,$options,'p'));
+		$cat_where = '';
+		if (isset($filters['categories'])) {
+			$filters = array('name'=>$filters['categories']);
+			$options = array('name');
+			$cat_where = preg_replace('/^\s*WHERE\s*/',' AND ',Saint::makeConditions($filters,$options,'c'));
+		}
 		try {
-			return Saint::getAll("SELECT `name` FROM `st_pages`$where");
+			return Saint::getAll("SELECT `p`.`name` FROM `st_pages` as `p`, `st_categories` as `c`, `st_pagecats` as `pc` WHERE `c`.`id`=`pc`.`catid` AND `p`.`id`=`pc`.`pageid`$page_where$cat_where");
 		} catch (Exception $e) {
 			if ($e->getCode()) {
 				Saint::logError("Unable to select pages from the database: ".$e->getMessage(),__FILE__,__LINE__);
@@ -47,7 +53,7 @@ class Saint_Model_Page {
 		$default = "Saint_Model_Page";
 		if ($sname = Saint::sanitize($name,SAINT_REG_NAME)) {
 			try {
-				$model = Saint::getOne("SELECT `model` FROM `st_pages` WHERE `name`='$sname'");
+				$model = Saint::getOne("SELECT `l`.`model` FROM `st_pages` as `p`, `st_layouts` as `l` WHERE `p`.`name`='$sname' AND `p`.`layout`=`l`.`name`");
 				if (class_exists($model) && ($model == $default || is_subclass_of($model,$default))) {
 					return $model;
 				}
@@ -137,6 +143,7 @@ class Saint_Model_Page {
 	protected $_newblocks; # Blocks are recalculated at each rendering
 	protected $_edit_block; # Block currently being edited by admin
 	protected $_model;
+	protected $_json_data;
 	
 	/**
 	 * Load page model with blank data.
@@ -160,6 +167,7 @@ class Saint_Model_Page {
 		$this->_newblocks = array();
 		$this->_edit_block = new Saint_Model_Block();
 		$this->_model = "Saint_Model_Page";
+		$this->_json_data = array();
 	}
 	
 	/**
@@ -171,7 +179,7 @@ class Saint_Model_Page {
 		if ($id = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {
 				$language = Saint::getCurrentUser()->getLanguage();
-				$info = Saint::getRow("SELECT `name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots`,`model` FROM `st_pages` WHERE `id`='$id'");
+				$info = Saint::getRow("SELECT `name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots` FROM `st_pages` WHERE `id`='$id'");
 				$this->_id = $id;
 				$this->_name=$info[0];
 				$this->_title=$info[1];
@@ -179,7 +187,7 @@ class Saint_Model_Page {
 				$this->_meta_keywords=explode(',',$info[3]);
 				$this->_meta_description=$info[4];
 				$this->_allow_robots=$info[5];
-				$this->_model=$info[6];
+				$this->_model=Saint_Model_Page::getModel($this->_name);
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Cannot load Page model from ID $id. Error: " . $e->getMessage(),__FILE__,__LINE__);
@@ -344,29 +352,6 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Set new model for loaded page.
-	 * @param string $newmodel Model descended from (or equal to) Saint_Model_Page.
-	 * @return boolean True on success, false otherwise.
-	 */
-	public function setModel($newmodel) {
-		$newmodel = Saint::sanitize($newmodel);
-		if (is_a($newmodel,"Saint_Model_Page") || is_subclass_of($newmodel,"Saint_Model_Page")) {
-			$this->_model = $newmodel;
-			/*
-			try {
-				Saint::query("UPDATE `st_pages` SET `model`='$newmodel' WHERE `id`='$this->_id'");
-				return 1;
-			} catch (Exception $e) {
-				Saint::logError("Unable to set page model: ".$e->getMessage(),__FILE__,__LINE__);
-			}
-			*/
-		} else {
-			Saint::logError("Error: '$newmodel' is not a valid page model.",__FILE__,__LINE__);
-		}
-		return 0;
-	}
-	
-	/**
 	 * Request page blocks.
 	 * @return string[] Block names used in page.
 	 */
@@ -376,13 +361,27 @@ class Saint_Model_Page {
 
 	/**
 	 * Request page current block ID.
-	 * 
 	 * Each time a block is called the page model stores the block ID for reference.
-	 * 
 	 * @return int Current block ID running in page.
 	 */
 	public function getBlockId() {
 		return $this->_bid;
+	}
+	
+	/**
+	 * Get AJAX reply data associated with running page.
+	 * @return array Reply data to be sent to Saint client.
+	 */
+	public function getJsonData() {
+		return $this->_json_data;
+	}
+	
+	/**
+	 * Set AJAX reply data associated with running page.
+	 * @param array $data New reply data to be sent to client.
+	 */
+	public function setJsonData($data) {
+		$this->_json_data = $data;
 	}
 	
 	/**
@@ -762,8 +761,7 @@ class Saint_Model_Page {
 				"`layout`='$this->_layout',".
 				"`meta_keywords`='".implode(',',$this->_meta_keywords)."',".
 				"`meta_description`='$this->_meta_description',".
-				"`allow_robots`='$this->_allow_robots',".
-				"`model`='$this->_model' ".
+				"`allow_robots`='$this->_allow_robots' ".
 				"WHERE `id`='$this->_id'";
 				Saint::query($query);
 				if ($log)
@@ -775,9 +773,9 @@ class Saint_Model_Page {
 			}
 		} else {
 			try {
-				$query = "INSERT INTO `st_pages` (`name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots`,`created`,`model`) ".
+				$query = "INSERT INTO `st_pages` (`name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots`,`created`) ".
 					" VALUES ('$this->_name','$this->_title','$this->_layout','".implode(',',$this->_meta_keywords).
-					"','$this->_meta_description','$this->_allow_robots',NOW(),'$this->_model')";
+					"','$this->_meta_description','$this->_allow_robots',NOW())";
 				Saint::query($query);
 				$this->_id = Saint::getLastInsertId();
 				return 1;

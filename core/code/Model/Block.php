@@ -542,7 +542,7 @@ EOT;
 	 * Processes all XML files in block directories then updates the associated block tables if necessary.
 	 * @return boolean True for success, false otherwise.
 	 */
-	public static function processSettings() {
+	public static function updateBlocks() {
 		# Scan files in user and system directories
 		$saintdir = SAINT_SITE_ROOT . "/core/blocks";
 		$userdir = Saint::getThemeDir() . "/blocks";
@@ -650,9 +650,11 @@ EOT;
 	}
 	
 	/**
-	 * Recursively scan directory for XML files.
+	 * Recursively scan directory for files matching given extension.
 	 * @param string $dir Directory to scan.
+	 * @param array $extensions Extensions to match.
 	 * @param int $limit Depth limit for recursion.
+	 * @param int $counter Current depth of recursion.
 	 * @return string[] Matching files.
 	 */
 	public static function recursiveScan($dir, $extensions = null, $limit = 10, $counter = 0) {

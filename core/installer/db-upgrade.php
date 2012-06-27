@@ -19,6 +19,25 @@ ALTER TABLE `st_blocks` ADD COLUMN `page_id` INTEGER UNSIGNED NOT NULL DEFAULT 0
 ALTER TABLE `st_pages` DROP INDEX `st_pages_name`;
 ALTER TABLE `st_pages` ADD INDEX `st_pages_name` (`name`);
 DROP TABLE IF EXISTS `st_pageblocks`;
+CREATE TABLE IF NOT EXISTS `st_layouts` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`enabled` BOOLEAN NOT NULL DEFAULT 1,
+	`name` VARCHAR(255) NOT NULL,
+	`title` VARCHAR(255) NOT NULL DEFAULT '',
+	`model` VARCHAR(255) DEFAULT 'Saint_Model_Page',
+	PRIMARY KEY (`id`),
+	INDEX `st_layouts_name` (`name`)
+) ENGINE=InnoDB;
+ALTER TABLE `st_pages` DROP COLUMN `model`;
+ALTER TABLE `st_categories` ADD COLUMN `title` VARCHAR(255) NOT NULL DEFAULT '';
+INSERT IGNORE INTO `st_categories` (`name`,`title`) VALUES ('main-menu','Main Menu');
+INSERT IGNORE INTO `st_pagecats` (`catid`,`pageid`)
+SELECT `c`.`id`,`p`.`id` FROM `st_categories` AS `c`, `st_pages` AS `p` WHERE `p`.`name` IN ('home','blog','shop','gallery','slideshow','contact') AND `c`.`name`='main-menu';
+ALTER TABLE `st_pages` ADD COLUMN `parent` INTEGER UNSIGNED NOT NULL DEFAULT 0;
+UPDATE `st_pages` as `parent`
+INNER JOIN `st_pages` as `child` ON `parent`.`id`=`child`.`id` AND `parent`.`name`='gallery'
+SET `child`.`parent`=`parent`.`id`
+WHERE `child`.`name`='slideshow';
 UPDATE `st_config` SET `version`='1.0300';
 EOT;
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<name>shop/index</name>
+	<model>Saint_Model_Shop</model>
+	<title>Shop</title>
+</layout>
