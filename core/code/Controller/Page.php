@@ -90,8 +90,16 @@ class Saint_Controller_Page {
 			else
 				$cats = array();
 			$this->_page->setTempLayout("system/json");
-			if (Saint::addPage($_POST['saint-add-page-name'],$_POST['saint-add-page-layout'],$_POST['saint-add-page-title'],
-				$keywords,$description,$cats))
+			$new_page_options = array(
+				'layout' => $_POST['saint-add-page-layout'],
+				'title' => $_POST['saint-add-page-title'],
+				'keywords' => $keywords,
+				'description' => $description,
+				'categories' => $cats,
+				'parent' => $_POST['saint-add-page-parent'],
+			);
+			
+			if (Saint::addPage($_POST['saint-add-page-name'],$new_page_options))
 				$success = true;
 			else
 				$success = false;
@@ -135,6 +143,8 @@ class Saint_Controller_Page {
 				$spage->setTitle($_POST['saint-edit-page-title']);
 				if (isset($_POST['saint-edit-page-layout'])) {
 					$spage->setLayout($_POST['saint-edit-page-layout']); }
+				if (isset($_POST['saint-edit-page-parent'])) {
+					$spage->setParent($_POST['saint-edit-page-parent']); }
 				$spage->setKeywords($keywords);
 				$spage->setDescription($description);
 				$spage->setCategories($cats);
@@ -155,7 +165,7 @@ class Saint_Controller_Page {
 		if (isset($args['delpage'])) {
 			$this->_page->setTempLayout("system/json");
 			if (Saint::getCurrentUser()->hasPermissionTo("delete-page")) {
-				$success = Saint::deletePage($val);
+				$success = Saint::deletePage($args['delpage']);
 			} else {
 				$success = false;
 			}

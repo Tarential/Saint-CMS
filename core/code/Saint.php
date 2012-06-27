@@ -397,16 +397,10 @@ class Saint {
 	}
 	
 	/**
-	 * Add a page to the site.
-	 * @param string $name Name for new page.
-	 * @param string $layout Name of layout to use for new page.
-	 * @param string $title Title for new page.
-	 * @param string $keywords Keywords for page.
-	 * @param string $description Description for page.
-	 * @return boolean True for success, false for failure.
+	 * Add a page to the site; shortcut for Saint_Model_Page::addPage.
 	 */
-	public static function addPage($name,$layout,$title='',$keywords='',$description='',$cats=array()) {
-		return Saint_Model_Page::addPage($name,$layout,$title,$keywords,$description,$cats);
+	public static function addPage($name,$options = array()) {
+		return Saint_Model_Page::addPage($name,$options);
 	}
 	
 	/**
@@ -1048,8 +1042,33 @@ class Saint {
 		if (strlen($sql) > 0) {
 			$sql = preg_replace('/^\s+(AND|OR)\s*(.*)$/',' WHERE $2',$sql);
 		}
-		
+	
 		return $sql;
+	}
+
+	/**
+	 * Get SQL order statements based on given filters.
+	 * @param array $filters Order by column and sort order options.
+	 * @return string SQL code matching filters.
+	 */
+	public static function getOrder($filters = array()) {
+		if (isset($filters['orderby'])) {
+			if (isset($filters['order'])) {
+				$order = Saint::sanitize($filters['order']);
+			} else {
+				$order = "DESC";
+			}
+			return " ORDER BY `".Saint::sanitize($filters['orderby'])."` $order";
+		} else {
+			return '';
+		}
+	}
+	
+	/**
+	 * Shortcut function for Saint_Model_Page::rankPages($pages).
+	 */
+	public static function rankPages($pages = array()) {
+		return Saint_Model_Page::rankPages($pages);
 	}
 	
 	/**

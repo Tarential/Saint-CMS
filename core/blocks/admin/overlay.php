@@ -51,6 +51,28 @@
 						'options' => $options,
 						'selected' => array(),
 						'multiple' => true,
+						'static' => true,
+					)); ?></li>
+					<?php $page_filters = array(
+						'layout' => array(
+							'comparison_operator' => 'NOT LIKE',
+							'match_all' => array('system/%'),
+						),
+						'parent' => array(
+							'comparison_operator' => '=',
+							'match_all' => array(0),
+						),
+					);
+					$parents = Saint_Model_Page::getPages($page_filters);
+					$parent_options = array(0=>'None');
+					foreach ($parents as $parent) {
+						$parent_options[$parent->getId()] = $parent->getTitle();
+					}
+					?>
+					<li><?php echo Saint::genField("saint-add-page-parent","select","Parent: ", array(
+						'options' => $parent_options,
+						'selected' => 0,
+						'static' => true,
 					)); ?></li>
 				</ul>
 			</form>
@@ -160,6 +182,12 @@
 					?>
 					<li><?php echo Saint::genField("saint-edit-page-categories[]","select","Categories: ",
 						array('options'=>$options,'selected'=>$page->getCategories(),'multiple'=>true,'static'=>true)); ?></li>
+					<?php if (isset($parent_options[$page->getId()])) unset($parent_options[$page->getId()]); ?>
+					<li><?php echo Saint::genField("saint-edit-page-parent","select","Parent: ", array(
+						'options' => $parent_options,
+						'selected' => $page->getParent(),
+						'static' => true,
+					)); ?></li>
 				</ul>
 				<span class="link save">Save</span>
 			</form>

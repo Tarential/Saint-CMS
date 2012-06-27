@@ -30,7 +30,7 @@ class Saint_Model_Category {
 	 * @return int ID of specified category, or 0 for failure.
 	 */
 	public static function getId($category) {
-		if ($scategory = Saint::sanitize($category,SAINT_REG_NAME)) {
+		if ($scategory = Saint::sanitize($category)) {
 			try {
 				return Saint::getOne("SELECT `id` FROM `st_categories` WHERE `name`='$category'");
 			} catch (Exception $e) {
@@ -67,7 +67,7 @@ class Saint_Model_Category {
 	 * @return int New category ID on success, 0 on failure.
 	 */
 	public static function addCategory($category) {
-		if ($scategory = Saint::sanitize($category,SAINT_REG_NAME)) {
+		if ($scategory = Saint::sanitize($category)) {
 			try {
 				Saint::query("INSERT INTO `st_categories` (`name`) VALUES ('$scategory')");
 				Saint::logEvent("Added category '$scategory'.",__FILE__,__LINE__);
@@ -110,7 +110,7 @@ class Saint_Model_Category {
 	 * @param string $newname New name for category.
 	 */
 	public static function setCategory($id,$newname) {
-		$scategory = Saint::sanitize($newname,SAINT_REG_NAME);
+		$scategory = Saint::sanitize($newname);
 		$sid = Saint::sanitize($id,SAINT_REG_ID);
 		if ($sid) {
 			if ($scategory) {

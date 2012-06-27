@@ -29,15 +29,17 @@ CREATE TABLE IF NOT EXISTS `st_layouts` (
 	INDEX `st_layouts_name` (`name`)
 ) ENGINE=InnoDB;
 ALTER TABLE `st_pages` DROP COLUMN `model`;
-ALTER TABLE `st_categories` ADD COLUMN `title` VARCHAR(255) NOT NULL DEFAULT '';
-INSERT IGNORE INTO `st_categories` (`name`,`title`) VALUES ('main-menu','Main Menu');
+INSERT IGNORE INTO `st_categories` (`name`) VALUES ('Main Menu');
 INSERT IGNORE INTO `st_pagecats` (`catid`,`pageid`)
 SELECT `c`.`id`,`p`.`id` FROM `st_categories` AS `c`, `st_pages` AS `p` WHERE `p`.`name` IN ('home','blog','shop','gallery','slideshow','contact') AND `c`.`name`='main-menu';
 ALTER TABLE `st_pages` ADD COLUMN `parent` INTEGER UNSIGNED NOT NULL DEFAULT 0;
-UPDATE `st_pages` as `parent`
-INNER JOIN `st_pages` as `child` ON `parent`.`id`=`child`.`id` AND `parent`.`name`='gallery'
-SET `child`.`parent`=`parent`.`id`
-WHERE `child`.`name`='slideshow';
+UPDATE `st_pages` as `parent` INNER JOIN `st_pages` as `child` ON `parent`.`name`='gallery' SET `child`.`parent`=`parent`.`id` WHERE `child`.`name`='slideshow';
+ALTER TABLE `st_pages` ADD COLUMN `weight` INTEGER NOT NULL DEFAULT 0;
+UPDATE `st_pages` SET `weight`=-10 WHERE `name`='home';
+UPDATE `st_pages` SET `weight`=-9 WHERE `name`='blog';
+UPDATE `st_pages` SET `weight`=-8 WHERE `name`='shop';
+UPDATE `st_pages` SET `weight`=-7 WHERE `name`='gallery';
+UPDATE `st_pages` SET `weight`=10 WHERE `name`='contact';
 UPDATE `st_config` SET `version`='1.0300';
 EOT;
 

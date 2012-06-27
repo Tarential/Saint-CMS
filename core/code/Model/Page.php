@@ -10,7 +10,8 @@ class Saint_Model_Page {
 	 * @return string[] Names of all matching pages in the database.
 	 */
 	public static function getPageNames($filters = array()) {
-		$options = array('id','enabled','name','title','layout','model','meta_keywords','meta_description','allow_robots','created','updated');
+		$options = array('id','enabled','name','title','layout','model','meta_keywords','meta_description','allow_robots','created','updated','weight','parent');
+		$order = Saint::getOrder($filters);
 		$page_where = preg_replace('/^\s*WHERE\s*/',' AND ',Saint::makeConditions($filters,$options,'p'));
 		$cat_where = '';
 		if (isset($filters['categories'])) {
@@ -19,7 +20,7 @@ class Saint_Model_Page {
 			$cat_where = preg_replace('/^\s*WHERE\s*/',' AND ',Saint::makeConditions($filters,$options,'c'));
 		}
 		try {
-			return Saint::getAll("SELECT `p`.`name` FROM `st_pages` as `p`, `st_categories` as `c`, `st_pagecats` as `pc` WHERE `c`.`id`=`pc`.`catid` AND `p`.`id`=`pc`.`pageid`$page_where$cat_where");
+			return Saint::getAll("SELECT `p`.`name` FROM `st_pages` as `p`, `st_categories` as `c`, `st_pagecats` as `pc` WHERE `c`.`id`=`pc`.`catid` AND `p`.`id`=`pc`.`pageid`$page_where$cat_where$order");
 		} catch (Exception $e) {
 			if ($e->getCode()) {
 				Saint::logError("Unable to select pages from the database: ".$e->getMessage(),__FILE__,__LINE__);
@@ -42,6 +43,35 @@ class Saint_Model_Page {
 				$pages[] = $newpage;
 		}
 		return $pages;
+	}
+	
+	/**
+	 * Organize given pages by hierarchy.
+	 * @param array $pages Pages to sort.
+	 * @return array Sorted array of Saint_Model_Page.
+	 */
+	public static function rankPages($pages = array()) {
+		$sorted_pages = array();
+		$sub_pages = array();
+		foreach ($pages as $page) {
+			if ($page->getParent() == 0) {
+				if (!isset($sorted_pages[$page->getId()])) {
+					$sorted_pages[$page->getId()] = array($page,array());
+				} else {
+					$sorted_pages[$page->getId()][0] = $page;
+				}
+			} else {
+				$sub_pages[] = $page;
+			}
+		}
+		foreach ($sub_pages as $page) {
+			if (!isset($sorted_pages[$page->getParent()])) {
+				$sorted_pages[$page->getParent()] = array(null,array($page));
+			} else {
+				$sorted_pages[$page->getParent()][1][] = $page;
+			}
+		}
+		return $sorted_pages;
 	}
 	
 	/**
@@ -94,22 +124,31 @@ class Saint_Model_Page {
 	/**
 	 * Add a new page to the database.
 	 * @param string $name URL-friendly identifier for new page.
-	 * @param string $layout Name of layout to use for page.
-	 * @param string $title Title for page.
-	 * @param string $keywords Keywords for page.
-	 * @param string $description Description for page.
+	 * @param array $options Additional page settings.
 	 * @return boolean True on success, false otherwise.
 	 */
-	public static function addPage($name,$layout,$title='',$keywords='',$description='',$cats=array()) {
+	public static function addPage($name,$options = array()) {
 		$page = new Saint_Model_Page();
-		$page->setLayout($layout);
 		$page->setName($name);
-		$page->setTitle($title);
-		$page->setKeywords($keywords);
-		$page->setDescription($description);
-		$success = $page->save();
-		$page->setCategories($cats);
-		return $success;
+		if (isset($options['layout'])) {
+			$page->setLayout($options['layout']);
+		}
+		if (isset($options['title'])) {
+			$page->setTitle($options['title']);
+		}
+		if (isset($options['keywords'])) {
+			$page->setKeywords($options['keywords']);
+		}
+		if (isset($options['description'])) {
+			$page->setDescription($options['description']);
+		}
+		if (isset($options['categories'])) {
+			$page->setCategories($options['categories']);
+		}
+		if (isset($options['parent'])) {
+			$page->setParent($options['parent']);
+		}
+		return $page->save();
 	}
 	
 	/**
@@ -140,10 +179,14 @@ class Saint_Model_Page {
 	protected $_temp_meta_keywords;
 	protected $_allow_robots;
 	protected $_blocks;
-	protected $_newblocks; # Blocks are recalculated at each rendering
-	protected $_edit_block; # Block currently being edited by admin
+	protected $_edit_block; # Block currently being edited on this page
 	protected $_model;
 	protected $_json_data;
+	protected $_parent;
+	protected $_weight;
+	protected $_categories;
+	protected $_cats_to_delete;
+	protected $_cats_to_add;
 	
 	/**
 	 * Load page model with blank data.
@@ -164,10 +207,14 @@ class Saint_Model_Page {
 		$this->_temp_meta_keywords = null;
 		$this->_allow_robots = true;
 		$this->_blocks = array();
-		$this->_newblocks = array();
 		$this->_edit_block = new Saint_Model_Block();
 		$this->_model = "Saint_Model_Page";
 		$this->_json_data = array();
+		$this->_parent = 0;
+		$this->_weight = 0;
+		$this->_categories = array();
+		$this->_cats_to_add = array();
+		$this->_cats_to_delete = array();
 	}
 	
 	/**
@@ -179,14 +226,17 @@ class Saint_Model_Page {
 		if ($id = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {
 				$language = Saint::getCurrentUser()->getLanguage();
-				$info = Saint::getRow("SELECT `name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots` FROM `st_pages` WHERE `id`='$id'");
+				$info = Saint::getRow("SELECT `name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots`,`parent`,`weight` FROM `st_pages` WHERE `id`='$id'");
 				$this->_id = $id;
-				$this->_name=$info[0];
-				$this->_title=$info[1];
-				$this->_layout=$info[2];
-				$this->_meta_keywords=explode(',',$info[3]);
-				$this->_meta_description=$info[4];
-				$this->_allow_robots=$info[5];
+				$this->_name = $info[0];
+				$this->_title = $info[1];
+				$this->_layout = $info[2];
+				$this->_meta_keywords = explode(',',$info[3]);
+				$this->_meta_description = $info[4];
+				$this->_allow_robots = $info[5];
+				$this->_parent = $info[6];
+				$this->_weight = $info[7];
+				$this->_categories = null;
 				$this->_model=Saint_Model_Page::getModel($this->_name);
 				return 1;
 			} catch (Exception $e) {
@@ -385,6 +435,45 @@ class Saint_Model_Page {
 	}
 	
 	/**
+	 * Get page weight (used for sorting).
+	 * @return int Page weight.
+	 */
+	public function getWeight() {
+		return $this->_weight;
+	}
+	
+	/**
+	 * Set page weight.
+	 * @param int $weight New page weight.
+	 */
+	public function setWeight($weight) {
+		$this->_weight = Saint::sanitize($weight,SAINT_REG_ID);
+	}
+	
+	/**
+	 * Get page parent (used for sub-pages).
+	 * @return int Parent page ID.
+	 */
+	public function getParent() {
+		return $this->_parent;
+	}
+	
+	/**
+	 * Set page parent.
+	 * @param int $id New page parent.
+	 * @return boolean True on success if parent page exists, false otherwise.
+	 */
+	public function setParent($id) {
+		$np = new Saint_Model_Page();
+		if ($id == 0 || ($id != $this->_id && $np->loadById($id))) {
+			$this->_parent = $np->getId();
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
+	/**
 	 * Get the block which is currently being edited on this page.
 	 * @return Saint_Model_Block Block which is currently being edited.
 	 */
@@ -577,31 +666,31 @@ class Saint_Model_Page {
 		} else
 			return 0;
 	}
-	
+
 	/**
-	 * Add loaded page to given category.
-	 * @param string $category Name of category to which to add the page.
-	 * @return boolean True on success, false otherwise.
+	 * Add the loaded block to the given category.
+	 * @param string $category Name of category to which the block is to be added.
+	 * @return boolean True for success, false for failure.
 	 */
 	public function addToCategory($category) {
-		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		if ($this->_categories == null) {
+			$this->loadCategories(); }
+		$scategory = Saint::sanitize($category);
 		if ($scategory) {
-			$id = Saint_Model_Category::getId($scategory);
-			if (!$id) {
-				$id = Saint_Model_Category::addCategory($scategory);
-			}
-			if (!$id) {
-				Saint::logError("Problem assigning page to category '$scategory'. Unable to get category ID.",__FILE__,__LINE__);
-				return 0;
-			} else {
-				try {
-					Saint::query("INSERT INTO `st_pagecats` (`catid`,`pageid`) VALUES ('$id','$this->_id')");
-					return 1;
-				} catch (Exception $e) {
-					Saint::logError("Problem adding page id '$this->_id' to category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
-					return 0;
+			// Add to categories array if not already present.
+			if (!in_array($scategory,$this->_categories)) {
+				$this->_categories[] = $scategory;
+				// Notify system this is a change and must be added to the db when saved.
+				if (!in_array($scategory,$this->_cats_to_add)) {
+					$this->_cats_to_add[] = $scategory;
 				}
 			}
+			// Notify the system not to delete this category (to nullify in case of delete->add->save)
+			if (in_array($scategory,$this->_cats_to_delete)) {
+				$index = array_search($scategory,$this->_cats_to_delete);
+				unset($this->_cats_to_delete[$index]);
+			}
+			return 1;
 		} else {
 			Saint::logError("Invalid category name: '$category'.",__FILE__,__LINE__);
 			return 0;
@@ -609,26 +698,31 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Remove loaded page from given category.
-	 * @param string $category Name of category from which to remove the page.
-	 * @return boolean True on success, false otherwise.
+	 * Remove the loaded block from the given category.
+	 * @param string $category Name of category from which the block is to be removed.
+	 * @return boolean True for success, false for failure.
 	 */
 	public function removeFromCategory($category) {
-		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		if ($this->_categories == null) {
+			$this->loadCategories(); }
+		$scategory = Saint::sanitize($category);
 		if ($scategory) {
-			$id = Saint_Model_Category::getId($scategory);
-			if (!$id) {
-				# No id... it can't be part of a category that doesn't exist, so our job is done.
-				return 1;
-			} else {
-				try {
-					Saint::query("DELETE FROM `st_pagecats` WHERE `catid`='$id' AND `pageid`='$this->_id'");
-					return 1;
-				} catch (Exception $e) {
-					Saint::logError("Problem removing page id '$this->_id' from category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
-					return 0;
+			// Remove from categories array if present
+			if (in_array($scategory,$this->_categories)) {
+				$index = array_search($scategory,$this->_categories);
+				unset($this->_categories[$index]);
+				// Notify system this is a change and must be removed from the db when saved.
+				if (!in_array($scategory,$this->_cats_to_delete)) {
+					$this->_cats_to_delete[] = $scategory;
 				}
 			}
+			// Notify the system not to add this category (to nullify in case of add->delete->save)
+			if (in_array($scategory,$this->_cats_to_add)) {
+				$index = array_search($scategory,$this->_cats_to_add);
+				unset($this->_cats_to_add[$index]);
+			}
+			return 1;
+			$this->_cats_to_delete[] = $scategory;
 		} else {
 			Saint::logError("Invalid category name: '$category'.",__FILE__,__LINE__);
 			return 0;
@@ -636,40 +730,48 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Set categories for loaded page en masse.
-	 * @param string[] $newcats New categories for loaded page.
+	 * Set the loaded page's categories en masse.
+	 * @param string[] $newcats Array of category names for the page.
 	 */
 	public function setCategories($newcats) {
 		if (!is_array($newcats))
 			$newcats = explode(',',$newcats);
-		
-		foreach ($this->getCategories() as $cat) {
-			if (!in_array($cat,$newcats)) {
+		foreach (Saint::getCategories() as $cat) {
+			if (in_array($cat,$newcats)) {
+				$this->addToCategory($cat);
+			} else {
 				$this->removeFromCategory($cat);
 			}
-		}
-		foreach ($newcats as $newcat) {
-			$this->addToCategory($newcat);
 		}
 	}
 	
 	/**
-	 * Get categories for the loaded page.
-	 * @return string[] Categories for loaded page.
+	 * Get the loaded page's categories.
+	 * @return string[] Array of category names.
 	 */
 	public function getCategories() {
-		try {
-			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_pagecats` as `p` WHERE `p`.`pageid`='$this->_id' AND `p`.`catid`=`c`.`id`");
-			$cats = array();
-			foreach ($getcats as $getcat) {
-				$cats[$getcat[0]] = $getcat[1];
-			}
-			return $cats;
-		} catch (Exception $e) {
-			# No categories found, so we return a blank array
-			return array();
-		}
+		if ($this->_categories == null) {
+			$this->loadCategories(); }
+		return $this->_categories;
 	}
+	
+	/**
+	 * Check if loaded page is in at least one of the given categories.
+	 * @param string[] $category Array of category names to check. Also accepts scalar category name.
+	 * @return boolean True if page is in at least one of the given categories, false otherwise.
+	 */
+	public function inCategory($category) {
+		if ($this->_categories == null) {
+			$this->loadCategories(); }
+		if (!is_array($category))
+			$category = array($category);
+		foreach ($category as $cname) {
+			if (in_array($cname,$this->_categories)) {
+				return 1;
+			}
+		}
+		return 0;
+}
 	
 	/**
 	 * Set keywords for loaded page.
@@ -761,9 +863,15 @@ class Saint_Model_Page {
 				"`layout`='$this->_layout',".
 				"`meta_keywords`='".implode(',',$this->_meta_keywords)."',".
 				"`meta_description`='$this->_meta_description',".
-				"`allow_robots`='$this->_allow_robots' ".
+				"`allow_robots`='$this->_allow_robots',".
+				"`parent`='$this->_parent',".
+				"`weight`='$this->_weight' ".
 				"WHERE `id`='$this->_id'";
 				Saint::query($query);
+				foreach ($this->_cats_to_add as $cat) {
+					$this->dbAddToCategory($cat); }
+				foreach ($this->_cats_to_delete as $cat) {
+					$this->dbRemoveFromCategory($cat); }
 				if ($log)
 					Saint::logEvent("Saved details for page '$this->_name'.");
 				return 1;
@@ -773,11 +881,15 @@ class Saint_Model_Page {
 			}
 		} else {
 			try {
-				$query = "INSERT INTO `st_pages` (`name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots`,`created`) ".
+				$query = "INSERT INTO `st_pages` (`name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots`,`created`,`parent`,`weight`) ".
 					" VALUES ('$this->_name','$this->_title','$this->_layout','".implode(',',$this->_meta_keywords).
-					"','$this->_meta_description','$this->_allow_robots',NOW())";
+					"','$this->_meta_description','$this->_allow_robots',NOW(),'$this->_parent','$this->_weight')";
 				Saint::query($query);
 				$this->_id = Saint::getLastInsertId();
+				foreach ($this->_cats_to_add as $cat) {
+					$this->dbAddToCategory($cat); }
+				foreach ($this->_cats_to_delete as $cat) {
+					$this->dbRemoveFromCategory($cat); }
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Problem creating page $this->_name. ".$e->getMessage(),__FILE__,__LINE__);
@@ -813,6 +925,82 @@ class Saint_Model_Page {
 		} else {
 			Saint::logError("Layout not found: $this->_layout",__FILE__,__LINE__);
 			return 0;
+		}
+	}
+	
+	
+	/**
+	 * Add loaded page to given category.
+	 * @param string $category Name of category to which to add the page.
+	 * @return boolean True on success, false otherwise.
+	 */
+	private function dbAddToCategory($category) {
+		$scategory = Saint::sanitize($category);
+		if ($scategory) {
+			$id = Saint_Model_Category::getId($scategory);
+			if (!$id) {
+				$id = Saint_Model_Category::addCategory($scategory);
+			}
+			if (!$id) {
+				Saint::logError("Problem assigning page to category '$scategory'. Unable to get category ID.",__FILE__,__LINE__);
+				return 0;
+			} else {
+				try {
+					Saint::query("INSERT INTO `st_pagecats` (`catid`,`pageid`) VALUES ('$id','$this->_id')");
+					return 1;
+				} catch (Exception $e) {
+					Saint::logError("Problem adding page id '$this->_id' to category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
+					return 0;
+				}
+			}
+		} else {
+			Saint::logError("Invalid category name: '$category'.",__FILE__,__LINE__);
+			return 0;
+		}
+	}
+	
+	/**
+	 * Remove loaded page from given category.
+	 * @param string $category Name of category from which to remove the page.
+	 * @return boolean True on success, false otherwise.
+	 */
+	private function dbRemoveFromCategory($category) {
+		$scategory = Saint::sanitize($category);
+		if ($scategory) {
+			$id = Saint_Model_Category::getId($scategory);
+			if (!$id) {
+				# No id... it can't be part of a category that doesn't exist, so our job is done.
+				return 1;
+			} else {
+				try {
+					Saint::query("DELETE FROM `st_pagecats` WHERE `catid`='$id' AND `pageid`='$this->_id'");
+					return 1;
+				} catch (Exception $e) {
+					Saint::logError("Problem removing page id '$this->_id' from category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
+					return 0;
+				}
+			}
+		} else {
+			Saint::logError("Invalid category name: '$category'.",__FILE__,__LINE__);
+			return 0;
+		}
+	}
+	
+		
+	/**
+	 * Load categories for the current page; called on demand for increased performance.
+	 */
+	private function loadCategories() {
+		$this->_categories = array();
+		try {
+			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_pagecats` as `p` WHERE `p`.`pageid`='$this->_id' AND `p`.`catid`=`c`.`id`");
+			foreach ($getcats as $getcat) {
+				$this->_categories[$getcat[0]] = $getcat[1];
+			}
+		} catch (Exception $e) {
+			if ($e->getCode()) {
+				Saint::logError("Unable to load page categories: ".$e->getMessage(),__FILE__,__LINE__);
+			}
 		}
 	}
 }

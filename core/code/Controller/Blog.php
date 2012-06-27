@@ -55,6 +55,7 @@ class Saint_Controller_Blog {
 				"order" => "DESC",
 				"orderby" => "postdate",
 				"paging" => true,
+				"page_id" => $page->getId(),
 				"matches" => array(
 					array("enabled","1"),
 				),

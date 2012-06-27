@@ -1,9 +1,7 @@
 <?php
 if ($installing) {
-$sql = array();
 
-# Site languages
-$sql[] = <<<EOT
+$sql = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_languages` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -12,9 +10,7 @@ CREATE TABLE IF NOT EXISTS `st_languages` (
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX(`name`)
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_users` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`username` VARCHAR(255) NOT NULL,
@@ -29,9 +25,7 @@ CREATE TABLE IF NOT EXISTS `st_users` (
 	CONSTRAINT `st_users_language_name`
 	FOREIGN KEY (`language`) REFERENCES st_languages(`name`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_usergroups` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`userid` INTEGER UNSIGNED NOT NULL,
@@ -39,9 +33,7 @@ CREATE TABLE IF NOT EXISTS `st_usergroups` (
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `st_usergroups_usergroup`(`userid`,`group`)
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_sessions` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`username` VARCHAR(255) NOT NULL,
@@ -52,10 +44,7 @@ CREATE TABLE IF NOT EXISTS `st_sessions` (
 	CONSTRAINT `st_sessions_username_username`
 	FOREIGN KEY (`username`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
-EOT;
 
-# General site configuration, global defaults
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_config` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`version` DECIMAL(6,4) NOT NULL DEFAULT 0,
@@ -69,10 +58,7 @@ CREATE TABLE IF NOT EXISTS `st_config` (
 	CONSTRAINT `st_config_owner_username`
 	FOREIGN KEY (`owner`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
-EOT;
 
-# Labels for natural language
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_labels` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -87,9 +73,7 @@ CREATE TABLE IF NOT EXISTS `st_labels` (
 	CONSTRAINT `st_labels_owner_username`
 	FOREIGN KEY (`owner`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_blocktypes` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -97,9 +81,7 @@ CREATE TABLE IF NOT EXISTS `st_blocktypes` (
 	PRIMARY KEY (`id`),
 	INDEX `st_blocktypes_name` (`name`)
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_blocks` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`page_id` INTEGER UNSIGNED NOT NULL DEFAULT 0,
@@ -109,9 +91,7 @@ CREATE TABLE IF NOT EXISTS `st_blocks` (
 	INDEX `st_blocks_blocktypeid` (`blocktypeid`),
 	INDEX `st_blocks_blockid` (`blockid`)
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_layouts` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`enabled` BOOLEAN NOT NULL DEFAULT 1,
@@ -121,9 +101,7 @@ CREATE TABLE IF NOT EXISTS `st_layouts` (
 	PRIMARY KEY (`id`),
 	INDEX `st_layouts_name` (`name`)
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_pages` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`enabled` BOOLEAN NOT NULL DEFAULT 1,
@@ -136,12 +114,11 @@ CREATE TABLE IF NOT EXISTS `st_pages` (
 	`created` DATETIME,
 	`updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`parent` INTEGER UNSIGNED NOT NULL DEFAULT 0,
+	`weight` INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id`),
 	INDEX `st_pages_name` (`name`)
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_files` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`enabled` BOOLEAN NOT NULL DEFAULT 1,
@@ -158,9 +135,7 @@ CREATE TABLE IF NOT EXISTS `st_files` (
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `st_files_location` (`location`)
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_filelabels` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -170,9 +145,7 @@ CREATE TABLE IF NOT EXISTS `st_filelabels` (
 	CONSTRAINT `st_filelabels_fileid_id`
 	FOREIGN KEY (`fileid`) REFERENCES st_files(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_categories` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -180,9 +153,7 @@ CREATE TABLE IF NOT EXISTS `st_categories` (
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `st_categories_name` (`name`)
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_blockcats` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`catid` INTEGER UNSIGNED NOT NULL,
@@ -196,9 +167,7 @@ CREATE TABLE IF NOT EXISTS `st_blockcats` (
 	CONSTRAINT `st_blockcats_blockid_id`
 	FOREIGN KEY (`blockid`) REFERENCES st_blocks(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_pagecats` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`catid` INTEGER UNSIGNED NOT NULL,
@@ -212,9 +181,7 @@ CREATE TABLE IF NOT EXISTS `st_pagecats` (
 	CONSTRAINT `st_pagecats_pageid_id`
 	FOREIGN KEY (`pageid`) REFERENCES st_pages(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_filecats` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`catid` INTEGER UNSIGNED NOT NULL,
@@ -228,10 +195,7 @@ CREATE TABLE IF NOT EXISTS `st_filecats` (
 	CONSTRAINT `st_filecats_fileid_id`
 	FOREIGN KEY (`fileid`) REFERENCES st_files(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
-EOT;
 
-# SHOP SECTION
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_shop_carts` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`purchased` BOOLEAN NOT NULL DEFAULT FALSE,
@@ -239,9 +203,7 @@ CREATE TABLE IF NOT EXISTS `st_shop_carts` (
 	`updated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_shop_cart_products` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`cartid` INTEGER UNSIGNED NOT NULL,
@@ -252,9 +214,7 @@ CREATE TABLE IF NOT EXISTS `st_shop_cart_products` (
 	CONSTRAINT `st_shop_cart_products_cartid_id`
 	FOREIGN KEY (`cartid`) REFERENCES st_shop_carts(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_shop_transactions` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`userid` INTEGER UNSIGNED NOT NULL,
@@ -265,9 +225,7 @@ CREATE TABLE IF NOT EXISTS `st_shop_transactions` (
 	`amount` DECIMAL(10,2) NOT NULL DEFAULT 0,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_shop_paypal_details` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`paypalid` VARCHAR(255) NOT NULL UNIQUE,
@@ -276,9 +234,7 @@ CREATE TABLE IF NOT EXISTS `st_shop_paypal_details` (
 	CONSTRAINT `st_shop_paypal_details_paypalid_paypalid`
 	FOREIGN KEY (`paypalid`) REFERENCES `st_shop_transactions`(`paypalid`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
-EOT;
 
-$sql[] = <<<EOT
 CREATE TABLE IF NOT EXISTS `st_shop_downloads` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`productid` INTEGER UNSIGNED NOT NULL,
@@ -287,75 +243,32 @@ CREATE TABLE IF NOT EXISTS `st_shop_downloads` (
 	`expires` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
-EOT;
 
-# END SHOP SECTION
-
-# START CONTENT SECTION
-
-$sql[] = <<<EOT
 INSERT INTO `st_languages` (`name`,`title`) VALUES ('english','English');
-EOT;
-
-$sql[] = <<<EOT
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('home','Home','blank','NOW()');
-EOT;
-
-$sql[] = <<<EOT
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('home','Home','blank','NOW()',-10);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('user','User','system/user-edit','NOW()');
-EOT;
-
-$sql[] = <<<EOT
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('login','Login','system/user-login','NOW()');
-EOT;
-
-$sql[] = <<<EOT
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('search','Search','system/search-results','NOW()');
-EOT;
-
-$sql[] = <<<EOT
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('system','Saint','system/system','NOW()');
-EOT;
-
-$sql[] = <<<EOT
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('filemanager','Saint','system/file-manager','NOW()');
-EOT;
-
-$sql[] = <<<EOT
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('upload','Saint','system/upload','NOW()');
-EOT;
-
-$sql[] = <<<EOT
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('contact','Contact','contact','NOW()');
-EOT;
-
-$sql[] = <<<EOT
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('gallery','Gallery','gallery/gallery','NOW()');
-EOT;
-
-$sql[] = <<<EOT
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('contact','Contact','contact','NOW()',10);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('gallery','Gallery','gallery/gallery','NOW()',-7);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('slideshow','Slideshow','gallery/slideshow','NOW()');
-EOT;
-
-$sql[] = <<<EOT
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('maintenance','Site Maintenance','system/maintenance','NOW()');
-EOT;
-
-$sql[] = <<<EOT
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('404','Page Not Found','system/404','NOW()');
-EOT;
-
-$sql[] = <<<EOT
 INSERT INTO `st_categories` (`name`,`title`) VALUES ('main-menu','Main Menu');
+UPDATE `st_pages` as `parent` INNER JOIN `st_pages` as `child` ON `parent`.`name`='gallery' SET `child`.`parent`=`parent`.`id` WHERE `child`.`name`='slideshow';
 EOT;
-
-# END CONTENT SECTION
 
 ?>
 <div id="db-create" class="info-block">
 <?php 
-foreach ($sql as $query) {
-	mysql_query($query) or die("Error installing Saint: " . mysql_error());
+
+foreach (explode(";",$sql) as $query) {
+	if (!preg_match('/^\s*$/',$query)) {
+		mysql_query(trim($query)) or die("Error installing Saint: " . mysql_error());
+	}
 }
 ?>
 </div>

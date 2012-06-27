@@ -8,6 +8,7 @@
 			"order" => "DESC",
 			"orderby" => "postdate",
 			"paging" => false,
+			"page_id" => $page->getId(),
 			"matches" => array(
 				array("enabled","1"),
 			),

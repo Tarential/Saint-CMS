@@ -235,6 +235,9 @@ class Saint_Model_Block {
 						$where .= " AND `b`.`".Saint::sanitize($arguments['matches'][0])."`$eq'".Saint::sanitize($arguments['matches'][1])."'";
 					}
 				}
+				if (isset($arguments['page_id'])) {
+					$where .= " AND `u`.`page_id`='".Saint::sanitize($arguments['page_id'],SAINT_REG_ID)."'";
+				}
 				if (isset($arguments['search'])) {
 					if (is_array($arguments['search'][0])) {
 						foreach ($arguments['search'] as $match)
@@ -983,7 +986,7 @@ EOT;
 	public function addToCategory($category) {
 		if ($this->_categories == null) {
 			$this->loadCategories(); }
-		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		$scategory = Saint::sanitize($category);
 		if ($scategory) {
 			// Add to categories array if not already present.
 			if (!in_array($scategory,$this->_categories)) {
@@ -1013,7 +1016,7 @@ EOT;
 	public function removeFromCategory($category) {
 		if ($this->_categories == null) {
 			$this->loadCategories(); }
-		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		$scategory = Saint::sanitize($category);
 		if ($scategory) {
 			// Remove from categories array if present
 			if (in_array($scategory,$this->_categories)) {
@@ -1079,7 +1082,7 @@ EOT;
 			}
 		}
 		return 0;
-}
+	}
 	
 	/**
 	 * Flag the loaded block as disabled.
@@ -1215,7 +1218,7 @@ EOT;
 	 * @return boolean True for success, false for failure.
 	 */
 	private function dbAddToCategory($category) {
-		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		$scategory = Saint::sanitize($category);
 		if ($scategory) {
 			$id = Saint_Model_Category::getId($scategory);
 			if (!$id) {
@@ -1246,7 +1249,7 @@ EOT;
 	 * @return boolean True for success, false for failure.
 	 */
 	private function dbRemoveFromCategory($category) {
-		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		$scategory = Saint::sanitize($category);
 		if ($scategory) {
 			$id = Saint_Model_Category::getId($scategory);
 			if (!$id) {
