@@ -91,7 +91,6 @@ class Saint_Controller_Block {
 		$webname = Saint_Model_Block::convertNameToWeb($bname);
 		$page->process();
 		$output = $page->render(array('get'=>true));
-		//$output = preg_replace('/^.*<div class="saint-block repeating sbn-'.$webname.'">/s','',$output);
 		$str_to_match = '<div class="saint-block repeating sbn-'.$webname.'">';
 		$init_pos = strpos($output,$str_to_match);
 		if ($init_pos === false) {

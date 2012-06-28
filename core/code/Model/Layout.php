@@ -93,7 +93,6 @@ class Saint_Model_Layout {
 				}
 				$layout->save();
 			} else {
-				print_r($data);
 				Saint_Model_Layout::create($name,$data);
 			}
 		}

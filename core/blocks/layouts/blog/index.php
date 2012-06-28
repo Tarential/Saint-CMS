@@ -8,7 +8,12 @@ if (sizeof($posts) == 1) {
 	echo SAINT_URL . "/" . $page->getName();
 }
 ?>" />
-<script type="text/javascript" src="http://s7.addthis.com/js/300/addthis_widget.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$.getScript("http://s7.addthis.com/js/300/addthis_widget.js");
+});
+</script>
 
 <?php Saint::includeBlock("middle"); ?>
 

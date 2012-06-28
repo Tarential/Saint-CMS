@@ -788,6 +788,7 @@ EOT;
 				$columns = "`b`.`id`,`b`.`enabled`";
 			try {
 				$bname = Saint_Model_Block::formatForTable($name);
+
 				$info = Saint::getRow("SELECT `u`.`id`,`u`.`page_id`,$columns FROM `st_blocks_$bname` as `b`, `st_blocks` as `u`, `st_blocktypes` as `t` WHERE `b`.`id`='$id' AND `u`.`blockid`=`b`.`id` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$name'");
 				$this->_id = $id;
 				$this->_uid = $info[0];
@@ -822,16 +823,15 @@ EOT;
 			$fname = Saint_Model_Block::formatForTable($name);
 			try {
 				Saint::query("INSERT INTO `st_blocks_$fname` () VALUES ()");
-				if ($this->load($name,Saint::getLastInsertId())) {
-					$btid = Saint_Model_Block::getBlockTypeId($name);
-					try {
-						Saint::query("INSERT INTO `st_blocks` (`blocktypeid`,`blockid`) VALUES ('$btid','$this->_id')");
-					} catch (Exception $h) {
-						Saint::logError("Unable to add block: ".$h->getMessage(),__FILE__,__LINE__);
-					}
-					return 1;
-				} else
+				$btid = Saint_Model_Block::getBlockTypeId($name);
+				$bid = Saint::getLastInsertId();
+				try {
+					Saint::query("INSERT INTO `st_blocks` (`blocktypeid`,`blockid`) VALUES ('$btid','$bid')");
+				} catch (Exception $h) {
+					Saint::logError("Unable to add block: ".$h->getMessage(),__FILE__,__LINE__);
 					return 0;
+				}
+				return $this->load($name,$bid);
 			} catch (Exception $e) {
 				Saint::logError("Failed to add new block named $fname because",$e->getMessage(),__FILE__,__LINE__);
 				return 0;
