@@ -18,8 +18,7 @@ class Saint_Controller_Blog {
 		
 		if (!empty($args['subids'])) {
 			if ($args['subids'][0] == "feed") {
-				$page->setTempLayout("blog/rss");
-				$page->render();
+				Saint::includeBlock("blog/rss-feed");
 				exit();
 			} elseif ($args['subids'][0] == "category" && isset($args['subids'][1]) && $args['subids'][1] != "") {
 				$category = $args['subids'][1];

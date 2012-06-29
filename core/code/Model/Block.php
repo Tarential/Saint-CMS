@@ -108,10 +108,13 @@ class Saint_Model_Block {
 	 */
 	public static function inUse($block) {
 		if ($block = Saint::sanitize($block,SAINT_REG_NAME)) {
-			if (file_exists(Saint::getThemeDir() .  "/blocks/".$block.".php"))
+			if (file_exists(Saint::getThemeDir() .  "/blocks/".$block.".php")) {
 				return 1;
-			elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$block.".php"))
+			} elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$block.".php")) {
 				return 1;
+			} else {
+				return 0;
+			}
 		} else
 			return 0;
 	}
@@ -257,7 +260,7 @@ class Saint_Model_Block {
 				$ls = '';
 			else
 				$ls = "LIMIT $start,$repeat";
-			$obs = "ORDER BY $orderby $order";
+			$obs = "ORDER BY `b`.`$orderby` $order";
 			
 			try {
 				# Check if this block has its own table
@@ -312,6 +315,9 @@ EOT;
 			try {
 				$saved_blocks = Saint::getAll($query);
 			} catch (Exception $d) {
+				if ($d->getCode()) {
+					Saint::logError("Unable to get blocks: ".$d->getError(),__FILE__,__LINE__);
+				}
 				# If we don't find any, use an empty array
 				$saved_blocks = array();
 			}

@@ -18,7 +18,7 @@ $arguments = array(
 	"view" => "blog/rss-item",
 	"container" => false,
 );
-Saint::includeBlock("blog/post",$arguments);
+$page->includeBlock("blog/post",$arguments);
 ?>
 </channel>
 </rss>
