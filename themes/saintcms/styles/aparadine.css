@@ -1,0 +1,653 @@
+html {
+	height: 100%; }
+
+body, p, ul, li, td, blockquote,div,span {
+	
+}
+
+body {
+	height: 100%;
+	background: #fff;
+	padding: 0;
+	margin: 0; }
+
+div {
+	display: block; }
+
+h1 {
+	
+}
+
+h2 {
+	
+}
+
+h3 {
+	
+}
+
+body.wide #header {
+	height: 50px;
+}
+
+#header {
+	position: relative;
+	width: 100%;
+	background: #000;
+	height: 61px; }
+
+body.wide #header .tagline {
+	top: 12px;
+	bottom: 10px;
+	left: 190px;
+	width: auto;
+}
+
+body.wide #header .tagline p {
+	display: block;
+}
+
+#header .tagline p {
+	margin: 0;
+	font-weight: bold;
+	color: #fff;
+}
+
+#header .tagline {
+	position: absolute;
+	top: 45px;
+	left: 2px; }
+
+#header .tagline p {
+	display: inline;
+}
+
+#wrapper #content {
+	position: relative;
+	width: 64.66666666%;
+	margin: 10px 0 10px 1%;
+	border: 1px solid #000;
+	min-height: 624px;
+}
+
+body.narrow #wrapper #content {
+	width: 98%;
+	min-height: 0;
+}
+
+body.wide #wrapper #content {
+	width: 48%; }
+
+#logo {
+	position: absolute;
+	left: 0;
+	top: 0px;
+	width: 184px;
+	height: 50px;
+	background: url('../images/saint-logo-white-small.png');
+}
+
+nav {
+	position: absolute;
+	left: 0;
+	right: 10px;
+	top: 40px;
+	text-align: right;
+}
+
+nav ul.toplevel {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+nav, ul, li, a {
+	transition: all 250ms;
+	-moz-transition: all 250ms; /* Firefox 4 */
+	-webkit-transition: all 250s; /* Safari and Chrome */
+	-o-transition: all 250s; /* Opera */
+}
+
+nav a {
+	color: #fff;
+	font-weight: bold;
+	font-size: 16px;
+	text-decoration: none;
+	display: inline-block;
+	margin-left: 10px;
+	margin-right: 10px;
+	background: #000;
+	border: 1px solid #000;
+	box-shadow: none; }
+
+body.narrow nav a {
+	font-size: 12px;
+}
+
+nav ul a.current {
+	border: 1px dotted #aaa;
+	box-shadow: none;
+	color: #fff;
+}
+
+nav ul a:hover {
+	text-decoration: none;
+	background: #001122;
+	border: 1px solid #aaa;
+	color: #fff; }
+
+.toplevel a {
+	padding: 2px 10px;
+	margin: 0px 0px 0px 4px; }
+
+nav ul.toplevel {
+	padding: 0px;
+	margin: 0px;}
+
+nav li {
+	display: inline; }
+
+nav li.toplevel {
+	position: relative; }
+
+nav .toplevel ul {
+	position: absolute;
+	left: 0px;
+	padding-left: 0px;
+	margin-left: 0px;
+	margin-top: -10px;
+	padding-top: 10px;
+	display: none; }
+
+nav .toplevel:hover > ul, #menu .toplevel ul:hover {
+	display: block; }
+
+.nav-column {
+	float: left;
+	width: 32.7%;
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+body.wide .nav-column {
+	width: 25%;
+}
+
+.nav-column.two, body.narrow .nav-column {
+	width: 100%;
+}
+
+.nav-column.two .nav-block, body.narrow .nav-column.one .nav-block {
+	width: 31.66666%;
+	margin: 0 0 10px 1%;
+	float: left;
+}
+
+body.narrow.blog .nav-column.one .nav-block {
+	width: 98%;
+}
+
+body.wide .nav-column.two {
+	width: 25%;
+}
+
+body.wide .nav-column.two .nav-block {
+	width: 96%;
+}
+
+.nav-block {
+	width: 96%;
+	min-height: 200px;
+	margin: 10px 0 0 3%;
+	border: 1px solid #000;
+}
+
+.nav-block img {
+	float: right;
+	margin: 10px;
+	max-width: 45%;
+}
+
+.nav-block.demo img, .nav-block.documentation img {
+	border: 1px dotted #ccc;
+}
+
+#wrapper .nav-block.secondary .content {
+	padding-bottom: 0; }
+
+.nav-block.documentation p {
+	text-align: left;
+	margin: 0 0 10px;
+}
+
+.nav-block.documentation p a {
+	display: block;
+}
+
+.nav-block.secondary {
+	text-align: left;
+}
+
+.nav-block.secondary ul li.title {
+	margin-bottom: 15px;
+	font-style: italic;
+}
+
+.nav-block.secondary ul li {
+	margin-bottom: 10px;
+}
+
+.nav-block.buy-now a {
+	font-weight: bold;
+}
+
+.nav-block .title {
+	font-weight: bold;
+	display: block;
+	margin-top: 10px;
+}
+
+.nav-block .info {
+	width: 50%;
+}
+
+.nav-block.buy-now .title {
+	margin-top: 25px;
+}
+
+.nav-block.buy-now .price a {
+	font-size: 32px;
+	display: block;
+	margin: 5px 0;
+	color: #003366;
+}
+
+.nav-block.buy-now .special .price a {
+	font-size: 10px;
+	text-decoration: line-through;
+	color: #000;
+}
+
+.nav-block.buy-now .special .special-price a {
+	color: red;
+	font-size: 32px;
+	display: block;
+	margin: 5px 0;
+}
+
+body.narrow .nav-block.buy-now .info {
+	margin: -10px auto 0;
+}
+
+body.narrow .nav-block.buy-now img {
+	float: none;
+	max-width: none;
+}
+
+body.wide .nav-block, body.wide .nav-column.two .nav-block, body.narrow .nav-column-one .nav-block {
+	margin: 10px 0 0 4%;
+}
+
+.nav-block a {
+	color: #001122;
+	font-weight: bold; }
+
+.nav-block ul {
+	padding: 0;
+	margin: 0;
+	list-style: none; }
+
+.nav-block li {
+	margin: 0 0 5px 0; }
+
+.nav-block li.title {
+	margin: 0 0 10px 0;
+}
+
+.nav-block h6 {
+	margin: 10px 0;
+}
+
+.nav-block h6 a {
+	text-decoration: underline;
+}
+
+.nav-block h2 {
+	margin: 0;
+	padding: 0; }
+
+.nav-block h2 a {
+	display: block;
+	margin: 0;
+	padding: 2px 0;
+	text-align: center;
+	background: #000;
+	color: #fff;
+	font-size: 16px;
+}
+
+.nav-block h2 a:hover {
+	text-decoration: none;
+	background: #001122;
+}
+
+.nav-block.demo {
+	text-align: left;
+}
+
+#saint-box {
+	width: 200px;
+	height: 183px;
+	float: right;
+	background: url('../images/st.cms-box-left-small.png') no-repeat;
+}
+
+#saint-login-form {
+	margin-top: 10px; }
+
+#sidebar {
+	float: right;
+	width: 200px;
+	margin-right: 65px;
+	margin-top: 50px;
+}
+
+#content a {
+	font-weight: bold;
+}
+
+a.rss-feed-link {
+	padding-left: 20px;
+	padding-top: 1px;
+	height: 15px;
+	background: url('../images/rss.png') 0 0 no-repeat;
+	margin: 10px 0;
+	display: block;
+	font-weight: bold; }
+
+.nav h4 a {
+	font-weight: normal;
+}
+
+#main-options img {
+	border: 1px solid #000;
+}
+
+#main-options {
+	margin: 50px 0 20px;
+	clear: both;
+}
+
+#main-options .column {
+	text-align: center;
+}
+
+.saint-logo.inline-right {
+	margin-right: 25px; }
+
+.description {
+	width: 450px;
+}
+
+#content .sbn-blog_post {
+	width: inherit; }
+
+.description h1 {
+	margin-bottom: 0;
+}
+
+.description h4 {
+	margin-top: -5px;
+}
+
+.inline-right.list {
+	width: 350px;
+}
+
+#footer {
+	text-align: center;
+	font-weight: bold;
+	width: 100%;
+	padding: 5px 0 0;
+	background: #000;
+	color: #fff;
+}
+
+#footer, .push {
+	height: 20px;
+}
+
+#footer a {
+	color: #fff;
+}
+
+#footer ul {
+	margin: 0;
+	padding: 0;
+}
+
+#footer ul li {
+	list-style: none;
+	display: inline;
+}
+
+#footer ul li.s:before {
+	content: ' .:. ';
+}
+
+#footer .left {
+	margin-left: 1%;
+	float: left; }
+
+#footer .right {
+	margin-right: 1%;
+	float: right; }
+
+#footer .center {
+	width: 30%;
+	position: absolute;
+	left: 50%;
+	margin-left: -15%;
+	text-align: center;
+}
+
+#wrapper {
+	margin: 0 0 -25px 0;
+	height: auto !important;
+	min-height: 100%; }
+
+#content #saint_blog_post {
+	width: auto;
+}
+
+#blog-sidebar {
+	text-align: left;
+	height: auto;
+	min-height: 624px;
+}
+
+body.narrow #blog-sidebar {
+	min-height: 0;
+}
+
+#wrapper .content {
+	padding: 10px;
+}
+
+#wrapper #content .content {
+	padding: 10px 20px;
+}
+
+#wrapper #content .blog-post .content {
+	padding: 0;
+}
+
+#blog-sidebar .saint-search input {
+	width: 87%;
+}
+
+#blog-sidebar .saint-search input.submit {
+	width: 10%;
+	float: right;
+}
+
+body.home #wrapper #content {
+	min-height: 424px;
+	padding-top: 200px; }
+
+#content #slides {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 200px;
+}
+
+#content .header-container img.background {
+	position: absolute;
+	right: 0;
+	min-width: 100%;
+}
+
+#content .header-container {
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 200px;
+	border-bottom: 1px solid #000;
+}
+
+#content img.logo {
+	position: absolute;
+	top: 25px;
+	left: 50%;
+	margin-left: -227px;
+}
+
+#content h1 {
+	text-align: center;
+	font-size: 18px;
+}
+
+.saint-product ul {
+	margin-top: 0;
+	padding-left: 15px;
+}
+
+.saint-product h2 {
+	margin: 10px 0 15px;
+}
+
+.saint-product h2 .regprice {
+	color: #003366;
+}
+
+.saint-product h3 {
+	margin: 0 0 5px;
+}
+
+.saint-product h6 {
+	margin: 0 0 15px;
+}
+
+.saint-product h2 .saleprice {
+	color: red;
+}
+
+.saint-product h6 .regprice {
+	text-decoration: line-through;
+}
+
+#wrapper #saint-paypal-buynow {
+	margin: 0;
+}
+
+/* Lyx Documentation Styles */
+
+div.toc {
+margin: 2em 0em;
+border-style: none;
+border-width: 0;
+padding: 0;
+}
+div.tochead { font-size: x-large; font-weight: bold; }
+div.lyxtoc-0 {
+margin: 2em 0em 0em 0em;
+font-size: xx-large;
+font-weight: bold;
+}
+div.lyxtoc-1 {
+margin: 1em 0em 0em 0em;
+font-size: x-large;
+font-weight: bold;
+}
+div.lyxtoc-2 {
+margin: 0em 0em 0em 1em;
+font-size: large;
+font-weight: normal;
+}
+div.lyxtoc-3 { margin: 0em 0em 0em 0.5em; font-size: medium; }
+div.lyxtoc-4 { margin: 0em 0em 0em 0.5em; }
+div.lyxtoc-5 { margin: 0em 0em 0em 0.5em; }
+div.lyxtoc-6 { margin: 0em 0em 0em 0.5em; }
+a.tocentry {
+text-decoration: none;
+color: black;
+}
+a.tocentry:visited { color: black; }
+a.tocarrow {
+font-weight: bold;
+text-decoration: none;
+color: #909090;
+}
+a.tocarrow:visited { color: #C0C0C0; }
+
+h1.title {
+font-size: x-large;
+margin-bottom: 1ex;
+text-align: center;
+
+}
+div.author {
+font-size: large;
+margin-top: 1.3ex;
+margin-bottom: 0.7ex;
+text-align: center;
+
+}
+div.standard {
+margin-bottom: 2ex;
+}
+h2.section {
+font-weight: bold;
+font-size: x-large;
+margin-top: 1.3ex;
+margin-bottom: 0.7ex;
+text-align: left;
+
+}
+h3.subsection {
+font-weight: bold;
+font-size: large;
+margin-top: 0.9ex;
+margin-bottom: 0.5ex;
+text-align: left;
+
+}
+div.plain_layout {
+text-align: left;
+
+}
+h4.subsubsection {
+font-weight: bold;
+font-size: medium;
+margin-top: 0.7ex;
+margin-bottom: 0.4ex;
+text-align: left;
+
+}
+div.listings {
+font-family: monospace;
+}
