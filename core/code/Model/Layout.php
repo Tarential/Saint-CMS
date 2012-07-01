@@ -47,7 +47,7 @@ class Saint_Model_Layout {
 		$theme_dir = Saint::getThemeDir() . "/blocks/layouts";
 		$layout_config_files = Saint_Model_Block::recursiveScan($core_dir,"xml");
 		$root_layouts = Saint_Model_Block::recursiveScan($core_dir,"php",1);
-		if ($theme_dir != $core_dir) {
+		if ($theme_dir != $core_dir && file_exists($theme_dir)) {
 			$layout_config_files = array_merge($layout_config_files,Saint_Model_Block::recursiveScan($theme_dir,"xml"));
 			$root_layouts = array_merge($root_layouts,Saint_Model_Block::recursiveScan($theme_dir,"php",1));
 		}

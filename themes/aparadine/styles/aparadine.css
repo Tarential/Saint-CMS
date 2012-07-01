@@ -6,7 +6,7 @@ body {
 	font-family: 'DejaVu Sans Mono', 'Verdana', 'Arial', serif;
 }
 
-body.dark .saint-admin-overlay {
+body.dark .saint-admin-overlay, body.dark .saint-admin-menu, body.dark .saint-admin-options {
 	border-color: #aa4400;
 }
 
@@ -69,11 +69,51 @@ nav a:hover {
 
 #content {
 	float: none;
-	width: 960px;
+	width: auto;
+	padding: 0 10px;
 	margin: 0 auto;
 	text-align: center;
 }
 
 h1 {
 	color: #aa4400;
+}
+
+#content .columns p {
+	font-family: 'Verdana', serif;
+	padding: 0 5px;
+	text-align: justify;
+	color: #7e9db1;
+}
+
+.home .columns.four {
+	margin-top: 40px;
+}
+
+.columns .column {
+	height: 20px;
+}
+
+.columns.four .column {
+	width: 24%;
+}
+
+.columns.four .middle {
+	width: 49%;
+}
+
+.columns.four .middle .column {
+	width: 48%;
+}
+
+.columns .column.left {
+	float: left;
+}
+
+.columns .column.middle {
+	margin: 0 auto;
+}
+
+.columns .column.right {
+	float: right;
 }

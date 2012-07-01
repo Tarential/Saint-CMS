@@ -43,10 +43,24 @@ p {
 	border-bottom: 1px solid #000;
 	border-top: none;
 	box-shadow: 0px 0px 15px #000;
-	background: url('../images/logo.png') no-repeat 328px 0px #fff;
 	min-height: 400px;
 	padding: 150px 40px 25px;
 }
+
+.logo {
+		background: url('../images/logo.png') no-repeat 0px 0px transparent;
+		display: block;
+		width: 368px;
+		height: 100px;
+		position: absolute;
+		top: 0;
+		left: 50%;
+		margin-left: -158px;
+		text-decoration: none;
+}
+
+.logo:hover {
+	text-decoration: none; }
 
 #content {
 	width: 660px;
@@ -164,6 +178,19 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	z-index: 101;
 }
 
+body.dark .saint-admin-overlay, body.dark .saint-admin-options.current-page, body.dark .saint-admin-block {
+	background: #000510;
+	color: #ccc;
+	border-color: #ccc;
+}
+
+body.dark .saint-admin-overlay .saint-logo {
+	background: url('../../../core/images/saint-logo-white-small.png') no-repeat 0px 0px transparent;
+}
+
+body.dark .link {
+	color: #fff; }
+
 .saint-ajax-indicator {
 	position: absolute;
 	top: 0px;
@@ -190,6 +217,16 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	width: 500px;
 	height: 17px;
 	border-bottom: solid 1px #000;
+}
+
+body.dark .saint-admin-menu {
+	border-color: #ccc;
+}
+
+body.dark .saint-admin-code input, body.dark .saint-admin-code select, body.dark .saint-admin-code textarea {
+	background: #333;
+	color: #fff;
+	border-color: #666;
 }
 
 .saint-admin-menu li {
@@ -286,7 +323,17 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	display: block;
 	height: 20px;
 	width: 20px;
-	background: url('../images/close.png');	
+	background-image: url('../images/close.png');	
+}
+
+body.dark .close-button {
+	background-image: url('../images/close-white.png');
+}
+
+.saint-admin-options.current-page .close-button, .close-button.delete {
+	width: 10px;
+	height: 10px;
+	background-size: 10px;
 }
 
 .close-button:hover {
@@ -318,6 +365,10 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	height: 272px;
 	overflow: auto;
 	border-right: 1px solid #000;
+}
+
+body.dark .saint-admin-options {
+	border-color: #ccc;
 }
 
 .hud {
@@ -915,16 +966,24 @@ span.match {
 	background: #ccc;
 	left: 0;
 	overflow: hidden;
+	border-style: solid;
+	border-width: 0;
+	border-color: #000;
+}
+
+body.dark .sfm-pager, body.dark #saint-uploader {
+	background-color: #333;
+	border-color: #ccc;
 }
 
 #sfm-top-pager {
 	top: 0;
-	border-bottom: 1px solid #000;
+	border-bottom-width: 1px;
 }
 
 #sfm-bottom-pager {
 	bottom: 0;
-	border-top: 1px solid #000;
+	border-top-width: 1px;
 }
 
 .saint_admin_file-list {

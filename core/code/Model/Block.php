@@ -556,7 +556,7 @@ EOT;
 		$saintdir = SAINT_SITE_ROOT . "/core/blocks";
 		$userdir = Saint::getThemeDir() . "/blocks";
 		$allfiles = Saint_Model_Block::recursiveScan($saintdir,"xml");
-		if ($userdir != $saintdir)
+		if ($userdir != $saintdir && file_exists($userdir))
 			$allfiles = array_merge($allfiles,Saint_Model_Block::recursiveScan($userdir,"xml"));
 		
 		# Parse the xml files
