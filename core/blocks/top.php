@@ -4,8 +4,11 @@
 		<title><?php echo $page->getTitle(); ?> - <?php echo Saint::getSiteTitle(); ?></title>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<meta name="robots" content="<?php if ($page->allowsRobots()): ?>index,follow<?php else: ?>noindex,nofollow<?php endif; ?>" />
-		<meta name="keywords" content="<?php echo implode(',',$page->getMetaKeywords()); ?>" />
-		<meta name="description" content="<?php echo $page->getMetaDescription(); ?>" />
+		<meta name="keywords" content="<?php
+			if (sizeof($page->getMetaKeywords()) > 0) echo implode(',',$page->getMetaKeywords());
+			else echo implode(',',Saint::getSiteKeywords()); ?>" />
+		<meta name="description" content="<?php if ($page->getMetaDescription() != "") echo $page->getMetaDescription();
+			else echo Saint::getSiteDescription(); ?>" />
 		<script type="text/javascript" src="http://www.google.com/jsapi"></script>
 		<script type="text/javascript">
 			google.load("jquery", "1");

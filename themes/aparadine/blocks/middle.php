@@ -1,3 +1,4 @@
+<?php Saint::includeStyle("aparadine"); ?>
 	</head>
 	<body class="dark <?php echo $page->getName(); ?>">
 		<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")) Saint::includeBlock("admin/overlay"); ?>

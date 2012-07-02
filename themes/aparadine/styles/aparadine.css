@@ -12,6 +12,7 @@ body.dark .saint-admin-overlay, body.dark .saint-admin-menu, body.dark .saint-ad
 
 a {
 	color: #fff;
+	font-weight: bold;
 }
 
 #header {
@@ -19,6 +20,9 @@ a {
 	height: 70px;
 	background: #293458;
 	border-bottom: 3px solid #111;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 .logo {
@@ -35,7 +39,6 @@ a {
 
 #container {
 	width: 100%;
-	padding: 50px 0 25px;
 	background: transparent;
 	box-shadow: none;
 	border: none;
@@ -47,7 +50,7 @@ a {
 
 nav {
 	top: 25px;
-	left: inherit;
+	left: auto;
 	right: 10px;
 }
 
@@ -70,7 +73,7 @@ nav a:hover {
 #content {
 	float: none;
 	width: auto;
-	padding: 0 10px;
+	padding: 125px 10px 25px;
 	margin: 0 auto;
 	text-align: center;
 }
@@ -79,8 +82,15 @@ h1 {
 	color: #aa4400;
 }
 
-#content .columns p {
+.content p {
+	text-align: left;
+}
+
+#content p {
 	font-family: 'Verdana', serif;
+}
+
+#content .columns p {
 	padding: 0 5px;
 	text-align: justify;
 	color: #7e9db1;
@@ -88,32 +98,40 @@ h1 {
 
 .home .columns.four {
 	margin-top: 40px;
+	clear: both;
 }
 
 .columns .column {
-	height: 20px;
+	float: left;
 }
 
 .columns.four .column {
 	width: 24%;
 }
 
-.columns.four .middle {
-	width: 49%;
+.columns.four .column {
+	margin: 0 0.5%;
 }
 
-.columns.four .middle .column {
-	width: 48%;
+.columns.four .column:last-child {
+	margin: 0 0 0 0.5%;
 }
 
-.columns .column.left {
-	float: left;
+#saint-contact-form label, #saint-contact-form .saint-label {
+	display: block;
+	width: 100%;
+	font-weight: bold;
+	margin-bottom: 1px;
 }
 
-.columns .column.middle {
+#content .content {
 	margin: 0 auto;
+	max-width: 960px;
+	line-height: 25px;
 }
 
-.columns .column.right {
+.about img {
 	float: right;
+	margin: 0 0 5px 10px;
+	border: 1px solid #999;
 }

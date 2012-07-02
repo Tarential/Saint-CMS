@@ -446,7 +446,7 @@ class Saint_Controller_Page {
 					break;
 			}
 		}
-
+		
 		$this->_page->render();
 	}
 }

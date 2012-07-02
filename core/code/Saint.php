@@ -260,7 +260,12 @@ class Saint {
 	 */
 	public static function getSiteKeywords() {
 		try {
-			return Saint::getOne("SELECT `keywords` FROM `st_config`");
+			$keywords = Saint::getOne("SELECT `keywords` FROM `st_config`");
+			if ($keywords == "")
+				$keywords = array();
+			else
+				$keywords = explode(',',$keywords);
+			return $keywords;
 		} catch (Exception $e) {
 			Saint::logWarning("Problem getting site keywords: ".$e->getMessage(),__FILE__,__LINE__);
 			return '';

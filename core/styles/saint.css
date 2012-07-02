@@ -1,3 +1,6 @@
+html,body {
+	height: 100%; }
+
 body {
 	background: #fff;
 	padding: 0;
@@ -36,15 +39,17 @@ p {
 
 #container {
 	width: 880px;
-	margin: 0 auto 20px;
+	margin: 0 auto -25px;
 	position: relative;
 	border-left: 1px solid #000;
 	border-right: 1px solid #000;
 	border-bottom: 1px solid #000;
 	border-top: none;
 	box-shadow: 0px 0px 15px #000;
-	min-height: 400px;
-	padding: 150px 40px 25px;
+	padding: 0;
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
 }
 
 .logo {
@@ -794,9 +799,10 @@ span.match {
 	display: block; }
 
 #saint-powered {
+	clear: both;
 	text-align: center;
 	font-weight: bold;
-	position: absolute;
+	position: relative;
 	width: 100%;
 	bottom: 0;
 	left: 0;
@@ -1054,6 +1060,10 @@ body.dark .sfm-pager, body.dark #saint-uploader {
 	background: #ccc;
 	overflow: hidden;
 	border-bottom: 1px solid #000;
+}
+
+body.dark .ssm.nav-bar {
+	background: #333;
 }
 
 .ssm.nav-bar ul {

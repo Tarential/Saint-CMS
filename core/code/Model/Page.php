@@ -12,15 +12,17 @@ class Saint_Model_Page {
 	public static function getPageNames($filters = array()) {
 		$options = array('id','enabled','name','title','layout','model','meta_keywords','meta_description','allow_robots','created','updated','weight','parent');
 		$order = Saint::getOrder($filters);
-		$page_where = preg_replace('/^\s*WHERE\s*/',' AND ',Saint::makeConditions($filters,$options,'p'));
+		$page_where = Saint::makeConditions($filters,$options,'p');
 		$cat_where = '';
+		$cat_sel = '';
 		if (isset($filters['categories'])) {
 			$filters = array('name'=>$filters['categories']);
 			$options = array('name');
-			$cat_where = preg_replace('/^\s*WHERE\s*/',' AND ',Saint::makeConditions($filters,$options,'c'));
+			$cat_where = "WHERE `c`.`id`=`pc`.`catid` AND `p`.`id`=`pc`.`pageid`" . preg_replace('/^\s*WHERE\s*/',' AND ',Saint::makeConditions($filters,$options,'c'));
+			$cat_sel = ", `st_categories` as `c`, `st_pagecats` as `pc`";
 		}
 		try {
-			return Saint::getAll("SELECT `p`.`name` FROM `st_pages` as `p`, `st_categories` as `c`, `st_pagecats` as `pc` WHERE `c`.`id`=`pc`.`catid` AND `p`.`id`=`pc`.`pageid`$page_where$cat_where$order");
+			return Saint::getAll("SELECT `p`.`name` FROM `st_pages` as `p`$cat_sel $page_where$cat_where$order");
 		} catch (Exception $e) {
 			if ($e->getCode()) {
 				Saint::logError("Unable to select pages from the database: ".$e->getMessage(),__FILE__,__LINE__);
@@ -231,7 +233,10 @@ class Saint_Model_Page {
 				$this->_name = $info[0];
 				$this->_title = $info[1];
 				$this->_layout = $info[2];
-				$this->_meta_keywords = explode(',',$info[3]);
+				if ($info[3] == "")
+					$this->_meta_keywords = array();
+				else
+					$this->_meta_keywords = explode(',',$info[3]);
 				$this->_meta_description = $info[4];
 				$this->_allow_robots = $info[5];
 				$this->_parent = $info[6];
