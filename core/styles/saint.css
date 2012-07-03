@@ -1,5 +1,4 @@
-html,body {
-	height: 100%; }
+@CHARSET "UTF-8";
 
 body {
 	background: #fff;
@@ -46,10 +45,7 @@ p {
 	border-bottom: 1px solid #000;
 	border-top: none;
 	box-shadow: 0px 0px 15px #000;
-	padding: 0;
-	min-height: 100%;
-	height: auto !important;
-	height: 100%;
+	padding: 175px 20px 0;
 }
 
 .logo {
@@ -1547,4 +1543,8 @@ body.sle-active .blackout {
 
 #blog-by-month-nav h4 a {
 	font-weight: normal;
+}
+
+.subindex {
+	margin-left: 10px;
 }

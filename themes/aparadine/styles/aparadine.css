@@ -1,5 +1,8 @@
 @CHARSET "UTF-8";
 
+html,body {
+	height: 100%; }
+
 body {
 	background: url('../images/bg.png') repeat 0 0 #1B1B24;
 	color: #ccc;
@@ -42,6 +45,10 @@ a {
 	background: transparent;
 	box-shadow: none;
 	border: none;
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	padding: 0;
 }
 
 #menu-center {
@@ -67,7 +74,7 @@ nav a.current {
 }
 
 nav a:hover {
-	background: #293458;
+	background: #1B1B24;
 	color: #fff; }
 
 #content {

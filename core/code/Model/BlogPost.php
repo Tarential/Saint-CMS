@@ -62,6 +62,10 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 	 */
 	public function renderInput($setting, $options = array()) {
 		switch ($setting) {
+			case "title":
+				$options['classes'] = 'uri-indicator';
+				parent::renderInput($setting,$options);
+				break;
 			case "uri":
 				$options['label'] = "URI:";
 				$options['details'] = array($this->getPageUrl()."/[URI]");

@@ -7,7 +7,7 @@ body, p, ul, li, td, blockquote,div,span {
 
 body {
 	height: 100%;
-	background: #fff;
+	background: #8a969f;
 	padding: 0;
 	margin: 0; }
 
@@ -202,6 +202,11 @@ body.wide .nav-column.two .nav-block {
 	border: 1px solid #000;
 }
 
+.nav-block, .info-block {
+	background: #dbdee0;
+	box-shadow: 2px 2px 5px #000;
+}
+
 .nav-block img {
 	float: right;
 	margin: 10px;
@@ -306,6 +311,7 @@ body.wide .nav-block, body.wide .nav-column.two .nav-block, body.narrow .nav-col
 
 .nav-block h6 {
 	margin: 10px 0;
+	-webkit-margin-after: 0;
 }
 
 .nav-block h6 a {
@@ -524,6 +530,9 @@ body.home #wrapper #content {
 	top: 25px;
 	left: 50%;
 	margin-left: -227px;
+	width: 534px;
+	height: 145px;
+	background: transparent;
 }
 
 #content h1 {

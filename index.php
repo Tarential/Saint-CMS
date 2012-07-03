@@ -170,22 +170,24 @@ try {
 
 define('SAINT_DB_VERSION',$installed);
 
-$argument_pattern = '/[\/]*([^\/\.]+\.[^\/\.]+)\/*/';
+#$argument_pattern = '/[\/]*([^\/\.]+\.[^\/\.]+)\/*/';
 $args = array();
 
+/*
 if (preg_match_all($argument_pattern,$uri,$matches)) {
 	foreach ($matches[1] as $match) {
 		$mix = explode('.',$match);
 		$args[$mix[0]] = $mix[1];
 	}
-}
+}*/
 
 foreach ($_GET as $key=>$val) {
 	if (trim($key,'/') != $uri) {
 		$args[$key] = $val;
 	}
 }
-$uri_sans_args = preg_replace($argument_pattern,'',$uri);
+#$uri_sans_args = preg_replace($argument_pattern,'',$uri);
+$uri_sans_args = $uri;
 if (preg_match('/^([^\/]+)\/(.*)$/',$uri_sans_args,$matches)) {
 	$pid = $matches[1];
 	$args['subids'] = explode('/',$matches[2]);

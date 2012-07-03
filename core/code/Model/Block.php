@@ -157,6 +157,10 @@ class Saint_Model_Block {
 				elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$view.".php"))
 					$incfile = SAINT_SITE_ROOT .  "/core/blocks/".$view.".php";
 				else {
+					if (preg_match('/^layouts/',$view) && !preg_match('/^layouts\/system\/404$/',$view)) {
+						$page->setTempLayout("system/404");
+						$page->render();
+					}
 					Saint::logError("Cannot find view $view.",__FILE__,__LINE__); 
 					return 0; }
 				if ($get) {
@@ -197,7 +201,8 @@ class Saint_Model_Block {
 			$paging = false;
 			$repeat = 3;
 			$order = "DESC";
-			$orderby = "`b`.`id`";			
+			$orderby = "id";
+			$enabled = true;
 			$name = Saint_Model_Block::formatForTable($sblock);
 			$where = "WHERE `b`.`id`=`u`.`blockid` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$sblock'";
 			$category = '';
@@ -219,6 +224,8 @@ class Saint_Model_Block {
 					$order = Saint::sanitize($arguments['order']);
 				if (isset($arguments['orderby']))
 					$orderby = Saint::sanitize($arguments['orderby']);
+				if (isset($arguments['enabled']))
+					$enabled = Saint::sanitize($arguments['enabled']);
 				if (isset($arguments['matches'])) {
 					if (is_array($arguments['matches'][0])) {
 						foreach ($arguments['matches'] as $match) {
@@ -293,8 +300,9 @@ EOT;
 				$tables .= ",`st_blockcats` as `bc`,`st_categories` as `c`";
 				$where .= " AND `u`.`id`=`bc`.`blockid` AND `c`.`id`=`bc`.`catid` AND `c`.`name`='$category'";
 			}
+			$where .= " AND `b`.`enabled`='$enabled'";
 			
-			return "SELECT `b`.$sel,`u`.`id`,`u`.`page_id` FROM $tables $where $obs $ls";
+			return "SELECT `b`.$sel,`u`.`id`,`u`.`page_id`,`u`.`created`,`u`.`updated` FROM $tables $where $obs $ls";
 		} else {
 			Saint::logError("Invalid block name '$block'.",__FILE__,__LINE__);
 			return 0;
@@ -316,7 +324,7 @@ EOT;
 				$saved_blocks = Saint::getAll($query);
 			} catch (Exception $d) {
 				if ($d->getCode()) {
-					Saint::logError("Unable to get blocks: ".$d->getError(),__FILE__,__LINE__);
+					Saint::logError("Unable to get blocks: ".$d->getMessage(),__FILE__,__LINE__);
 				}
 				# If we don't find any, use an empty array
 				$saved_blocks = array();
@@ -332,6 +340,8 @@ EOT;
 					}
 					$settings['uid'] = $sb[sizeof($setting_names)];
 					$settings['page_id'] = $sb[sizeof($setting_names)+1];
+					$settings['created'] = $sb[sizeof($setting_names)+2];
+					$settings['updated'] = $sb[sizeof($setting_names)+3];
 					$real_blocks[] = new $model($block,$sb[0],$sb[1],$settings);
 				}
 				$saved_blocks = $real_blocks;
@@ -721,6 +731,8 @@ EOT;
 	protected $_cats_to_delete;
 	protected $_cats_to_add;
 	protected $_page_id;
+	protected $_created;
+	protected $_updated;
 	
 	/**
 	 * Create a dynamic block model.
@@ -741,6 +753,16 @@ EOT;
 				$this->_name = Saint::sanitize($name,SAINT_REG_NAME);
 				$this->_settingnames = array();
 				$this->_categories = null;
+				if (isset($settings['created'])) {
+					$this->_created = $settings['created'];
+				} else {
+					$this->_created = null;
+				}
+				if (isset($settings['updated'])) {
+					$this->_updated = $settings['updated'];
+				} else {
+					$this->_updated = null;
+				}
 				if (isset($settings['page_id'])) {
 					$this->_page_id = $settings['page_id'];
 				} else {
@@ -767,6 +789,8 @@ EOT;
 			$this->_categories = array();
 			$this->_cats_to_add = array();
 			$this->_cats_to_delete = array();
+			$this->_updated = null;
+			$this->_created = null;
 			return 0;
 		}
 	}
@@ -795,18 +819,20 @@ EOT;
 			try {
 				$bname = Saint_Model_Block::formatForTable($name);
 
-				$info = Saint::getRow("SELECT `u`.`id`,`u`.`page_id`,$columns FROM `st_blocks_$bname` as `b`, `st_blocks` as `u`, `st_blocktypes` as `t` WHERE `b`.`id`='$id' AND `u`.`blockid`=`b`.`id` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$name'");
+				$info = Saint::getRow("SELECT `u`.`id`,`u`.`page_id`,`u`.`created`,`u`.`updated`,$columns FROM `st_blocks_$bname` as `b`, `st_blocks` as `u`, `st_blocktypes` as `t` WHERE `b`.`id`='$id' AND `u`.`blockid`=`b`.`id` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$name'");
 				$this->_id = $id;
 				$this->_uid = $info[0];
 				$this->_page_id = $info[1];
-				$this->_enabled = $info[3];
+				$this->_created = $info[2];
+				$this->_updated = $info[3];
+				$this->_enabled = $info[5];
 				$this->_name = $name;
 				$this->_settingnames = $settingnames;
 				$this->_categories = null;
 				$this->_cats_to_add = array();
 				$this->_cats_to_delete = array();
 				for ($i = 0; $i < sizeof($settingnames); $i++)
-					$this->_settings[$settingnames[$i]]=$info[$i+2];
+					$this->_settings[$settingnames[$i]]=$info[$i+4];
 				
 				return 1;
 			} catch (Exception $e) {
@@ -832,7 +858,7 @@ EOT;
 				$btid = Saint_Model_Block::getBlockTypeId($name);
 				$bid = Saint::getLastInsertId();
 				try {
-					Saint::query("INSERT INTO `st_blocks` (`blocktypeid`,`blockid`) VALUES ('$btid','$bid')");
+					Saint::query("INSERT INTO `st_blocks` (`blocktypeid`,`blockid`,`created`) VALUES ('$btid','$bid',NOW())");
 				} catch (Exception $h) {
 					Saint::logError("Unable to add block: ".$h->getMessage(),__FILE__,__LINE__);
 					return 0;
@@ -1121,6 +1147,20 @@ EOT;
 	}
 	
 	/**
+	 * Get created time for current block.
+	 */
+	public function getCreatedTime() {
+		return date("Y-m-d H:i:s",strtotime($this->_created));
+	}
+	
+	/**
+	 * Get last updated time for current block.
+	 */
+	public function getUpdatedTime() {
+		return date("Y-m-d H:i:s",strtotime($this->_updated));
+	}
+	
+	/**
 	 * Render form input for given setting using given options.
 	 * Override this function in your child class to customize input types. See Saint_Model_BlogPost.
 	 * @param string $setting Field name.
@@ -1136,6 +1176,9 @@ EOT;
 			"value" => $this->get($setting),
 			"static" => true,
 		);
+		
+		if (isset($options['classes']))
+			$data['classes'] = $options['classes'];
 		
 		if (isset($options['type']))
 			$type = $options['type'];
@@ -1190,8 +1233,9 @@ EOT;
 				$name = Saint_Model_Block::formatForTable($this->_name);
 				$id = $this->_id;
 				$set = '';
+				
 				foreach ($this->_settings as $setting=>$value) {
-					if ($setting != 'id') {
+					if ($setting != 'id' && $setting != "created" && $setting != 'updated') {
 						$set .= "`$setting`='$value',";
 					}
 				}

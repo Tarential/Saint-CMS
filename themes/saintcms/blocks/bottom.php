@@ -11,7 +11,7 @@
 				</ul>
 			</div>
 			<div class="right">
-				&copy; Copyright <?php echo date('Y'); ?> <a href="http://www.aparadine.com/">Aparadine Software</a> 
+				&copy; Copyright <?php echo date('Y'); ?> <a href="http://www.aparadine.com/" target="_blank">Aparadine Software</a> 
 			</div>
 			<div class="center">
 				This site is powered by <a href="http://www.saintcms.com/">Saint CMS</a>

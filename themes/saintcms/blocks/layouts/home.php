@@ -4,9 +4,9 @@
 
 <div class="header-container">
 
-	<img class="background" src="/images/mt.jpg" />
+	<img class="background" src="/themes/saintcms/images/mt.jpg" />
 	
-	<img class="logo" src="/images/saint-logo.png" />
+	<img class="logo" src="/themes/saintcms/images/saint-logo.png" />
 
 </div>
 

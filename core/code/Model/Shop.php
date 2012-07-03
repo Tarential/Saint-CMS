@@ -68,4 +68,76 @@ class Saint_Model_Shop extends Saint_Model_Page {
 			return 0;
 		}
 	}
+	
+	protected $_product_args;
+	protected $_products;
+	
+	/**
+	 * Process input settings.
+	 * @see core/code/Controller/Saint_Controller_Shop::process()
+	 */
+	public function process() {
+		Saint_Controller_Shop::process($this);
+	}
+	
+	/**
+	 * Get arguments for displaying products.
+	 * @return array Arguments for displaying products.
+	 */
+	public function getProductArgs() {
+		return $this->_product_args;
+	}
+	
+	/**
+	 * Set arguments for displaying products.
+	 * @param array $args New arguments for displaying products.
+	 */
+	public function setProductArgs($args) {
+		if (is_array($args)) {
+			$this->_product_args = $args;
+		} else {
+			$this->_product_args = array($args);
+		}
+	}
+	
+	/**
+	 * Get products prepared for this page.
+	 */
+	public function getProducts() {
+		return $this->_products;
+	}
+	
+	/**
+	 * Set products prepared for this page.
+	 * @param array $products Array of Saint_Model_BlogProduct ready for use.
+	 */
+	public function setProducts($products) {
+		if (is_array($products)) {
+			$this->_products = $products;
+		} else {
+			$this->_products = array($products);
+		}
+	}
+	
+	/**
+	 * Get index of all blog posts / child pages.
+	 * @return array Index of all descendants of current page including blog posts.
+	 */
+	public function getIndex() {
+		$index = parent::getIndex();
+		if ($this->_id == 0) {
+			return $index;
+		} else {
+			$products = Saint_Model_Block::getBlocks("shop/product",array(
+				'enabled' => true,
+				'page_id' => $this->_id,
+				'collection' => true,
+			));
+			
+			foreach ($products as $product) {
+				$index[] = array($product->getUrl(),$product->get("name"),$product->getUpdatedTime(),array());
+			}
+			return $index;
+		}
+	}
 }

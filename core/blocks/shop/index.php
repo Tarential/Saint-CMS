@@ -1,4 +1,6 @@
+<?php $page->includeBlock("shop/product",$page->getProductArgs()); ?>
 <?php
+/*
 $args = $page->getArgs();
 if (isset($args['view']) && $args['view'] == "thanks") {
 	Saint::includeBlock("shop/thanks");
@@ -22,5 +24,5 @@ if (isset($args['view']) && $args['view'] == "thanks") {
 		);
 		Saint::includeBlock("shop/product",$arguments);
 	}
-}
+} */
 ?>

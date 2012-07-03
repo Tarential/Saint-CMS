@@ -179,6 +179,54 @@ class Saint {
 	}
 	
 	/**
+	 * Return array with index of public site pages.
+	 * @return array Index of public site pages.
+	 */
+	public static function getIndex() {
+		$index = array();
+		$main_pages = Saint::getPages(array(
+			'layout' => array(
+				'logical_operator' => 'AND',
+				'comparison_operator' => 'NOT LIKE',
+				'match_all' => 'system/%',
+			),
+			'allow_robots' => array(
+				'logical_operator' => 'AND',
+				'comparison_operator' => '!=',
+				'match_all' => 0,
+			),
+			'parent' => 0,
+		));
+		foreach ($main_pages as $mp) {
+			$index[] = array($mp->getUrl(),$mp->getTitle(),$mp->getLastModified(),$mp->getIndex());
+		}
+		return $index;
+	}
+	
+	public static function includeIndex($xml = false, $index = null) {
+		if ($index == null) {
+			$index = Saint::getIndex();
+		}
+		foreach ($index as $i) {
+			if ($xml) {
+				echo "\t<url>\n";
+				echo "\t\t<loc>".$i[0]."</loc>\n";
+				echo "\t\t<lastmod>".date("Y-m-d",strtotime($i[2]))."</lastmod>\n";
+				echo "\t</url>\n";
+			} else {
+				echo '<h4><a href="'.$i[0].'">'.$i[1].'</a></h4>';
+			}
+			if (!empty($i[3])) {
+				if (!$xml) {
+					echo '<div class="subindex">'; }
+				Saint::includeIndex($xml,$i[3]);
+				if (!$xml) {
+					echo '</div>'; }
+			}
+		}
+	}
+	
+	/**
 	 * Shortcut for Saint_Model_Category::getCategories()
 	 * @return string[] Array with keys matching category ID and values matching category name.
 	 */

@@ -5,5 +5,7 @@
 	<setting>name</setting>
 	<setting>price</setting>
 	<setting>sku</setting>
+	<setting>keywords</setting>
 	<setting>file</setting>
+	<setting>uri</setting>
 </block>

@@ -37,6 +37,35 @@ class Saint_Model_Product extends Saint_Model_Block {
 	}
 	
 	/**
+	 * Select ID for product matching given URI and load data into model.
+	 * Function will first look for an exact match; if that fails it will try a fuzzy match.
+	 * @param $uri URI to match.
+	 * @return True on success, false otherwise.
+	 */
+	public function loadByUri($uri) {
+		$suri = Saint::sanitize($uri);
+		for ($i = 0; $i < 2; $i++) {
+			try {
+				$id = Saint::getOne("SELECT `id` FROM `st_blocks_shop_product` WHERE `uri` LIKE '$suri' ORDER BY `id` DESC");
+				return $this->load($id);
+			} catch (Exception $e) {
+				if ($e->getCode()) {
+					Saint::logError("Unable to select shop product via URI: ".$e->getMessage(),__FILE__,__LINE__); }
+			}
+			$suri = "%$suri%";
+		}
+		return 0;
+	}
+	
+	/**
+	 * Get the URL for the current product.
+	 * @return string URL for current product.
+	 */
+	public function getUrl() {
+		return $this->getPageUrl() . "/" . $this->_settings['uri'];
+	}
+	
+	/**
 	 * Get SKU of loaded product.
 	 * @return string SKU of loaded product.
 	 */
@@ -126,13 +155,25 @@ class Saint_Model_Product extends Saint_Model_Block {
 	 */
 	public function renderInput($setting, $options = array()) {
 			switch ($setting) {
-			case "File":
+			case "name":
+				$options['classes'] = 'uri-indicator';
+				parent::renderInput($setting,$options);
+				break;
+			case "file":
 				parent::renderInput($setting,
 					array(
 						"details" => array("File associated with product. This file must be stored in the 'restricted' folder and will be delivered to users when they make a purchase."),
 						"label" => "(Optional) File:",
 					)
 				);
+				break;
+			case "uri":
+				$options['label'] = "URI:";
+				$options['details'] = array($this->getPageUrl()."/[URI]");
+				if ($this->get($setting) == "") {
+					$options['details'][] = "(Leave blank to auto generate)";
+				}
+				parent::renderInput($setting,$options);
 				break;
 			default:
 				parent::renderInput($setting);

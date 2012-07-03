@@ -24,7 +24,7 @@ EOT;
 $primary_links = <<<EOT
 	<div class="nav-block buy-now">
 		<h2><a href="/purchase" class="buy-now">Buy Now</a></h2>
-		<a href="/purchase" class="buy-now"><img src="/themes/saintcms/images/saint-box-left-small.jpg" /></a>
+		<a href="/purchase" class="buy-now"><img src="/themes/saintcms/images/saint-box-left-small.png" /></a>
 		<div class="info">
 $price_block
 			<p><a href="/purchase" class="buy-now">Buy $name</a></p>
@@ -32,7 +32,7 @@ $price_block
 	</div>
 	<div class="nav-block demo">
 		<h2><a href="http://demo.saintcms.com/login" target="_blank">Try Saint</a></h2>
-		<img src="/images/saint-demo.jpg" />
+		<img src="/themes/saintcms/images/saint-demo.jpg" />
 		<div class="content">
 			<ul>
 				<li class="title"><a href="http://demo.saintcms.com/" target="_blank">View the Demo</a></li>
@@ -46,7 +46,7 @@ $price_block
 	</div>
 	<div class="nav-block documentation">
 		<h2><a href="/documentation">Documentation</a></h2>
-		<img src="/images/saint-docs.jpg" />
+		<img src="/themes/saintcms/images/saint-docs.jpg" />
 		<div class="content">
 			<p>Start with the: <a href="/documentation/view.user-guide">User Guide.</a></p>
 			<p>Want to learn more? Read the: <a href="/documentation/view.dev-guide">Developer Guide.</a></p>

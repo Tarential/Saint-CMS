@@ -238,7 +238,7 @@
 					</select>
 					<div class="link close-button" title="Close">&nbsp;</div>
 				</div>
-				<div class="label-value" contenteditable="true">&nbsp;</div>
+				<div class="label-value">&nbsp;</div>
 			</div>
 			<div class="source">
 				<div class="toolbar">
@@ -255,5 +255,6 @@
 				</form>
 			</div>
 		</div>
+		
 	</div>
 </div>

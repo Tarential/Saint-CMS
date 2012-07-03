@@ -21,5 +21,5 @@
 				</div>
 				<?php Saint::includeBlock("navigation/menu",false); ?>
 			</div>
-			<div id="content">
+			<div id="content" class="info-block">
 				<div class="content">

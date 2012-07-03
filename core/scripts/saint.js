@@ -300,12 +300,13 @@ $(document).ready(function() {
 		$('.sle.active div.source').show();
 		Saint.sleResizeSourceEditor();
 		$('.sle.active .wysiwyg').hide();
+		$('.sle.active .wysiwyg .label-value').attr("contenteditable","false");
 		Saint.sleRepopulateRevisions();
 		Saint.sleWysiwygActive = false;
 	};
 	
 	Saint.sleToggleWysiwyg = function () {
-		$('.sle.active .wysiwyg .label-value').html($('.sle.active div.source .label-value').val())
+		$('.sle.active .wysiwyg .label-value').attr("contenteditable","true").html($('.sle.active div.source .label-value').val())
 		$('.sle.active .wysiwyg').show();
 		$('.sle.active div.source').hide();
 		Saint.sleRepopulateRevisions();
@@ -385,9 +386,6 @@ $(document).ready(function() {
 		// Load the number of saved revisions for this label from the server.
 		Saint.sleGetNumRevs();
 		
-		// Tell the browser to use traditional tags (b, i, u) instead of styles.
-		Saint.sleExecute('styleWithCSS',false);
-		
 		// If it is a WYSIWYG block...
 		if (label.hasClass("wysiwyg")) {
 			// Set up the environment
@@ -397,8 +395,10 @@ $(document).ready(function() {
 			// Then start TinyMCE
 			Saint.sleStartMCE($('.sle.active div.source textarea'),labelForm.width(),labelForm.height());
 		} else {
-			// Otherwise, just focus on the editor.
-			labelForm.find('div.label-value').focus();
+			// Otherwise, just enable the regular Saint editor and focus on it.
+			labelForm.find('div.label-value').attr("contenteditable","true").focus();
+			// Tell the browser to use traditional tags (b, i, u) instead of styles.
+			Saint.sleExecute('styleWithCSS',false);
 		}
 	};
 	
@@ -1033,7 +1033,7 @@ $(document).ready(function() {
 	$(document).on({
 		'keyup': function(event) {
 			var setting = event.currentTarget.id.replace(/^saint-block-setting-/,'');
-			// For the blog
+			// For automatic URI generation
 			if (setting == "uri") {
 				if ($('#saint-block-setting-uri').val() == "") {
 					Saint.sbeUriOverride = false;
@@ -1041,7 +1041,7 @@ $(document).ready(function() {
 					Saint.sbeUriOverride = true;
 				}
 			}
-			if (setting == "title" && !Saint.sbeUriOverride) {
+			if ($(event.currentTarget).hasClass("uri-indicator") && !Saint.sbeUriOverride) {
 				$('#saint-block-setting-uri').val($(event.currentTarget).val().replace(/[\s*]/g,'-').replace(/[^\w-]/g,'').toLowerCase());
 			}
 			$('#saint-add-block-data .sbs-'+setting).html($(event.currentTarget).val());

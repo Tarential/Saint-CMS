@@ -1,13 +1,12 @@
-<?php Saint::includeBlock("top"); ?>
-<link rel="alternate" type="application/rss+xml" title="RSS" href="<?php echo SAINT_URL . "/" . $page->getName() . "/feed"; ?>" />
-<base href="<?php
+<?php
 $posts = $page->getPosts();
 if (sizeof($posts) == 1) {
-	echo $posts[0]->getUrl();
+	$page->setTempUrl($posts[0]->getUrl());
 } else {
-	echo SAINT_URL . "/" . $page->getName();
+	$page->setTempUrl(SAINT_URL . "/" . $page->getName());
 }
-?>" />
+Saint::includeBlock("top"); ?>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="<?php echo SAINT_URL . "/" . $page->getName() . "/feed"; ?>" />
 
 <script type="text/javascript">
 $(document).ready(function() {

@@ -63,4 +63,26 @@ class Saint_Model_Blog extends Saint_Model_Page {
 			$this->_posts = array($posts);
 		}
 	}
+	
+	/**
+	 * Get index of all blog posts / child pages.
+	 * @return array Index of all descendants of current page including blog posts.
+	 */
+	public function getIndex() {
+		$index = parent::getIndex();
+		if ($this->_id == 0) {
+			return $index;
+		} else {
+			$posts = Saint_Model_Block::getBlocks("blog/post",array(
+				'enabled' => true,
+				'page_id' => $this->_id,
+				'collection' => true,
+			));
+			
+			foreach ($posts as $post) {
+				$index[] = array($post->getUrl(),$post->get("title"),$post->getUpdatedTime(),array());
+			}
+			return $index;
+		}
+	}
 }

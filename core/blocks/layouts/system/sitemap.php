@@ -1,0 +1,1 @@
+<?php Saint::includeBlock("navigation/sitemap"); ?>

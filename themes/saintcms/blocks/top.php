@@ -5,6 +5,8 @@
 		<meta name="robots" content="<?php if ($page->allowsRobots()): ?>index,follow<?php else: ?>noindex,nofollow<?php endif; ?>" />
 		<meta name="keywords" content="<?php echo implode(',',$page->getMetaKeywords()); ?>" />
 		<meta name="description" content="<?php echo $page->getMetaDescription(); ?>" />
+		<base href="<?php echo $page->getUrl(); ?>" />
+		<link rel="canonical" href="<?php echo $page->getUrl(); ?>" />
 		<script type="text/javascript" src="http://www.google.com/jsapi"></script>
 		<script type="text/javascript">
 			google.load("jquery", "1");
@@ -14,6 +16,6 @@
 			Saint::includeScript("saint"); 
 		}
 		Saint::includeStyle("saint");
-		Saint::includeStyle("aparadine");
-		Saint::includeScript("aparadine");
+		Saint::includeStyle("saintcms");
+		Saint::includeScript("saintcms");
 		?>

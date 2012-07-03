@@ -87,6 +87,8 @@ CREATE TABLE IF NOT EXISTS `st_blocks` (
 	`page_id` INTEGER UNSIGNED NOT NULL DEFAULT 0,
 	`blocktypeid` INTEGER UNSIGNED NOT NULL,
 	`blockid` INTEGER UNSIGNED NOT NULL,
+	`created` DATETIME,
+	`updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`),
 	INDEX `st_blocks_blocktypeid` (`blocktypeid`),
 	INDEX `st_blocks_blockid` (`blockid`)
@@ -110,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `st_pages` (
 	`layout` VARCHAR(255) NOT NULL DEFAULT '',
 	`meta_keywords` TEXT DEFAULT '',
 	`meta_description` TEXT DEFAULT '',
-	`allow_robots` BOOLEAN NOT NULL,
+	`allow_robots` BOOLEAN NOT NULL DEFAULT 1,
 	`created` DATETIME,
 	`updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	`parent` INTEGER UNSIGNED NOT NULL DEFAULT 0,
@@ -246,17 +248,18 @@ CREATE TABLE IF NOT EXISTS `st_shop_downloads` (
 
 INSERT INTO `st_languages` (`name`,`title`) VALUES ('english','English');
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('home','Home','blank','NOW()',-10);
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('user','User','system/user-edit','NOW()');
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('login','Login','system/user-login','NOW()');
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('search','Search','system/search-results','NOW()');
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('system','Saint','system/system','NOW()');
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('filemanager','Saint','system/file-manager','NOW()');
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('upload','Saint','system/upload','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('user','User','system/user-edit','NOW()',0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('login','Login','system/user-login','NOW()',0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('search','Search','system/search-results','NOW()',0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('system','Saint','system/system','NOW()',0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('filemanager','Saint','system/file-manager','NOW()',0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('upload','Saint','system/upload','NOW()',0);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('contact','Contact','contact','NOW()',10);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('gallery','Gallery','gallery/gallery','NOW()',-7);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('slideshow','Slideshow','gallery/slideshow','NOW()');
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('maintenance','Site Maintenance','system/maintenance','NOW()');
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('404','Page Not Found','system/404','NOW()');
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('maintenance','Site Maintenance','system/maintenance','NOW()',0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('404','Page Not Found','system/404','NOW()',0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap.xml','Sitemap','system/sitemap','NOW()',0);
 INSERT INTO `st_categories` (`name`,`title`) VALUES ('main-menu','Main Menu');
 UPDATE `st_pages` as `parent` INNER JOIN `st_pages` as `child` ON `parent`.`name`='gallery' SET `child`.`parent`=`parent`.`id` WHERE `child`.`name`='slideshow';
 EOT;

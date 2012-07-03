@@ -40,7 +40,8 @@ class Saint_Model_Page {
 		$pagenames = Saint_Model_Page::getPageNames($filters);
 		$pages = array();
 		foreach ($pagenames as $curpage) {
-			$newpage = new Saint_Model_Page();
+			$page_model = Saint_Model_Page::getModel($curpage);
+			$newpage = new $page_model();
 			if ($newpage->loadByName($curpage))
 				$pages[] = $newpage;
 		}
@@ -189,6 +190,9 @@ class Saint_Model_Page {
 	protected $_categories;
 	protected $_cats_to_delete;
 	protected $_cats_to_add;
+	protected $_temp_url;
+	protected $_modified;
+	protected $_created;
 	
 	/**
 	 * Load page model with blank data.
@@ -209,7 +213,7 @@ class Saint_Model_Page {
 		$this->_temp_meta_keywords = null;
 		$this->_allow_robots = true;
 		$this->_blocks = array();
-		$this->_edit_block = new Saint_Model_Block();
+		$this->_edit_block = null;
 		$this->_model = "Saint_Model_Page";
 		$this->_json_data = array();
 		$this->_parent = 0;
@@ -217,6 +221,9 @@ class Saint_Model_Page {
 		$this->_categories = array();
 		$this->_cats_to_add = array();
 		$this->_cats_to_delete = array();
+		$this->_temp_url = null;
+		$this->_modified = null;
+		$this->_created = null;
 	}
 	
 	/**
@@ -228,7 +235,7 @@ class Saint_Model_Page {
 		if ($id = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {
 				$language = Saint::getCurrentUser()->getLanguage();
-				$info = Saint::getRow("SELECT `name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots`,`parent`,`weight` FROM `st_pages` WHERE `id`='$id'");
+				$info = Saint::getRow("SELECT `name`,`title`,`layout`,`meta_keywords`,`meta_description`,`allow_robots`,`parent`,`weight`,`updated`,`created` FROM `st_pages` WHERE `id`='$id'");
 				$this->_id = $id;
 				$this->_name = $info[0];
 				$this->_title = $info[1];
@@ -241,6 +248,8 @@ class Saint_Model_Page {
 				$this->_allow_robots = $info[5];
 				$this->_parent = $info[6];
 				$this->_weight = $info[7];
+				$this->_modified = $info[8];
+				$this->_created = $info[9];
 				$this->_categories = null;
 				$this->_model=Saint_Model_Page::getModel($this->_name);
 				return 1;
@@ -323,7 +332,23 @@ class Saint_Model_Page {
 	 * @return string Page URL.
 	 */
 	public function getUrl() {
-		return SAINT_URL . "/" . $this->_name;
+		if ($this->_temp_url != null) {
+			return $this->_temp_url;
+		} else {
+			if ($this->_name == "home")
+				$name = "";
+			else
+				$name = $this->_name;
+			return SAINT_URL . "/" . $name;
+		}
+	}
+	
+	/**
+	 * Temporarily set URL for running page.
+	 * @param string $url URL to set for running page.
+	 */
+	public function setTempUrl($url) {
+		$this->_temp_url = $url;
 	}
 	
 	/**
@@ -483,6 +508,8 @@ class Saint_Model_Page {
 	 * @return Saint_Model_Block Block which is currently being edited.
 	 */
 	public function getEditBlock() {
+		if ($this->_edit_block == null)
+			$this->_edit_block = new Saint_Model_Block();
 		return $this->_edit_block;
 	}
 	
@@ -519,6 +546,14 @@ class Saint_Model_Page {
 		return 1;
 	}
 
+	/**
+	 * Get last modified date for page.
+	 * @return timestamp Last modified date.
+	 */
+	public function getLastModified() {
+		return $this->_modified;
+	}
+	
 	/**
 	 * Check if robots are allowed.
 	 * @return boolean True if robots allowed, false otherwise.
@@ -908,6 +943,35 @@ class Saint_Model_Page {
 	 */
 	public function process() {
 		
+	}
+
+	/**
+	 * Get index of all children of the loaded page.
+	 * @return array Index of all descendants of current page.
+	 */
+	public function getIndex() {
+		if ($this->_id == 0) {
+			return array();
+		} else {
+			$index = array();
+			$sub_pages = Saint::getPages(array(
+				'layout' => array(
+					'logical_operator' => 'AND',
+					'comparison_operator' => 'NOT LIKE',
+					'match_all' => 'system/%',
+				),
+				'allow_robots' => array(
+					'logical_operator' => 'AND',
+					'comparison_operator' => '!=',
+					'match_all' => 0,
+				),
+				'parent' => $this->_id,
+			));
+			foreach ($sub_pages as $sp) {
+				$index[] = array($sp->getUrl(),$sp->getTitle(),$sp->getLastModified(),$sp->getIndex());
+			}
+			return $index;
+		}
 	}
 	
 	/**
