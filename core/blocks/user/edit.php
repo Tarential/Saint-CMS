@@ -22,6 +22,7 @@ else
 				array(
 					'value'=>$username,
 					'static'=>true,
+					'classes' => 'saint-validate saint-validate-username',
 					'rules'=>'required',
 				)); ?><div class="hud error username" style="display:none;"></div></li>
 			<li><?php echo Saint::genField("saint-edit-user-firstname","text","First Name: ",

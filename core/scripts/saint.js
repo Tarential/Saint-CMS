@@ -550,8 +550,6 @@ $(document).ready(function() {
 	
 	/* START User Administration */
 	
-	Saint.checkUsernameTimer = 0;
-	
 	$(document).on({
 		'click': function(event) {
 			window.location.replace("/action.logout");
@@ -597,20 +595,6 @@ $(document).ready(function() {
 			Saint.showOptions(".saint-admin-options.user-options");
 		}
 	},'.saint-admin-options .user-edit-form .link.cancel');
-
-	$(document).on({
-		'keypress': function(event) {
-			if (Saint.checkUsernameTimer) {
-				clearTimeout(Saint.checkUsernameTimer);
-				Saint.checkUsernameTimer = 0;
-			}
-			if ($('#saint-edit-user-username').val() == "") {
-				$('.hud.username').hide();
-			} else {
-				Saint.checkUsernameTimer = setTimeout(Saint.checkUsername,1500);
-			}
-		}
-	},'#saint-edit-user-username');
 	
 	Saint.editUser = function(uid) {
 		$('.saint-admin-options.dynamic').html('');
@@ -648,33 +632,6 @@ $(document).ready(function() {
 		} catch (e) {
 			$('.saint-ajax-indicator').addClass("error");
 			Saint.addError("There was a problem editing selected user. Please check the server error log for further information.",0);
-		}
-	};
-	
-	Saint.checkUsername = function() {
-		if ($('#saint-edit-user-username').val() == $('#saint-edit-user-original-username').val()) {
-			$('.hud.username').hide();
-		} else {
-			Saint.callHome('/system/?check-username='+$('#saint-edit-user-username').val(),null,Saint.checkedUsername);
-		}
-	};
-	
-	Saint.checkedUsername = function(data) {
-		try {
-			realdata = JSON.parse(data);
-			if (realdata['success']) {
-				if (realdata['available']) {
-					$('.hud.username').removeClass("error").html("That username is available.").show();
-				} else {
-					$('.hud.username').addClass("error").html("Sorry, that username is taken. Please choose another.").show();
-				}
-			} else {
-				Saint.addError("There was a problem checking the availability of the given username. Check the error log for details.");
-				$('.saint-ajax-indicator').addClass("error");
-			}
-		} catch (e) {
-			$('.saint-ajax-indicator').addClass("error");
-			Saint.addError("There was a problem checking the availability of the given username. Check the error log for details.");
 		}
 	};
 	
@@ -1514,11 +1471,29 @@ $(document).ready(function() {
 	
 	/* START World Events */
 	
+	Saint.validationTimer = new Array();
+	
 	$(window).resize(function() {
 		if (Saint.sfmCurrentlyEditing) {
 			Saint.sfmCenterImage(Saint.sfmCurrentlyEditing);
 		}
 	});
+	
+	$(document).on({
+		'keyup': function(event) {
+			var setting = Saint.bubbleGet(event.currentTarget,'.saint-validate',/^saint-validate-(.*)$/)
+			if (Saint.validationTimer[setting]) {
+				clearTimeout(Saint.validationTimer[setting]);
+				Saint.validationTimer[setting] = 0;
+			}
+			if ($(event.currentTarget).val() == "" || $(event.currentTarget).val() == $(event.currentTarget)[0].defaultValue) {
+				clearTimeout(Saint.validationTimer[setting]);
+				$('.hud.'+setting).hide();
+			} else {
+				Saint.validationTimer[setting] = setTimeout(function() { Saint.validateField(setting) },1000);
+			}
+		}
+	},'.saint-validate');
 	
 	Saint.refreshPage = function() {
 		location.reload(true);
@@ -1605,6 +1580,34 @@ $(document).ready(function() {
 			}
 		}
 		return id;
+	};
+	
+	Saint.validateField = function(field) {
+		var field_selector = ".saint-validate.saint-validate-"+field;
+		if ($(field_selector).val() == $(field_selector)[0].defaultValue) {
+			$('.hud.username').hide();
+		} else {
+			Saint.callHome('/system/?check-'+field+'='+$(field_selector).val(),null,Saint.validatedField);
+		}
+	};
+	
+	Saint.validatedField = function(data) {
+		try {
+			realdata = JSON.parse(data);
+			if (realdata['success']) {
+				if (realdata['available']) {
+					$('.hud.'+realdata['setting']).removeClass("error").html(realdata['message']).show();
+				} else {
+					$('.hud.'+realdata['setting']).addClass("error").html(realdata['message']).show();
+				}
+			} else {
+				Saint.addError("There was a problem checking the availability of the given username. Check the error log for details.");
+				$('.saint-ajax-indicator').addClass("error");
+			}
+		} catch (e) {
+			$('.saint-ajax-indicator').addClass("error");
+			Saint.addError("There was a problem checking the availability of the given username. Check the error log for details.");
+		}
 	};
 	
 	/* END World Events */

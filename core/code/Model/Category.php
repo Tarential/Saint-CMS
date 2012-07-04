@@ -131,4 +131,26 @@ class Saint_Model_Category {
 			return 0;
 		}
 	}
+	
+	/**
+	 * Check if given name is available for use.
+	 * @param string $name Category name to check.
+	 */
+	public static function nameAvailable($name) {
+		$sname = Saint::sanitize($name);
+		if ($sname) {
+			try {
+				Saint::getOne("SELECT `id` FROM `st_categories` WHERE `name`='$sname'");
+				return 0;
+			} catch (Exception $e) {
+				if ($e->getCode()) {
+					Saint::logError("Unable to check category name '$sname': ".$e->getMessage(),__FILE__,__LINE__);
+					return 0;
+				}
+				return 1;
+			}
+		} else {
+			return 0;
+		}
+	}
 }

@@ -26,7 +26,8 @@
 					<li><?php echo Saint::genField("saint-add-page-name","text","Identifier: ", array(
 						'static' => true,
 						'rules' => 'required',
-					)); ?></li>
+						'classes' => 'saint-validate saint-validate-add-page-name',
+					)); ?><div class="hud error add-page-name" style="display:none;"></div></li>
 					<?php
 						$options = array();
 						foreach (Saint::getLayoutNames() as $name=>$title)
@@ -143,7 +144,9 @@
 				<input type="hidden" value="0" name="saint-delete-category" id="saint-delete-category" />
 				<?php echo Saint::genField("saint-add-category","text","Name:",array(
 					'static' => true,
+					'classes' => 'saint-validate saint-validate-category',
 				)); ?>
+				<div class="hud error category" style="display:none;"></div>
 				<span id="saint-add-category-submit" class="link">Add</span>
 				<span id="saint-add-category-cancel" class="link hidden">Cancel</span>
 			</form>
@@ -166,7 +169,11 @@
 				<input type="hidden" name="saint-edit-page-id" value="<?php echo $page->getId(); ?>" />
 				<ul>
 					<li><?php echo Saint::genField("saint-edit-page-title","text","Name: ",array('value'=> $page->getTitle(),'static'=>true)); ?></li>
-					<li><?php echo Saint::genField("saint-edit-page-name","text","Identifier (URI): ",array('value'=> $page->getName(),'static'=>true)); ?></li>
+					<li><?php echo Saint::genField("saint-edit-page-name","text","Identifier (URI): ",array(
+						'value'=> $page->getName(),
+						'static'=>true,
+						'classes' => 'saint-validate saint-validate-edit-page-name',
+					)); ?><div class="hud error edit-page-name" style="display:none;"></div></li>
 					<?php
 						$options = array();
 						foreach (Saint::getLayoutNames() as $name=>$title)

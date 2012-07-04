@@ -298,15 +298,47 @@ class Saint_Controller_Page {
 			}
 		}
 		
-		if (isset($args['check-username'])) {
-			$this->_page->setTempLayout("system/json");
-			$jsondata = array('success'=>true);
-			if (Saint_Model_User::nameAvailable($args['check-username'])) {
-				$jsondata['available'] = true;
-			} else {
-				$jsondata['available'] = false;
+		if ($this->_page->getName() == "system") {
+			$validation_targets = array("username","add-page-name","edit-page-name","category");
+			
+			foreach ($validation_targets as $vt) {
+				if (isset($args['check-'.$vt])) {
+					$this->_page->setTempLayout("system/json");
+					$jsondata = array('success'=>true);
+					
+					switch ($vt) {
+						case "username":
+							$available = Saint_Model_User::nameAvailable($args['check-'.$vt]);
+							if ($available) {
+								$jsondata['message'] = "That username is available.";
+							} else {
+								$jsondata['message'] = "That username is unavailable. Please choose another.";
+							}
+							break;
+						case "add-page-name":
+						case "edit-page-name":
+							$available = Saint_Model_Page::nameAvailable($args['check-'.$vt]);
+							if ($available) {
+								$jsondata['message'] = "That page name is available.";
+							} else {
+								$jsondata['message'] = "That page name is unavailable. Please choose another.";
+							}
+							break;
+						case "category":
+							$available = Saint_Model_Category::nameAvailable($args['check-'.$vt]);
+							if ($available) {
+								$jsondata['message'] = "That category name is available.";
+							} else {
+								$jsondata['message'] = "That category name is unavailable. Please choose another.";
+							}
+							break;
+					}
+					
+					$jsondata['available'] = $available;
+					$jsondata['setting'] = $vt;
+					$this->_page->setJsonData($jsondata);
+				}
 			}
-			$page->setJsonData($jsondata);
 		}
 		
 		/*
