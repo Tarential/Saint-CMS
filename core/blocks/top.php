@@ -5,10 +5,10 @@
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<meta name="robots" content="<?php if ($page->allowsRobots()): ?>index,follow<?php else: ?>noindex,nofollow<?php endif; ?>" />
 		<meta name="keywords" content="<?php
-			if (sizeof($page->getMetaKeywords()) > 0) echo implode(',',$page->getMetaKeywords());
+			if (sizeof($page->getKeywords()) > 0) echo implode(',',$page->getKeywords());
 			else echo implode(',',Saint::getSiteKeywords()); ?>" />
 		<meta name="description" content="<?php
-			if ($page->getMetaDescription() != "") echo $page->getMetaDescription();
+			if ($page->getDescription() != "") echo $page->getDescription();
 			else echo Saint::getSiteDescription(); ?>" />
 		<base href="<?php echo $page->getUrl(); ?>" />
 		<link rel="canonical" href="<?php echo $page->getUrl(); ?>" />

@@ -28,7 +28,7 @@ class Saint_Controller_ShoppingCart {
 		} else {
 			Saint::logError("Unable to add item to cart; cart will not initiate.",__FILE__,__LINE__);
 			$page = Saint::getCurrentPage();
-			$page->error = "Problem adding item to cart. If this issue continues please contact the site administrator.";
+			$page->addError("Problem adding item to cart. If this issue continues please contact the site administrator.");
 			$page->setTempLayout("system/error");
 		}
 	}
@@ -53,7 +53,7 @@ class Saint_Controller_ShoppingCart {
 		} else {
 			Saint::logError("Unable to remove item from cart; cart will not initiate.",__FILE__,__LINE__);
 			$page = Saint::getCurrentPage();
-			$page->error = "Problem removing item from cart. If this issue continues please contact the site administrator.";
+			$page->addError("Problem removing item from cart. If this issue continues please contact the site administrator.");
 			$page->setTempLayout("system/error");
 		}
 	}

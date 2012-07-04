@@ -1548,3 +1548,7 @@ body.sle-active .blackout {
 .subindex {
 	margin-left: 10px;
 }
+
+.saint-errors {
+	display: none;
+}

@@ -30,11 +30,11 @@ class Saint_Controller_Contact {
 		
 		$page->setTempLayout("system/error");
 		if (mail($owner->getEmail(),$mailsub,$mailcon,$mailhead)) {
-			$page->error = "Thank you for submitting your contact request. We will reply to you as soon as availability allows.";
+			$page->addError("Thank you for submitting your contact request. We will reply to you as soon as availability allows.");
 			return 1;
 		} else {
 			Saint::logError("Cannot connect to the mail server. Check your host php settings and mail server status for more information.",__FILE__,__LINE__);
-			$page->error = "We're sorry, but due to technical difficulties our contact form is not working. If you don't mind, please e-mail <a href=\"".$owner->getEmail()."\">".$owner->getEmail()."</a> and we will look into the problem as soon as possible.";
+			$page->addError("We're sorry, but due to technical difficulties our contact form is not working. If you don't mind, please e-mail <a href=\"".$owner->getEmail()."\">".$owner->getEmail()."</a> and we will look into the problem as soon as possible.");
 			return 0;
 		}
 	}

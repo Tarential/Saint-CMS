@@ -124,7 +124,7 @@
 				)); ?>
 				<?php echo Saint::genField("saint-site-keywords","text","Keywords:",array(
 					"static" => true,
-					"value" => Saint::getSiteKeywords(),
+					"value" => implode(',',Saint::getSiteKeywords()),
 				)); ?>
 				<?php echo Saint::genField("saint-site-description","textarea","Description:",array(
 					"static" => true,
@@ -180,8 +180,8 @@
 							$options[$name] = $title;
 					?>
 					<li><?php echo Saint::genField("saint-edit-page-layout","select","Layout: ",array('options'=>$options,'selected' => $page->getLayout(),'static'=>true)); ?></li>
-					<li><?php echo Saint::genField("saint-edit-page-keywords","text","Keywords: ",array('value'=> implode(',',$page->getMetaKeywords()),'static'=>true)); ?></li>
-					<li><?php echo Saint::genField("saint-edit-page-description","textarea","Description: ",array('value'=> $page->getMetaDescription(),'static'=>true)); ?></li>
+					<li><?php echo Saint::genField("saint-edit-page-keywords","text","Keywords: ",array('value'=> implode(',',$page->getKeywords()),'static'=>true)); ?></li>
+					<li><?php echo Saint::genField("saint-edit-page-description","textarea","Description: ",array('value'=> $page->getDescription(),'static'=>true)); ?></li>
 					<?php
 						$options = array();
 						foreach (Saint::getCategories() as $category)

@@ -146,7 +146,7 @@ class Saint_Model_User {
 			} else {
 				$page = new Saint_Model_Page();
 				$page->setTempLayout("system/error");
-				$page->error = "There has been a possible hacking attempt on this account. All related cookies have been disabled. You must enter your password to proceed.";
+				$page->addError("There has been a possible hacking attempt on this account. All related cookies have been disabled. You must enter your password to proceed.");
 				$page->render();
 				die();
 			}

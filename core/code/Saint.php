@@ -203,26 +203,11 @@ class Saint {
 		return $index;
 	}
 	
-	public static function includeIndex($xml = false, $index = null) {
-		if ($index == null) {
-			$index = Saint::getIndex();
-		}
-		foreach ($index as $i) {
-			if ($xml) {
-				echo "\t<url>\n";
-				echo "\t\t<loc>".$i[0]."</loc>\n";
-				echo "\t\t<lastmod>".date("Y-m-d",strtotime($i[2]))."</lastmod>\n";
-				echo "\t</url>\n";
-			} else {
-				echo '<h4><a href="'.$i[0].'">'.$i[1].'</a></h4>';
-			}
-			if (!empty($i[3])) {
-				if (!$xml) {
-					echo '<div class="subindex">'; }
-				Saint::includeIndex($xml,$i[3]);
-				if (!$xml) {
-					echo '</div>'; }
-			}
+	public static function includeIndex($xml = false) {
+		if ($xml) {
+			Saint::includeBlock("index/xml");
+		} else {
+			Saint::includeBlock("index/index");
 		}
 	}
 	

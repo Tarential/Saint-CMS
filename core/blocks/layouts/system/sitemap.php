@@ -1,1 +1,1 @@
-<?php Saint::includeBlock("navigation/sitemap"); ?>
+<?php Saint::includeBlock("index/xml"); ?>

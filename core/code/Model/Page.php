@@ -193,6 +193,7 @@ class Saint_Model_Page {
 	protected $_temp_url;
 	protected $_modified;
 	protected $_created;
+	protected $_errors;
 	
 	/**
 	 * Load page model with blank data.
@@ -224,6 +225,7 @@ class Saint_Model_Page {
 		$this->_temp_url = null;
 		$this->_modified = null;
 		$this->_created = null;
+		$this->_errors = array();
 	}
 	
 	/**
@@ -377,7 +379,7 @@ class Saint_Model_Page {
 	 * Request page keywords.
 	 * @return string[] Page keywords.
 	 */
-	public function getMetaKeywords() {
+	public function getKeywords() {
 		if ($this->_temp_meta_keywords == null)
 			return $this->_meta_keywords;
 		else
@@ -388,7 +390,7 @@ class Saint_Model_Page {
 	 * Request page description.
 	 * @return string Page description.
 	 */
-	public function getMetaDescription() {
+	public function getDescription() {
 		if ($this->_temp_meta_description == null)
 			return $this->_meta_description;
 		else
@@ -708,6 +710,25 @@ class Saint_Model_Page {
 	}
 
 	/**
+	 * Add error message for current page.
+	 * @param string Error to add to current page.
+	 */
+	public function addError($error) {
+		if (is_array($error))
+			$this->_errors = array_merge($this->_errors,$errors);
+		else
+			$this->_errors[] = $error;
+	}
+	
+	/**
+	 * Get errors for current page.
+	 * @return array Errors for current page.
+	 */
+	public function getErrors() {
+		return $this->_errors;
+	}
+	
+	/**
 	 * Add the loaded block to the given category.
 	 * @param string $category Name of category to which the block is to be added.
 	 * @return boolean True for success, false for failure.
@@ -821,10 +842,11 @@ class Saint_Model_Page {
 		if (!is_array($tags))
 			$tags = explode(',',$tags);
 		
+		$stags = array();
 		foreach ($tags as $key=>$tag)
-			$tags[$key] = Saint::sanitize($tag);
+			$stags[$key] = Saint::sanitize(trim($tag));
 		
-		$this->_meta_keywords = $tags;
+		$this->_meta_keywords = $stags;
 		return 1;
 	}
 	

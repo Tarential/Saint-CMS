@@ -21,7 +21,7 @@ class Saint_Controller_User {
 		if (Saint_Model_User::login($username,$password,$setcookie)) {
 			header("Location: " .SAINT_BASE_URL);
 		} else {
-			$page->error = "Username/password combination incorrect. Please try again.";
+			$page->addError("Username/password combination incorrect. Please try again.");
 			$page->setTempLayout("system/error");
 			$success = 0;
 		}
@@ -158,10 +158,10 @@ class Saint_Controller_User {
 			} else {
 				if (sizeof($errors) == 0) {
 					$page->setTempLayout("system/error");
-					$page->error = "Registration Successful.";
+					$page->addError("Registration Successful.");
 				} else {
 					$page->setTempLayout("system/user-register");
-					$page->error = $errors;
+					$page->addError($errors);
 				}
 			}
 		}

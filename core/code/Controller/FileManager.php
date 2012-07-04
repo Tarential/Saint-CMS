@@ -29,15 +29,15 @@ class Saint_Controller_FileManager {
 					$page->sfmstatus = "saved";
 					$success = true;
 				} else {
-					$page->error = "Problem saving file with id '$id'. Check the error log for more information.";
+					$page->addError("Problem saving file with id '$id'. Check the error log for more information.");
 					$page->setTempLayout("system/error");
 				}
 			} else {
-				$page->error = "Couldn't load model with id '$id'.";
+				$page->addError("Couldn't load model with id '$id'.");
 				$page->setTempLayout("system/error");
 			}
 		} else {
-			$page->error = "Sorry, but you don't have access to change file meta data.";
+			$page->addError("Sorry, but you don't have access to change file meta data.");
 			$page->setTempLayout("system/error");
 			Saint::logError("User ".Saint::getCurrentUsername()." tried to change file meta data for file id '".
 				$id."' from IP $_SERVER[REMOTE_ADDR] but was denied access.",__FILE__,__LINE__);

@@ -26,7 +26,7 @@ class Saint_Controller_Block {
 
 			if (!$edit_block) {
 				$page->setTempLayout("system/error");
-				$page->error = "Failed to load block for editing. Check error logs for further details.";
+				$page->addError("Failed to load block for editing. Check error logs for further details.");
 				return 0;
 			}
 			
@@ -35,7 +35,7 @@ class Saint_Controller_Block {
 			Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$block."-".$_POST['blockid'].
 				" from IP $_SERVER[REMOTE_ADDR] but was denied access.");
 			$page->setTempLayout("system/error");
-			$page->error = "You do not have access to edit data which belongs to other users. This attempt has been logged.";
+			$page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
 			return 0;
 		}
 		return 1;
@@ -86,7 +86,7 @@ class Saint_Controller_Block {
 			Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$_POST['block']."-".$_POST['blockid'].
 				" from IP $_SERVER[REMOTE_ADDR] but was denied access.",__FILE__,__LINE__);
 			$page->setLayout("error");
-			$page->error = "You do not have access to edit data which belongs to other users. This attempt has been logged.";
+			$page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
 		}
 		$webname = Saint_Model_Block::convertNameToWeb($bname);
 		$page->process();

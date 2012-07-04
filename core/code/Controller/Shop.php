@@ -25,11 +25,11 @@ class Saint_Controller_Shop {
 				fclose($fp);
 			} else {
 				Saint::logError("Unable to find file '$filename'.",__FILE__,__LINE__);
-				$page->error = "Unable to find file associated with the given ID. If you were linked to this file, please contact the site administrator.";
+				$page->addError("Unable to find file associated with the given ID. If you were linked to this file, please contact the site administrator.");
 				$page->setTempLayout("system/error");
 			}
 		} else {
-			$page->error = "Sorry, but that download link is inactive. If you were unable to download a product you purchased, please contact us for support.";
+			$page->addError("Sorry, but that download link is inactive. If you were unable to download a product you purchased, please contact us for support.");
 			$page->setTempLayout("system/error");
 		}
 	}
