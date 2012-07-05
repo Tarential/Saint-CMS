@@ -371,8 +371,7 @@ EOT;
 			
 			$page = Saint::getCurrentPage();
 			$args = $page->getArgs();
-			$page->crb = $block;
-			$page->crbmore = false;
+			$page->set("crb",$block);
 			$name = Saint_Model_Block::formatForTable($sblock);
 			
 			if (isset($arguments['start']))
@@ -411,7 +410,9 @@ EOT;
 			}
 			
 			if ($numresults > ($start+$repeat)) {
-				$page->crbmore = true;
+				$page->set("crb-more",true);
+			} else {
+				$page->set("crb-more",false);
 			}
 	
 			# If requested, cache the block output for return
@@ -457,12 +458,12 @@ EOT;
 							$mark = "&";
 						}
 					}
-					$btid = Saint_Model_Block::getBlockTypeId($page->crb);
-					$page->crburl = chop($url,'/').$mark."btid=$btid&pnum=";
-					$page->crbpstart = Saint::getStartingNumber($btid)-1;
-					$page->crbnstart = Saint::getStartingNumber($btid)+1;
-					$page->crbnumpages = ceil($numresults / $repeat);
-					if ($page->crbnumpages > 1)
+					$btid = Saint_Model_Block::getBlockTypeId($page->get("crb"));
+					$page->set("crb-url",chop($url,'/').$mark."btid=$btid&pnum=");
+					$page->set("crb-pstart",Saint::getStartingNumber($btid)-1);
+					$page->set("crb-nstart",Saint::getStartingNumber($btid)+1);
+					$page->set("crb-number-of-pages",ceil($numresults / $repeat));
+					if ($page->get("crb-number-of-pages") > 1)
 						Saint::includeBlock("navigation/pager");
 				}
 			}
@@ -733,6 +734,7 @@ EOT;
 	protected $_page_id;
 	protected $_created;
 	protected $_updated;
+	protected $_files;
 	
 	/**
 	 * Create a dynamic block model.
@@ -742,6 +744,7 @@ EOT;
 	 * @return boolean True if product is loaded, false otherwise.
 	 */
 	public function __construct($name = null, $id = null, $enabled = null, $settings = array()) {
+		$this->_files = array();
 		if ($name != null && $id != null) {
 			if (empty($settings)) {
 				if ($this->load($name,$id)) {
@@ -990,7 +993,7 @@ EOT;
 		if (isset($this->_settings[$setting]))
 			return $this->_settings[$setting];
 		else {
-			Saint::logError("No such setting $setting for block $this->_name.",__FILE__,__LINE__);
+			Saint::logWarning("No such setting $setting for block $this->_name.",__FILE__,__LINE__);
 			return '';
 		}
 	}
@@ -998,17 +1001,32 @@ EOT;
 	/**
 	 * Change the value of the given setting name for the loaded block.
 	 * @param string $setting Name of the setting.
-	 * @return string Value to assign to the setting.
 	 */
 	public function set($setting,$value) {
 		$setting = Saint::sanitize($setting,SAINT_REG_NAME);
 		$value = Saint::sanitize($value);
-		if (in_array($setting,$this->_settingnames)) {
-			$this->_settings[$setting] = $value;
-			return 1;
-		} else
-			return 0;
+		$this->_settings[$setting] = $value;
 	}
+	
+	/**
+	 * Get block files.
+	 * @return array Files associated with block.
+	 */
+	public function getFiles() {
+		return $this->_files;
+	}
+		
+	/**
+	 * Set block files.
+	 * @param array $file New files to be associated with block.
+	 */
+	public function setFiles($files) {
+		if (!isset($files[0]) || !is_array($files)) {
+			$files = array($files);
+		}
+		$this->_files = $files;
+	}
+	
 	
 	/**
 	 * Add the loaded block to the given category.

@@ -26,7 +26,7 @@ class Saint_Model_Layout {
 	public static function getLayoutNames() {
 		$layouts = array();
 		try {
-			$layout_data = Saint::getAll("SELECT `name`,`title` FROM `st_layouts`");
+			$layout_data = Saint::getAll("SELECT `name`,`title` FROM `st_layouts` WHERE `name` NOT LIKE 'system/%'");
 			foreach ($layout_data as $data) {
 				$layouts[$data[0]] = $data[1];
 			}
@@ -46,15 +46,15 @@ class Saint_Model_Layout {
 		$core_dir = SAINT_SITE_ROOT . "/core/blocks/layouts";
 		$theme_dir = Saint::getThemeDir() . "/blocks/layouts";
 		$layout_config_files = Saint_Model_Block::recursiveScan($core_dir,"xml");
-		$root_layouts = Saint_Model_Block::recursiveScan($core_dir,"php",1);
+		$root_layouts = Saint_Model_Block::recursiveScan($core_dir,"php",2);
 		if ($theme_dir != $core_dir && file_exists($theme_dir)) {
 			$layout_config_files = array_merge($layout_config_files,Saint_Model_Block::recursiveScan($theme_dir,"xml"));
-			$root_layouts = array_merge($root_layouts,Saint_Model_Block::recursiveScan($theme_dir,"php",1));
+			$root_layouts = array_merge($root_layouts,Saint_Model_Block::recursiveScan($theme_dir,"php",2));
 		}
 		
-		# Start by adding the root layouts from plain PHP files.
+		# Start by adding the root and system layouts from plain PHP files.
 		foreach ($root_layouts as $layout) {
-			if (preg_match('/\/([^\/]*)\.php$/',$layout,$matches)) {
+			if (preg_match('/layouts\/([^\/]*)\.php$/',$layout,$matches) || preg_match('/layouts\/(system\/[^\/]*)\.php$/',$layout,$matches)) {
 				$layouts[$matches[1]] = array(
 					'title' => ucfirst($matches[1]),
 				);
@@ -85,13 +85,17 @@ class Saint_Model_Layout {
 		foreach ($layouts as $name=>$data) {
 			$layout = new Saint_Model_Layout();
 			if ($layout->loadByName($name)) {
-				if (isset($data['title']) && $data['title'] != "") {
+				$save = false;
+				if (isset($data['title']) && $data['title'] != "" && $data['title'] != $layout->getTitle()) {
 					$layout->setTitle($data['title']);
+					$save = true;
 				}
-				if (isset($data['model']) && $data['model'] != "") {
+				if (isset($data['model']) && $data['model'] != "" && $data['model'] != $layout->getModel()) {
 					$layout->setModel($data['model']);
+					$save = true;
 				}
-				$layout->save();
+				if ($save)
+					$layout->save();
 			} else {
 				Saint_Model_Layout::create($name,$data);
 			}
@@ -149,32 +153,25 @@ class Saint_Model_Layout {
 	 */
 	public function loadByName($name) {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
-		if (preg_match("/^system\//",$sname)) {
-			$this->_id = 0;
-			$this->_name = $sname;
-			$this->_title = '';
-			$this->_model = 'Saint_Model_Page';
-		} else {
-			if ($sname) {
-				try {
-					$data = Saint::getRow("SELECT `id`,`title`,`model` FROM `st_layouts` WHERE `name`='$sname'");
-					$this->_id = $data[0];
-					$this->_name = $sname;
-					$this->_title = $data[1];
-					$this->_model = $data[2];
-					return 1;
-				} catch (Exception $e) {
-					if ($e->getCode()) {
-						Saint::logError("Unable to select layout: ".$e->getMessage(),__FILE__,__LINE__);
-					} else {
-						Saint::logError("Cannot find layout with name $sname.",__FILE__,__LINE__);
-					}
-					return 0;
+		if ($sname) {
+			try {
+				$data = Saint::getRow("SELECT `id`,`title`,`model` FROM `st_layouts` WHERE `name`='$sname'");
+				$this->_id = $data[0];
+				$this->_name = $sname;
+				$this->_title = $data[1];
+				$this->_model = $data[2];
+				return 1;
+			} catch (Exception $e) {
+				if ($e->getCode()) {
+					Saint::logError("Unable to select layout: ".$e->getMessage(),__FILE__,__LINE__);
+				} else {
+					Saint::logEvent("Trying to find layout named '$sname' but it doesn't seem to exist.",__FILE__,__LINE__);
 				}
-			} else {
-				Saint::logError("Invalid layout name: '$name'.",__FILE__,__LINE__);
 				return 0;
 			}
+		} else {
+			Saint::logError("Invalid layout name: '$name'.",__FILE__,__LINE__);
+			return 0;
 		}
 	}
 	

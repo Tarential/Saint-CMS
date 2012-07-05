@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `st_layouts` (
 	`title` VARCHAR(255) NOT NULL DEFAULT '',
 	`model` VARCHAR(255) DEFAULT 'Saint_Model_Page',
 	PRIMARY KEY (`id`),
-	INDEX `st_layouts_name` (`name`)
+	UNIQUE INDEX `st_layouts_name` (`name`)
 ) ENGINE=InnoDB;
 ALTER TABLE `st_pages` DROP COLUMN `model`;
 INSERT IGNORE INTO `st_categories` (`name`) VALUES ('Main Menu');
@@ -48,6 +48,7 @@ UPDATE `st_blocks` as `b`, `st_blocks_blog_post` as `p`, `st_blocktypes` as `t`
 SET `b`.`updated`=`p`.`postdate`,`b`.`created`=`p`.`postdate` WHERE `b`.`blockid`=`p`.`id` AND `b`.`blocktypeid`=`t`.`id` AND `t`.`name`='blog/post';
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap.xml','Sitemap','system/sitemap',NOW(),1);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap','Sitemap','system/sitemap-user-friendly',NOW(),0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('robots.txt','Robots','system/robots',NOW(),1);
 UPDATE `st_config` SET `version`='1.0300';
 EOT;
 

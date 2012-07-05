@@ -203,6 +203,10 @@ class Saint {
 		return $index;
 	}
 	
+	/**
+	 * Display site index.
+	 * @param boolean $xml Flag true to display in XML format, false by default for HTML format.
+	 */
 	public static function includeIndex($xml = false) {
 		if ($xml) {
 			Saint::includeBlock("index/xml");
@@ -762,8 +766,9 @@ class Saint {
 	 */
 	public static function includeSlideshow($arguments = array()) {
 		$page = Saint::getCurrentPage();
-		$page->sfmarguments = $arguments;
-		Saint::includeBlock("slideshow/slideshow");
+		$block = new Saint_Model_Block();
+		$block->setFiles(Saint_Model_FileManager::getAllFiles($arguments));
+		Saint::includeBlock("slideshow/slideshow",array('repeat'=>1,'blocks'=>array($block),'container'=>false));
 	}
 	
 	/**
@@ -772,8 +777,26 @@ class Saint {
 	 */
 	public static function includeGallery($arguments = array()) {
 		$page = Saint::getCurrentPage();
-		$page->sfmarguments = $arguments;
-		Saint::includeBlock("gallery/gallery");
+		$block = new Saint_Model_Block();
+		#$arguments['results-per-page'] = 2;
+		if (isset($arguments['results-per-page']) && $arguments['results-per-page'] != "") {
+			$block->set("results-per-page",$arguments['results-per-page']);
+		} else {
+			$block->set("results-per-page",15);
+		}
+		if (isset($args['p']) && $args['p'] != "") {
+			$block->set("page-number",$args['p']);
+		} else {
+			$block->set("page-number",0);
+		}
+		$arguments['page-number'] = $block->get("page-number");
+		
+		$files = Saint_Model_FileManager::getAllFiles($arguments);
+		$page->setFiles($files);
+		$block->set("number-of-results",sizeof($files));
+
+		$block->set("number-of-pages",$block->get("number-of-results") / $block->get("results-per-page"));
+		Saint::includeBlock("gallery/gallery",array('repeat'=>1,'blocks'=>array($block),'container'=>false));
 	}
 	
 	/**
@@ -1193,8 +1216,8 @@ class Saint {
 	 * @return array[] Matching labels and URLs of pages on which the label can be found.
 	 */
 	public static function search($phrase) {
-		$phrase = Saint::sanitize($phrase);
-		$phrase = "%$phrase%";
+		$sans_phrase = Saint::sanitize($phrase);
+		$phrase = "%$sans_phrase%";
 		$results = array();
 		try {
 			$labels = Saint::getAll("SELECT `id`,`name` FROM `st_labels` WHERE `label` LIKE '$phrase'");
@@ -1202,29 +1225,37 @@ class Saint {
 				try {
 					$maxid = Saint::getOne("SELECT MAX(`id`) FROM `st_labels` WHERE `name`='$label[1]'");
 					if ($label[0] == $maxid) {
-						// Isolate block name from label name
+						$result_value = Saint::getLabel($label[1],array('container'=>false));
+						
+						# Case independent highlighting
+				    $lbl_length = strlen($sans_phrase);
+				    $lbl_start = 0;
+				    $done = false;
+						while (!$done) {
+							$lbl_start = stripos($result_value, $sans_phrase, $lbl_start);
+							if ($lbl_start !== false) {
+								$result_value = substr($result_value, 0, $lbl_start) . "<b>" . substr($result_value, $lbl_start, $lbl_length) . "</b>" .
+								substr($result_value, $lbl_start + $lbl_length);
+								$lbl_start = $lbl_start + $lbl_length;
+							} else $done = true;
+						}
+				    
+				    # Isolate block name from label name
 						if (preg_match('/^block\/(\d*)\/(.*)\/n\/.*$/',$label[1],$matches)) {
 							$bid = $matches[1];
 							$bname = $matches[2];
 							$bmodel = Saint_Model_Block::getBlockModel($bname);
 							$result_block = new $bmodel();
-							$result_block->load($bname,$bid);
-							$resultpages = $result_block->getAllUrls();
-							
-							foreach ($resultpages as $rp) {
-								if (!isset($results[$rp[0]]))
-									$results[$rp[0]] = array($rp[1],array($label[1]));
-								else
-									$results[$rp[0]][1][] = $label[1];
+							if ($result_block->load($bname,$bid)) {
+								$rp = $result_block->getUrl();
+								$results[$result_block->getUrl()] = array($result_block->get("title"),array($result_value));
 							}
+								
 						} elseif (preg_match('/^page\/(\d*)\/n\/.*$/',$label[1],$matches)) {
 							$pid = $matches[1];
 							$result_page = new Saint_Model_Page();
 							if ($result_page->loadById($pid)) {
-								if (!isset($results[$pid]))
-									$results[$pid] = array($result_page->getUrl(),array($label[1]));
-								else
-									$results[$pid][1][] = $label[1];
+								$results[$result_page->getUrl()] = array($result_page->getTitle(),array($result_value));
 							}
 						}
 					}
@@ -1237,14 +1268,6 @@ class Saint {
 		} catch (Exception $e) {
 			if ($e->getCode()) {
 				Saint::logError("Unable to select labels for search: ".$e->getMessage(),__FILE__,__LINE__);
-			}
-		}
-		
-		try {
-			
-		} catch (Exception $g) {
-			if ($g->getCode()) {
-				Saint::logError("Unable to select settings for search: ".$e->getMessage(),__FILE__,__LINE__);
 			}
 		}
 		

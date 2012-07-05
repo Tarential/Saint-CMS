@@ -136,7 +136,7 @@ class Saint_Model_Image extends Saint_Model_File {
 	 */
 	public function display() {
 		$page = Saint::getCurrentPage();
-		$page->curfile = $this;
+		$page->setFiles(array($this));
 		Saint::includeBlock("file-manager/image",false);
 	}
 

@@ -194,6 +194,7 @@ class Saint_Model_Page {
 	protected $_modified;
 	protected $_created;
 	protected $_errors;
+	protected $_files;
 	
 	/**
 	 * Load page model with blank data.
@@ -226,6 +227,8 @@ class Saint_Model_Page {
 		$this->_modified = null;
 		$this->_created = null;
 		$this->_errors = array();
+		$this->_files = array();
+		$this->_settings = array();
 	}
 	
 	/**
@@ -279,6 +282,48 @@ class Saint_Model_Page {
 			}
 		} else
 			return 0;
+	}
+	
+	/**
+	 * Get the value of the given temporary setting name for the loaded page.
+	 * @param string $setting Name of the requested setting.
+	 * @return string Value of the requested setting.
+	 */
+	public function get($setting) {
+		if (isset($this->_settings[$setting]))
+			return $this->_settings[$setting];
+		else {
+			Saint::logWarning("No such setting $setting for page $this->_name.",__FILE__,__LINE__);
+			return '';
+		}
+	}
+	
+	/**
+	 * Change the value of the given temporary setting name for the loaded page.
+	 * @param string $setting Name of the setting.
+	 */
+	public function set($setting,$value) {
+		$this->_settings[$setting] = $value;
+	}
+	
+	
+	/**
+	 * Get page files.
+	 * @return array Files associated with loaded page.
+	 */
+	public function getFiles() {
+		return $this->_files;
+	}
+		
+	/**
+	 * Set page files.
+	 * @param array $file New files to be associated with loaded page.
+	 */
+	public function setFiles($files) {
+		if (!isset($files[0]) || !is_array($files)) {
+			$files = array($files);
+		}
+		$this->_files = $files;
 	}
 	
 	/**

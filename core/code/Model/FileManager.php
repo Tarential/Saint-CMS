@@ -5,7 +5,7 @@
  * @package Saint
  * @todo Merge functionality with Saint_Model_File where applicable.
  */
-class Saint_Model_FileManager {
+class Saint_Model_FileManager extends Saint_Model_Page {
 	/**
 	 * Get all files matching given arguments.
 	 * @param string[] $arguments Arguments to match when selecting files.
@@ -37,47 +37,45 @@ class Saint_Model_FileManager {
 			$where .= " AND `user`='1'";
 		}
 		if (isset($arguments['categories']) && $arguments['categories'] != '') {
-			if (!is_array($arguments['categories']))
+			if (!is_array($arguments['categories'])) {
 				$arguments['categories'] = array($arguments['categories']);
+			}
+			$catsel = ", `st_categories` as `c`, `st_filecats` as `fc`";
+			$catwhere = " AND `c`.`id`=`fc`.`catid` AND `f`.`id`=`fc`.`fileid` AND `c`.`name` IN (";
+			foreach ($arguments['categories'] as $cat) {
+				$catwhere .= "'$cat',";
+			}
+			$catwhere = rtrim($catwhere,',') . ")";
 		} else {
 			$arguments['categories'] = 0;
+			$catsel = "";
+			$catwhere = "";
+		}
+		$limit = '';
+		if (isset($arguments['results-per-page']) && (!isset($arguments['num-results-only']) || $arguments['num-results-only'] == false)) {
+			$limit .= ' LIMIT '.$arguments['results-per-page'];
+			if (isset($arguments['page-number'])) {
+				$limit .= ' OFFSET '.($arguments['page-number'] * $arguments['results-per-page']);
+			}
 		}
 		try {
-			$allfiles = Saint::getAll("SELECT `id`,`location`,`title`,`description`,`keywords` FROM `st_files` WHERE `enabled`='1'$where");
-			$indexfiles = array();
-			for ($i = 0; $i < sizeof($allfiles); $i++) {
-				// Enter queried data into array
-				$indexfiles[$i]['id'] = $allfiles[$i][0];
-				$indexfiles[$i]['location'] = $allfiles[$i][1];
-				$indexfiles[$i]['title'] = $allfiles[$i][2];
-				$indexfiles[$i]['description'] = $allfiles[$i][3];
-				$indexfiles[$i]['keywords'] = $allfiles[$i][4];
+			$query = "SELECT `f`.`id`,`f`.`location`,`f`.`title`,`f`.`description`,`f`.`keywords` FROM `st_files` as `f`$catsel WHERE `enabled`='1'$where$catwhere$limit";
+			if (isset($arguments['num-results-only']) && $arguments['num-results-only']) {
+				return Saint::getNumRows($query);
+			} else {
+				$allfiles = Saint::getAll($query);
 				
-				// Get the categories for each file
-				$filemodel = new Saint_Model_FileManager();
-				if ($filemodel->load($indexfiles[$i]['id'])) {
-					$indexfiles[$i]['categories'] = $filemodel->getCategories();
-				} else {
-					$indexfiles[$i]['categories'] = array();
+				$indexfiles = array();
+				for ($i = 0; $i < sizeof($allfiles); $i++) {
+					// Enter queried data into array
+					$indexfiles[$i]['id'] = $allfiles[$i][0];
+					$indexfiles[$i]['location'] = $allfiles[$i][1];
+					$indexfiles[$i]['title'] = $allfiles[$i][2];
+					$indexfiles[$i]['description'] = $allfiles[$i][3];
+					$indexfiles[$i]['keywords'] = $allfiles[$i][4];
 				}
-				
-				// Filter by any categories we were given
-				if ($arguments['categories']) {
-					$validfile = false;
-					foreach ($indexfiles[$i]['categories'] as $cat) {
-						if (in_array($cat,$arguments['categories'])) {
-							$validfile = true;
-							break;
-						}
-					}
-					// Remove files that aren't in matching categories
-					if (!$validfile) {
-						unset($indexfiles[$i]);
-						$indexfiles = array_values($indexfiles);
-					}
-				}
+				return $indexfiles;
 			}
-			return $indexfiles;
 		} catch (Exception $e) {
 			Saint::logError("Problem selecting files from database: ".$e->getMessage(),__FILE__,__LINE__);
 			return array();
@@ -302,6 +300,7 @@ class Saint_Model_FileManager {
 	protected $_description;
 	protected $_categories;
 	protected $_location;
+	protected $_status;
 	
 	/**
 	 * Instantiate the model with blank data.
@@ -312,6 +311,7 @@ class Saint_Model_FileManager {
 		$this->_keywords = '';
 		$this->_description = '';
 		$this->_categories = array();
+		$this->_status = array();
 	}
 	
 	/**
@@ -431,7 +431,7 @@ class Saint_Model_FileManager {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function addToCategory($category) {
-		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		$scategory = Saint::sanitize($category);
 		if ($scategory) {
 			$id = Saint_Model_Category::getId($scategory);
 			if (!$id) {
@@ -462,9 +462,11 @@ class Saint_Model_FileManager {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function removeFromCategory($category) {
-		$scategory = Saint::sanitize($category,SAINT_REG_NAME);
+		Saint::logError("Category: ".$category);
+		$scategory = Saint::sanitize($category);
 		if ($scategory) {
 			$id = Saint_Model_Category::getId($scategory);
+			Saint::logError("DELETE FROM `st_filecats` WHERE `catid`='$id' AND `fileid`='$this->_id'");
 			if (!$id) {
 				# No id... it can't be part of a category that doesn't exist, so our job is done.
 				return 1;
@@ -492,6 +494,7 @@ class Saint_Model_FileManager {
 			$newcats = explode(',',$newcats);
 		
 		foreach ($this->getCategories() as $cat) {
+			Saint::logError("Testing: ".$cat);
 			if (!in_array($cat,$newcats)) {
 				$this->removeFromCategory($cat);
 			}
@@ -507,7 +510,7 @@ class Saint_Model_FileManager {
 	 */
 	public function getCategories() {
 		try {
-			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_filecats` as `p` WHERE `p`.`fileid`='$this->_id' AND `p`.`catid`=`c`.`id`");
+			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_filecats` as `fc` WHERE `fc`.`fileid`='$this->_id' AND `fc`.`catid`=`c`.`id`");
 			$cats = array();
 			foreach ($getcats as $getcat) {
 				$cats[$getcat[0]] = $getcat[1];
@@ -520,10 +523,36 @@ class Saint_Model_FileManager {
 	}
 	
 	/**
+	 * Get status message.
+	 * @return array Status message(s).
+	 */
+	public function getStatus() {
+		return $this->_status;
+	}
+		
+	/**
+	 * Set status messages.
+	 * @param array $status New status message(s).
+	 */
+	public function setStatus($status) {
+		if (!is_array($status))
+			$status = array($status);
+		$this->_status = $status;
+	}
+
+	/**
+	 * Process page arguments.
+	 * @see core/code/Model/Saint_Model_Page::process()
+	 */
+	public function process() {
+		return Saint_Controller_FileManager::process();
+	}
+	
+	/**
 	 * Save loaded model information to database.
 	 * @return boolean True on success, false otherwise.
 	 */
-	public function save() {
+	public function save($log = true) {
 		if ($this->_id) {
 			$query = "UPDATE st_files SET ".
 			"title='$this->_title',".
@@ -535,7 +564,10 @@ class Saint_Model_FileManager {
 			"('$this->_title','$this->_keywords','$this->_description')";
 		}
 		try {
+			Saint::logError($query);
 			Saint::query($query);
+			if ($log)
+				Saint::logEvent("Saved details of file id '$this->_id' to database.",__FILE__,__LINE__);
 			return 1;
 		} catch (Exception $e) {
 			Saint::logError("Problem saving file: ".$e->getMessage(),__FILE__,__LINE__);

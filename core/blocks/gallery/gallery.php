@@ -1,34 +1,12 @@
-<?php
-if (isset($page->sfmarguments))
-	$arguments = $page->sfmarguments;
-else
-	$arguments = array();
-$args = $page->getArgs();
-$files = array_values(Saint_Model_FileManager::getAllFiles($arguments));
-$page->sfmtotal = sizeof($files);
-if (isset($args['p']))
-	$page->sfmcurpage = $args['p'];
-else
-	$page->sfmcurpage = 0;
-if (isset($args['r']))
-	$page->sfmperpage = $args['r'];
-else
-	$page->sfmperpage = 6;
-$page->sfmnumpages = $page->sfmtotal / $page->sfmperpage;
-?>
+<?php $files = $page->getFiles(); ?>
 	<div class="sig-pager sig-top-pager">
-		<?php Saint::includeBlock("gallery/pager",false); ?>
+		<?php Saint::includeBlock("gallery/pager",array('repeat'=>1,'blocks'=>array($block),'container'=>false)); ?>
 	</div>
 	<div class="sig-preview-block">
 		<div class="saint-new-block">
 			<?php if (sizeof($files)): ?>
 			<table id="saint-file-preview">
-			<?php 
-				$start = $page->sfmcurpage * $page->sfmperpage; 
-				$finish = min($start + $page->sfmperpage,sizeof($files));
-				$closed = true;
-			?>
-			<?php for ($i = $start; $i < $finish; $i++): ?>
+			<?php $closed = true; for ($i = 0; $i < sizeof($files); $i++): ?>
 			<?php if ($i % 3 == 0): $closed = false; ?><tr><?php endif; ?>
 			<td>
 				<?php
@@ -57,5 +35,5 @@ $page->sfmnumpages = $page->sfmtotal / $page->sfmperpage;
 		</div>
 	</div>
 	<div class="sig-pager sig-bottom-pager">
-		<?php Saint::includeBlock("gallery/pager",false); ?>
+		<?php Saint::includeBlock("gallery/pager",array('repeat'=>1,'blocks'=>array($block),'container'=>false)); ?>
 	</div>

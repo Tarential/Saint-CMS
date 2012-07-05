@@ -1,4 +1,4 @@
-<?php $image = $page->curfile; ?>
+<?php foreach ($page->getFiles() as $image): ?>
 <div class="saint-image editable width-<?php echo $image->getMaxWidth(); ?> height-<?php echo $image->getMaxHeight();
 ?> sfl-<?php echo Saint::convertNameToWeb($image->getName()); ?>">
 	<?php if ($image->linkToFull()): ?><a href="<?php echo $image->getUrl(); ?>"><?php endif; ?>
@@ -8,3 +8,4 @@
 	<h6 class="title"><?php echo $image->getTitle(); ?></h6>
 	<?php endif; ?>
 </div>
+<?php endforeach; ?>

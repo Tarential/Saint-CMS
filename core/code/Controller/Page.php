@@ -68,7 +68,6 @@ class Saint_Controller_Page {
 		}
 		
 		$args = $this->_page->getArgs();
-		$this->_page->process();
 		
 		/*
 		 * Page controls
@@ -210,8 +209,9 @@ class Saint_Controller_Page {
 		 */
 		
 		if (isset($_POST['saint-search-phrase'])) {
-			$this->_page->searchphrase = $_POST['saint-search-phrase'];
-			$this->_page->searchresults = Saint::search($_POST['saint-search-phrase']);
+			$this->_page->set("search-phrase",$_POST['saint-search-phrase']);
+			$results = Saint::search($_POST['saint-search-phrase']);
+			$this->_page->set("search-results",$results);
 		}
 		
 		/*
@@ -290,8 +290,9 @@ class Saint_Controller_Page {
 			switch ($args['view']) {
 				case 'edit':
 					if (isset($args['id'])) {
-						$this->_page->usertoedit = new Saint_Model_User();
-						$this->_page->usertoedit->loadById($args['id']);
+						$edit_user = new Saint_Model_User();
+						$edit_user->loadById($args['id']);
+						$this->_page->set("user-to-edit",$edit_user);
 					}
 					$this->_page->setTempLayout("system/user-edit");
 					break;
@@ -479,6 +480,7 @@ class Saint_Controller_Page {
 			}
 		}
 		
+		$this->_page->process();
 		$this->_page->render();
 	}
 }

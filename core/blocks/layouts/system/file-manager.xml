@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+	<name>system/file-manager</name>
+	<model>Saint_Model_FileManager</model>
+	<title>File Manager</title>
+</layout>

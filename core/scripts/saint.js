@@ -409,7 +409,7 @@ $(document).ready(function() {
 	};
 	
 	Saint.sleGetNumRevs = function() {
-		Saint.callHome("/system/getlabelnumrevs."+$('.sle.active form input[name=label-name]').val(),null,Saint.sleGotNumRevs);
+		Saint.callHome("/system/?getlabelnumrevs="+$('.sle.active form input[name=label-name]').val(),null,Saint.sleGotNumRevs);
 	};
 	
 	Saint.sleGotNumRevs = function(data) {
@@ -449,7 +449,7 @@ $(document).ready(function() {
 	};
 	
 	Saint.sleGetRevision = function(revision) {
-		Saint.callHome("/system/getlabel."+$('.sle.active form input[name=label-name]').val()+"/revision."+revision,null,Saint.sleGotRevision);
+		Saint.callHome("/system/?getlabel="+$('.sle.active form input[name=label-name]').val()+"&revision="+revision,null,Saint.sleGotRevision);
 		$('.sle.active').addClass("loading");
 	};
 	
@@ -1207,24 +1207,6 @@ $(document).ready(function() {
 			Saint.closeFileManager();
 		}
 	},'#sfm-close-button');
-	
-	$(document).on({
-		'click': function(event) {
-			Saint.closeShopManager();
-		}
-	},'#ssm-close-button');
-	
-	$(document).on({
-		'click': function(event) {
-			if (Saint.shopManagerIsOpen) {
-				Saint.closeShopManager();
-			} else {
-				if (Saint.editing) {
-					Saint.stopPageEdit(); }
-				Saint.openShopManager();
-			}
-		}
-	},'.saint-admin-menu .link.shop');
 
 	$(document).on({
 		'click': function(event) {
@@ -1396,27 +1378,11 @@ $(document).ready(function() {
 		} else if (!Saint.sfmImageToLoad) {
 			$('.saint-admin-block.file-manager').removeClass("loading"); }
 	};
-
-	Saint.openShopManager = function() {
-		$('.saint-admin-block.shop-manager').addClass("loading").addClass("active");
-		Saint.callHome('/shop/?view=transactions','',Saint.loadedShopManager);
-		Saint.shopManagerIsOpen = true;
-	};
-	
-	Saint.closeShopManager = function() {
-		$('.saint-admin-block.shop-manager').removeClass("active");
-		Saint.shopManagerIsOpen = false;
-	};
-	
-	Saint.loadedShopManager = function(data) {
-		$('.saint-admin-block.shop-manager .load').html(data);
-		$('.saint-admin-block.shop-manager').removeClass("loading");
-	};
 	
 	Saint.sfmSelectPage = function(pagenum,postdata) {
 		Saint.sfmcurpage = pagenum;
 		$('#saint-file-manager-data .saint-admin-block .overlay').addClass("loading");
-		Saint.callHome("/system/?view=file-list&sfmcurpage="+pagenum, postdata, Saint.sfmLoadPage);
+		Saint.callHome("/filemanager/?view=file-list&sfmcurpage="+pagenum, postdata, Saint.sfmLoadPage);
 	};
 	
 	Saint.sfmLoadPage = function(data) {
@@ -1434,7 +1400,7 @@ $(document).ready(function() {
 			}
 		} catch (e) {
 			$('#saint-file-manager-data .saint-loadable-content').html(data);
-			if ($('#sfm-message').html() != "") {
+			if ($('#sfm-status').html() != "") {
 				$('#sfm-message').addClass('enabled');
 				setTimeout("$('#sfm-message').removeClass('enabled')",5000);
 			}
@@ -1466,6 +1432,40 @@ $(document).ready(function() {
 			Saint.callHome('/shop/view.discounts','',Saint.loadedShopManager);
 		}
 	},'#ssm-link-discounts');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.closeShopManager();
+		}
+	},'#ssm-close-button');
+	
+	$(document).on({
+		'click': function(event) {
+			if (Saint.shopManagerIsOpen) {
+				Saint.closeShopManager();
+			} else {
+				if (Saint.editing) {
+					Saint.stopPageEdit(); }
+				Saint.openShopManager();
+			}
+		}
+	},'.saint-admin-menu .link.shop');
+	
+	Saint.openShopManager = function() {
+		$('.saint-admin-block.shop-manager').addClass("loading").addClass("active");
+		Saint.callHome('/shop/?view=transactions','',Saint.loadedShopManager);
+		Saint.shopManagerIsOpen = true;
+	};
+	
+	Saint.closeShopManager = function() {
+		$('.saint-admin-block.shop-manager').removeClass("active");
+		Saint.shopManagerIsOpen = false;
+	};
+	
+	Saint.loadedShopManager = function(data) {
+		$('.saint-admin-block.shop-manager .load').html(data);
+		$('.saint-admin-block.shop-manager').removeClass("loading");
+	};
 	
 	/* END Shop Manager */
 	

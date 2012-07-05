@@ -1,4 +1,3 @@
-<?php if (isset($page->error)) echo "<p class=\"error\">".$page->error."</p>"; ?>
 <?php echo $page->getLabel("login-intro","Enter your username/password to log in:"); ?>
 <form id="saint-login-form" method="post" action="https://aparadine.com:444/">
 	<label for="username">Username:</label>

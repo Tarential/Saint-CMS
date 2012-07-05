@@ -1,6 +1,6 @@
 <?php
-if (isset($page->usertoedit) && is_a($page->usertoedit,'Saint_Model_User'))
-	$user = $page->usertoedit;
+if (is_a($page->get("user-to-edit"),'Saint_Model_User') || is_subclass_of($page->get("user-to-edit"),'Saint_Model_User'))
+	$user = $page->get("user-to-edit");
 else
 	$user = new Saint_Model_User();
 $options = array(); 

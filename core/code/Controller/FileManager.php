@@ -25,8 +25,7 @@ class Saint_Controller_FileManager {
 				$model->setDescription($description);
 				$model->setCategories($categories);
 				if ($model->save()) {
-					$page->sfmmessage = "Saved file information.";
-					$page->sfmstatus = "saved";
+					$page->setStatus(array("saved"=>"Saved file information."));
 					$success = true;
 				} else {
 					$page->addError("Problem saving file with id '$id'. Check the error log for more information.");
@@ -55,12 +54,42 @@ class Saint_Controller_FileManager {
 	 */
 	public static function filterFileDetails($id,$title,$keywords,$description,$categories = array()) {
 		$page = Saint::getCurrentPage();
-		$page->sfmarguments = array(
+		$arguments = array(
 			'id' => $id,
 			'title' => $title,
 			'keywords' => explode(',',$keywords),
 			'description' => $description,
 			'categories' => $categories
 		);
+		$page->setFiles(Saint_Model_FileManager::getAllFiles($arguments));
+	}
+	
+	/**
+	 * Process file manager arguments.
+	 */
+	public static function process() {
+		$page = Saint::getCurrentPage();
+		$args = $page->getArgs();
+		$arguments = array();
+		if (isset($args['fid']) && $args['fid'] != 0) {
+			$arguments['id'] = $args['fid'];
+		}
+		if (isset($args['sfmcurpage'])) {
+			$page->set("sfm-page-number",$args['sfmcurpage']);
+		} else {
+			$page->set("sfm-page-number",0);
+		}
+		$arguments['page-number'] = $page->get("sfm-page-number");
+		if (isset($args['sfmperpage'])) {
+			$page->set("sfm-results-per-page",$args['sfmperpage']);
+		} else {
+			$page->set("sfm-results-per-page",15);
+		}
+		$arguments['results-per-page'] = $page->get("sfm-results-per-page");
+		$files = Saint_Model_FileManager::getAllFiles($arguments);
+		$page->setFiles($files);
+		$arguments['num-results-only'] = true;
+		$page->set("sfm-number-of-files",Saint_Model_FileManager::getAllFiles($arguments));
+		$page->set("sfm-number-of-pages", $page->get("sfm-number-of-files") / $page->get("sfm-results-per-page"));
 	}
 }

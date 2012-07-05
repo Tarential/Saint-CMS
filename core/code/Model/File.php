@@ -86,12 +86,14 @@ class Saint_Model_File {
 	protected $_height;
 	protected $_size;
 	protected $_url;
+	protected $_categories;
 	
 	/**
 	 * Attempt to load model with information from the database matching the given file ID; otherwise load blank data.
 	 * @param int $id ID of file to load.
 	 */
 	public function __construct($id = null) {
+		$this->_categories = null;
 		if ($id == null || !$this->load($id)) {
 			$this->_id = 0;
 			$this->_location = '';
@@ -128,6 +130,7 @@ class Saint_Model_File {
 				$this->_width = $info[6];
 				$this->_height = $info[7];
 				$this->_size = $info[8];
+				$this->_categories = null;
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Unable to load file with id '$sid': ".$e->getMessage(),__FILE__,__LINE__);
@@ -372,6 +375,26 @@ class Saint_Model_File {
 	}
 	
 	/**
+	 * Get categories for loaded file.
+	 */
+	public function getCategories() {
+		if ($this->_categories == null) {
+			$this->_categories = array();
+			try {
+				Saint::logError("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_filecats` as `fc` WHERE `fc`.`fileid`='$this->_id' AND `fc`.`catid`=`c`.`id`");
+				$cats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_filecats` as `fc` WHERE `fc`.`fileid`='$this->_id' AND `fc`.`catid`=`c`.`id`");
+				foreach ($cats as $cat)
+					$this->_categories[$cat[0]] = $cat[1];
+			} catch (Exception $e) {
+				if ($e->getCode()) {
+					Saint::logError("Unable to load categories for file '$this->_name':".$e->getMessage(),__FILE__,__LINE__);
+				}
+			}
+		}
+		return $this->_categories;
+	}
+	
+	/**
 	 * Save loaded model information to database.
 	 * @param boolean $log Log save event to file if true.
 	 * @return boolean True for success, false otherwise.
@@ -402,7 +425,7 @@ class Saint_Model_File {
 	 */
 	public function display() {
 		$page = Saint::getCurrentPage();
-		$page->curfile = $this;
+		$page->setFiles(array($this));
 		Saint::includeBlock("file-manager/file",false);
 	}
 }
