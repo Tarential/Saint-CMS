@@ -3,4 +3,5 @@
 	<name>blog/index</name>
 	<model>Saint_Model_Blog</model>
 	<title>Blog</title>
+	<show>1</show>
 </layout>

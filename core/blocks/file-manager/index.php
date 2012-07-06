@@ -70,16 +70,16 @@ $(function() {
 			<?php echo Saint::genField("saint-file-mode","hidden","",array('value'=>'search')); ?>
 			<?php echo Saint::genField("saint-file-id","hidden"); ?>
 			<?php echo Saint::genField("saint-file-label","hidden"); ?>
-			<?php echo Saint::genField("saint-file-title","text","Title:"); ?>
-			<?php echo Saint::genField("saint-file-keywords","text","Keywords:"); ?>
-			<?php echo Saint::genField("saint-file-description","textarea","Description:"); ?>
+			<?php echo Saint::genField("saint-file-title","text","Title:",array('static'=>true)); ?>
+			<?php echo Saint::genField("saint-file-keywords","text","Keywords:",array('static'=>true)); ?>
+			<?php echo Saint::genField("saint-file-description","textarea","Description:",array('static'=>true)); ?>
 			<?php
 				$options = array();
 				foreach (Saint::getCategories() as $category)
 					$options[$category] = $category;
 			?>
 			<?php echo Saint::genField("saint-file-categories[]","select","Categories: ",
-				array('options'=>$options,'selected'=>array(),'multiple'=>true)); ?>
+				array('options'=>$options,'selected'=>array(),'multiple'=>true,'static'=>true)); ?>
 			<div class="form-options">
 				<span class="form-submit link">Search</span>
 				<span class="form-cancel link">Reset</span>

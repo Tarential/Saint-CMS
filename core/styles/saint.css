@@ -465,11 +465,7 @@ body.dark .saint-admin-options {
 	top: 0;
 }
 
-.saint-admin-block .overlay.loading {
-	display: block;
-}
-
-.loading > .saint-admin-block .overlay {
+.saint-admin-block.loading .overlay {
 	display: block;
 }
 
@@ -1045,6 +1041,8 @@ body.dark .sfm-pager, body.dark #saint-uploader {
 
 .sbn-shop_product .block-item {
 	float: left;
+	width: 48%;
+	margin-right: 1%;
 }
 
 .ssm.nav-bar {

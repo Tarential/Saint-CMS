@@ -121,7 +121,7 @@ class Saint_Model_File {
 				 " FROM `st_files` WHERE `id`='$id'");
 				$this->_id = $sid;
 				$this->_location = SAINT_SITE_ROOT . $info[0];
-				$this->_url = $info[0];
+				$this->_url = SAINT_URL . $info[0];
 				$this->_title = $info[1];
 				$this->_keywords = $info[2];
 				$this->_description = $info[3];
@@ -381,8 +381,7 @@ class Saint_Model_File {
 		if ($this->_categories == null) {
 			$this->_categories = array();
 			try {
-				Saint::logError("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_filecats` as `fc` WHERE `fc`.`fileid`='$this->_id' AND `fc`.`catid`=`c`.`id`");
-				$cats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_filecats` as `fc` WHERE `fc`.`fileid`='$this->_id' AND `fc`.`catid`=`c`.`id`");
+				$cats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_file_categories` as `fc` WHERE `fc`.`fileid`='$this->_id' AND `fc`.`catid`=`c`.`id`");
 				foreach ($cats as $cat)
 					$this->_categories[$cat[0]] = $cat[1];
 			} catch (Exception $e) {

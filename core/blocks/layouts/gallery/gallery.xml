@@ -2,4 +2,5 @@
 <layout>
 	<name>gallery/gallery</name>
 	<title>Gallery</title>
+	<show>1</show>
 </layout>

@@ -19,7 +19,7 @@ class Saint_Controller_User {
 		else
 			$setcookie = false;
 		if (Saint_Model_User::login($username,$password,$setcookie)) {
-			header("Location: " .SAINT_BASE_URL);
+			header("Location: " . SAINT_URL);
 		} else {
 			$page->addError("Username/password combination incorrect. Please try again.");
 			$page->setTempLayout("system/error");

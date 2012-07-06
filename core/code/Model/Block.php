@@ -16,7 +16,7 @@ class Saint_Model_Block {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
 		if ($sname) {
 			try {
-				return Saint::getOne("SELECT `id` FROM `st_blocktypes` WHERE `name`='$sname'");
+				return Saint::getOne("SELECT `id` FROM `st_block_types` WHERE `name`='$sname'");
 			} catch (Exception $f) {
 				if ($f->getCode()) {
 					Saint::logError("Problem selecting block type ID: ".$f->getMessage(),__FILE__,__LINE__);
@@ -46,7 +46,7 @@ class Saint_Model_Block {
 			$modval = '';
 		}
 		try {
-			Saint::query("INSERT INTO `st_blocktypes` (`name`$modname) VALUES ('$sname'$modval)");
+			Saint::query("INSERT INTO `st_block_types` (`name`$modname) VALUES ('$sname'$modval)");
 			return Saint::getLastInsertId();
 		} catch (Exception $g) {
 			Saint::logError("Problem inserting block type '$sname' into DB: ".$g->getMessage(),__FILE__,__LINE__);
@@ -62,7 +62,7 @@ class Saint_Model_Block {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
 		$default = "Saint_Model_Block";
 		try {
-			$model = Saint::getOne("SELECT `model` FROM `st_blocktypes` WHERE `name`='$sname'");
+			$model = Saint::getOne("SELECT `model` FROM `st_block_types` WHERE `name`='$sname'");
 			if (class_exists($model) && ($model == $default || is_subclass_of($model,$default))) {
 				return $model;
 			}
@@ -89,7 +89,7 @@ class Saint_Model_Block {
 		$uid = 0;
 		if ($sname && $sid) {
 			try {
-				$query = "SELECT `b`.`id` FROM `st_blocks` as `b`,`st_blocktypes` as `t` WHERE".
+				$query = "SELECT `b`.`id` FROM `st_blocks` as `b`,`st_block_types` as `t` WHERE".
 				" `t`.`name`='$sname' AND `b`.`blocktypeid`=`t`.`id` AND `b`.`blockid`='$sid'";
 				$uid = Saint::getOne($query);
 			} catch (Exception $f) {
@@ -294,10 +294,10 @@ EOT;
 			} else {
 				$sel = "`id`";
 			}
-			$tables = "`st_blocks_$name` as `b`,`st_blocks` as `u`,`st_blocktypes` as `t`";
+			$tables = "`st_blocks_$name` as `b`,`st_blocks` as `u`,`st_block_types` as `t`";
 			# Category filtering
 			if ($category != '') {
-				$tables .= ",`st_blockcats` as `bc`,`st_categories` as `c`";
+				$tables .= ",`st_block_categories` as `bc`,`st_categories` as `c`";
 				$where .= " AND `u`.`id`=`bc`.`blockid` AND `c`.`id`=`bc`.`catid` AND `c`.`name`='$category'";
 			}
 			$where .= " AND `b`.`enabled`='$enabled'";
@@ -822,7 +822,7 @@ EOT;
 			try {
 				$bname = Saint_Model_Block::formatForTable($name);
 
-				$info = Saint::getRow("SELECT `u`.`id`,`u`.`page_id`,`u`.`created`,`u`.`updated`,$columns FROM `st_blocks_$bname` as `b`, `st_blocks` as `u`, `st_blocktypes` as `t` WHERE `b`.`id`='$id' AND `u`.`blockid`=`b`.`id` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$name'");
+				$info = Saint::getRow("SELECT `u`.`id`,`u`.`page_id`,`u`.`created`,`u`.`updated`,$columns FROM `st_blocks_$bname` as `b`, `st_blocks` as `u`, `st_block_types` as `t` WHERE `b`.`id`='$id' AND `u`.`blockid`=`b`.`id` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$name'");
 				$this->_id = $id;
 				$this->_uid = $info[0];
 				$this->_page_id = $info[1];
@@ -880,7 +880,7 @@ EOT;
 	private function loadCategories() {
 		if ($this->_id) {
 			try {
-				$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_blockcats` as `b` WHERE `b`.`blockid`='".$this->getUid()."' AND `b`.`catid`=`c`.`id`");
+				$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_block_categories` as `b` WHERE `b`.`blockid`='".$this->getUid()."' AND `b`.`catid`=`c`.`id`");
 				$cats = array();
 				foreach ($getcats as $getcat) {
 					$cats[$getcat[0]] = $getcat[1];
@@ -1233,10 +1233,8 @@ EOT;
 		if (!isset($arguments['repeat'])) {
 			$arguments['repeat'] = 1;
 		}
-		if (!isset($arguments['matches'])) {
-			$arguments['matches'] = array(
-				array("id",$this->_id,"="),
-			);
+		if (!isset($arguments['blocks'])) {
+			$arguments['blocks'] = array($this);
 		}
 		Saint::includeBlock($this->_name,$arguments);
 	}
@@ -1266,8 +1264,11 @@ EOT;
 				
 				$bp = new Saint_Model_Page();
 				if (!$bp->loadById($this->_page_id) && Saint::getCurrentPage()->getId() != 0) {
-					Saint::query("UPDATE `st_blocks` SET `page_id`='".Saint::getCurrentPage()->getId()."' WHERE `id`='$this->_uid'");
+					$scp = ",`page_id`='".Saint::getCurrentPage()->getId()."'";
+				} else {
+					$scp = "";
 				}
+				Saint::query("UPDATE `st_blocks` SET `updated`=NOW()$scp WHERE `id`='$this->_uid'");
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Failed to save block $name with id $id because ".$e->getMessage(),__FILE__,__LINE__);
@@ -1297,7 +1298,7 @@ EOT;
 				return 0;
 			} else {
 				try {
-					Saint::query("INSERT INTO `st_blockcats` (`catid`,`blockid`) VALUES ('$id','".$this->getUid()."')");
+					Saint::query("INSERT INTO `st_block_categories` (`catid`,`blockid`) VALUES ('$id','".$this->getUid()."')");
 					return 1;
 				} catch (Exception $e) {
 					if ($e->getCode()) {
@@ -1325,7 +1326,7 @@ EOT;
 				return 1;
 			} else {
 				try {
-					Saint::query("DELETE FROM `st_blockcats` WHERE `catid`='$id' AND `blockid`='".$this->getUid()."'");
+					Saint::query("DELETE FROM `st_block_categories` WHERE `catid`='$id' AND `blockid`='".$this->getUid()."'");
 					return 1;
 				} catch (Exception $e) {
 					Saint::logError("Problem removing block id '$this->_id' from category id '$id': ".$e->getMessage(),__FILE__,__LINE__);

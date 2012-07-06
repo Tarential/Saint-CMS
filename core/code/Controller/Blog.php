@@ -21,7 +21,7 @@ class Saint_Controller_Blog {
 				Saint::includeBlock("blog/rss-feed");
 				exit();
 			} elseif ($args['subids'][0] == "category" && isset($args['subids'][1]) && $args['subids'][1] != "") {
-				$category = $args['subids'][1];
+				$category = urldecode($args['subids'][1]);
 			} else {
 				$post = new Saint_Model_BlogPost();
 				$post->loadByUri($args['subids'][0]);
@@ -49,6 +49,11 @@ class Saint_Controller_Blog {
 			$page->setTempKeywords(explode(",",$post->get("keywords")));
 			$page->setTempDescription($post->get("description"));
 		} else {
+			if (Saint::getCurrentUser()->hasPermissionTo("edit-block")) {
+				$label = "You haven't added any blog posts here yet! Click 'edit page' in the Saint admin menu then click 'Add New Post' to create a post.";
+			} else {
+				$label = "No blog posts found. Come back later and maybe there will be some!";
+			}
 			$arguments = array(
 				"repeat" => 2,
 				"order" => "DESC",
@@ -58,7 +63,7 @@ class Saint_Controller_Blog {
 				"matches" => array(
 					array("enabled","1"),
 				),
-				"label" => "You haven't created any blog posts yet. Click 'edit page' in the Saint admin menu then click 'Add New Post' to create a post.",
+				"label" => $label,
 				"collection" => true,
 			);
 			if ($category != null) {

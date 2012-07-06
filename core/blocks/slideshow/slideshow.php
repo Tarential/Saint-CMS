@@ -1,14 +1,6 @@
 <?php
 $args = $page->getArgs();
 $files = $block->getFiles();
-if (isset($arguments['width']))
-	$width = $arguments['width'];
-else
-	$width = null;
-if (isset($arguments['height']))
-	$height = $arguments['height'];
-else
-	$height = null;
 if (isset($arguments['autoplay']))
 	$autoplay = $arguments['autoplay'];
 else
@@ -17,15 +9,15 @@ else
 <?php if (sizeof($files)): ?>
 <div id="slides">
   <div class="slides_container" style="display:block;<?php 
-  if ($width != null) echo "width:".$width."px;";
-  if ($height != null) echo "height:".$height."px;";?>">
+  if ($block->get("width") != null) echo "width:".$block->get("width")."px;";
+  if ($block->get("height") != null) echo "height:".$block->get("height")."px;";?>">
   	<?php foreach ($files as $curfile): ?>
   	<?php
 		$img = new Saint_Model_Image();
 		$img->loadByLocation($curfile['location']);
 		$resizeargs = array(
-			'max-height' => $height,
-			'max-width' => $width,
+			'max-height' => $block->get("height"),
+			'max-width' => $block->get("width"),
 		);
 		$resizedurl = $img->getResizedUrl($resizeargs);
 		?>

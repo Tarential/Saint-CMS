@@ -59,7 +59,7 @@ class Saint {
 	 */
 	public static function siteHasAdmin() {
 		try {
-			Saint::getOne("SELECT `u`.`id` FROM `st_users` as `u`,`st_usergroups` as `g` WHERE `g`.`group`='administrator' AND `g`.`userid`=`u`.`id` LIMIT 1");
+			Saint::getOne("SELECT `u`.`id` FROM `st_users` as `u`,`st_user_groups` as `g` WHERE `g`.`group`='administrator' AND `g`.`userid`=`u`.`id` LIMIT 1");
 			return 1;
 		} catch (Exception $f) {
 			if ($f->getCode()) {
@@ -768,6 +768,14 @@ class Saint {
 		$page = Saint::getCurrentPage();
 		$block = new Saint_Model_Block();
 		$block->setFiles(Saint_Model_FileManager::getAllFiles($arguments));
+		if (isset($arguments['width']))
+			$block->set("width",$arguments['width']);
+		else
+			$block->set("width",null);
+		if (isset($arguments['height']))
+			$block->set("height",$arguments['height']);
+		else
+			$block->set("height",null);
 		Saint::includeBlock("slideshow/slideshow",array('repeat'=>1,'blocks'=>array($block),'container'=>false));
 	}
 	

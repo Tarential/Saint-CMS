@@ -26,12 +26,12 @@ CREATE TABLE IF NOT EXISTS `st_users` (
 	FOREIGN KEY (`language`) REFERENCES st_languages(`name`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS `st_usergroups` (
+CREATE TABLE IF NOT EXISTS `st_user_groups` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`userid` INTEGER UNSIGNED NOT NULL,
 	`group` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX `st_usergroups_usergroup`(`userid`,`group`)
+	UNIQUE INDEX `st_user_groups_usergroup`(`userid`,`group`)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `st_sessions` (
@@ -74,12 +74,12 @@ CREATE TABLE IF NOT EXISTS `st_labels` (
 	FOREIGN KEY (`owner`) REFERENCES st_users(`username`) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS `st_blocktypes` (
+CREATE TABLE IF NOT EXISTS `st_block_types` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
 	`model` VARCHAR(255) DEFAULT 'Saint_Model_Block',
 	PRIMARY KEY (`id`),
-	INDEX `st_blocktypes_name` (`name`)
+	INDEX `st_block_types_name` (`name`)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `st_blocks` (
@@ -100,6 +100,7 @@ CREATE TABLE IF NOT EXISTS `st_layouts` (
 	`name` VARCHAR(255) NOT NULL,
 	`title` VARCHAR(255) NOT NULL DEFAULT '',
 	`model` VARCHAR(255) DEFAULT 'Saint_Model_Page',
+	`show` BOOLEAN NOT NULL DEFAULT 1,
 	PRIMARY KEY (`id`),
 	INDEX `st_layouts_name` (`name`)
 ) ENGINE=InnoDB;
@@ -138,63 +139,62 @@ CREATE TABLE IF NOT EXISTS `st_files` (
 	UNIQUE INDEX `st_files_location` (`location`)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS `st_filelabels` (
+CREATE TABLE IF NOT EXISTS `st_file_labels` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
 	`fileid` INTEGER UNSIGNED NOT NULL,
 	PRIMARY KEY (`id`),
-	UNIQUE INDEX `st_filelabels_name` (`name`),
-	CONSTRAINT `st_filelabels_fileid_id`
+	UNIQUE INDEX `st_file_labels_name` (`name`),
+	CONSTRAINT `st_file_labels_fileid_id`
 	FOREIGN KEY (`fileid`) REFERENCES st_files(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `st_categories` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
-	`title` VARCHAR(255) NOT NULL DEFAULT '',
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `st_categories_name` (`name`)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS `st_blockcats` (
+CREATE TABLE IF NOT EXISTS `st_block_categories` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`catid` INTEGER UNSIGNED NOT NULL,
 	`blockid` INTEGER UNSIGNED NOT NULL,
 	PRIMARY KEY (`id`),
-	INDEX `st_blockcats_catid` (`catid`),
-	INDEX `st_blockcats_blockid` (`blockid`),
-	UNIQUE INDEX `st_blockcats_catidblockid`(`catid`,`blockid`),
-	CONSTRAINT `st_blockcats_catid_id`
+	INDEX `st_block_categories_catid` (`catid`),
+	INDEX `st_block_categories_blockid` (`blockid`),
+	UNIQUE INDEX `st_block_categories_catidblockid`(`catid`,`blockid`),
+	CONSTRAINT `st_block_categories_catid_id`
 	FOREIGN KEY (`catid`) REFERENCES st_categories(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT `st_blockcats_blockid_id`
+	CONSTRAINT `st_block_categories_blockid_id`
 	FOREIGN KEY (`blockid`) REFERENCES st_blocks(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS `st_pagecats` (
+CREATE TABLE IF NOT EXISTS `st_page_categories` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`catid` INTEGER UNSIGNED NOT NULL,
 	`pageid` INTEGER UNSIGNED NOT NULL,
 	PRIMARY KEY (`id`),
-	INDEX `st_pagecats_catid` (`catid`),
-	INDEX `st_pagecats_pageid` (`pageid`),
-	UNIQUE INDEX `st_pagecats_catidpageid`(`catid`,`pageid`),
-	CONSTRAINT `st_pagecats_catid_id`
+	INDEX `st_page_categories_catid` (`catid`),
+	INDEX `st_page_categories_pageid` (`pageid`),
+	UNIQUE INDEX `st_page_categories_catidpageid`(`catid`,`pageid`),
+	CONSTRAINT `st_page_categories_catid_id`
 	FOREIGN KEY (`catid`) REFERENCES st_categories(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT `st_pagecats_pageid_id`
+	CONSTRAINT `st_page_categories_pageid_id`
 	FOREIGN KEY (`pageid`) REFERENCES st_pages(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS `st_filecats` (
+CREATE TABLE IF NOT EXISTS `st_file_categories` (
 	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
 	`catid` INTEGER UNSIGNED NOT NULL,
 	`fileid` INTEGER UNSIGNED NOT NULL,
 	PRIMARY KEY (`id`),
-	INDEX `st_filecats_catid` (`catid`),
-	INDEX `st_filecats_fileid` (`fileid`),
-	UNIQUE INDEX `st_filecats_catidfileid`(`catid`,`fileid`),
-	CONSTRAINT `st_filecats_catid_id`
+	INDEX `st_file_categories_catid` (`catid`),
+	INDEX `st_file_categories_fileid` (`fileid`),
+	UNIQUE INDEX `st_file_categories_catidfileid`(`catid`,`fileid`),
+	CONSTRAINT `st_file_categories_catid_id`
 	FOREIGN KEY (`catid`) REFERENCES st_categories(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT `st_filecats_fileid_id`
+	CONSTRAINT `st_file_categories_fileid_id`
 	FOREIGN KEY (`fileid`) REFERENCES st_files(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -248,6 +248,8 @@ CREATE TABLE IF NOT EXISTS `st_shop_downloads` (
 
 INSERT INTO `st_languages` (`name`,`title`) VALUES ('english','English');
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('home','Home','blank',NOW(),-10);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('blog','Blog','blog/index',NOW(),-9);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('shop','Shop','shop/index',NOW(),-8);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('user','User','system/user-edit',NOW(),0);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('login','Login','system/user-login',NOW(),0);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('search','Search','system/search-results',NOW(),0);
@@ -262,7 +264,9 @@ INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap.xml','Sitemap','system/sitemap',NOW(),1);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap','Sitemap','system/sitemap-user-friendly',NOW(),0);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('robots.txt','Robots','system/robots',NOW(),1);
-INSERT INTO `st_categories` (`name`,`title`) VALUES ('main-menu','Main Menu');
+INSERT INTO `st_categories` (`name`) VALUES ('Main Menu');
+INSERT INTO `st_page_categories` (`catid`,`pageid`)
+SELECT `c`.`id`,`p`.`id` FROM `st_categories` AS `c`, `st_pages` AS `p` WHERE `p`.`name` IN ('home','blog','shop','gallery','slideshow','contact') AND `c`.`name`='Main Menu';
 UPDATE `st_pages` as `parent` INNER JOIN `st_pages` as `child` ON `parent`.`name`='gallery' SET `child`.`parent`=`parent`.`id` WHERE `child`.`name`='slideshow';
 EOT;
 

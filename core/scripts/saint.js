@@ -552,7 +552,7 @@ $(document).ready(function() {
 	
 	$(document).on({
 		'click': function(event) {
-			window.location.replace("/action.logout");
+			window.location.replace(SAINT_URL + "/?action=logout");
 		}
 	},'.link.logout');
 	
@@ -1033,7 +1033,7 @@ $(document).ready(function() {
 			indicator = '&';
 		} else {
 			indicator = '?'; }
-		Saint.callHome(window.location.pathname+window.location.search+indicator+"edit="+$('#saint-block-setting-id').val(),postdata,Saint.savedAddBox);
+		Saint.callHome(SAINT_BASE_URL+window.location.pathname+"/"+window.location.search+indicator+"edit="+$('#saint-block-setting-id').val(),postdata,Saint.savedAddBox);
 	};
 	
 	Saint.savedAddBox = function(data) {
@@ -1422,14 +1422,14 @@ $(document).ready(function() {
 	$(document).on({
 		'click': function(event) {
 			$('.saint-admin-block.shop-manager').addClass("loading").addClass("active");
-			Saint.callHome('/shop/view.transactions','',Saint.loadedShopManager);
+			Saint.callHome('/shop/?view=transactions','',Saint.loadedShopManager);
 		}
 	},'#ssm-link-transactions');
 	
 	$(document).on({
 		'click': function(event) {
 			$('.saint-admin-block.shop-manager').addClass("loading").addClass("active");
-			Saint.callHome('/shop/view.discounts','',Saint.loadedShopManager);
+			Saint.callHome('/shop/?view=discounts','',Saint.loadedShopManager);
 		}
 	},'#ssm-link-discounts');
 	

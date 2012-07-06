@@ -275,7 +275,7 @@ class Saint_Controller_Page {
 		
 		if (isset($args['action']) && $args['action'] == "logout") {
 			Saint_Model_User::logout();
-			header("Location: " .SAINT_BASE_URL);
+			header("Location: " . SAINT_URL);
 		}
 		
 		if (isset($_POST['saint-edit-user-id'])) {
@@ -379,59 +379,6 @@ class Saint_Controller_Page {
 				'E-Mail' => $_POST['saint-contact-email'],
 				'Message' => $_POST['saint-contact-message'],
 			));
-		}
-		
-		/*
-		 * File manager controls
-		 */
-		
-		if (isset($args['view']) && $args['view'] == 'file-list') {
-			if (Saint::getCurrentUser()->hasPermissionTo("manage-files")) {
-				$this->_page->setTempLayout("system/file-manager-list");
-			}
-		}
-		
-		if (isset($_POST['saint-file-mode']) && isset($_POST['saint-file-id']) && isset($_POST['saint-file-title'])
-			&& isset($_POST['saint-file-keywords']) && isset($_POST['saint-file-description'])) {
-			if (isset($_POST['saint-file-categories']))
-				$categories = $_POST['saint-file-categories'];
-			else
-				$categories = array();
-			if ($_POST['saint-file-mode'] == "search") {
-				Saint_Controller_FileManager::filterFileDetails($_POST['saint-file-id'],
-					$_POST['saint-file-title'],$_POST['saint-file-keywords'],
-					$_POST['saint-file-description'],$categories);
-			} else {
-				Saint_Controller_FileManager::saveFileDetails($_POST['saint-file-id'],
-					$_POST['saint-file-title'],$_POST['saint-file-keywords'],
-					$_POST['saint-file-description'],$categories);
-				if (isset($_POST['saint-file-label']) && $_POST['saint-file-label']) {
-					if (Saint_Model_FileLabel::setFile(
-						Saint::convertNameFromWeb($_POST['saint-file-label']),
-						array('fid'=>$_POST['saint-file-id']))) {
-						$success = true;
-					} else {
-						$success = false;
-					}
-					
-					$this->_page->setTempLayout("system/json");
-					$jsondata = array(
-						"success" => $success,
-						"sfl" => $_POST['saint-file-label'],
-						"sfid" => $_POST['saint-file-id'],
-					);
-					if (isset($_POST['saint-file-label-width']) && $_POST['saint-file-label-width'] != "0" 
-						&& isset($_POST['saint-file-label-height']) && $_POST['saint-file-label-height'] != "0" ) {
-						$arguments = array(
-							"max-width" => $_POST['saint-file-label-width'],
-							"max-height" => $_POST['saint-file-label-height'],
-						);
-						$img = new Saint_Model_Image($_POST['saint-file-id']);
-						$jsondata['url'] = $img->getResizedUrl($arguments);
-					}
-					$page->setJsonData($jsondata);
-				}
-			}
 		}
 		
 		/*

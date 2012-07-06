@@ -4,13 +4,13 @@ function setInstalled($owner) {
 	try {
 		if (mysql_num_rows(mysql_query("SELECT `id` FROM `st_config`"))) {
 			try {
-				Saint::query("UPDATE `st_config` SET `version`=".SAINT_VERSION.",`owner`='$owner'");
+				Saint::query("UPDATE `st_config` SET `version`=".SAINT_CODE_VERSION.",`owner`='$owner'");
 			} catch (Exception $e) {
 				Saint::logError($e->getMessage(),__FILE__,__LINE__);
 			}
 		} else {
 			try {
-				Saint::query("INSERT INTO `st_config` (`version`,`owner`) VALUES (".SAINT_VERSION.",'$owner')");
+				Saint::query("INSERT INTO `st_config` (`version`,`owner`) VALUES (".SAINT_CODE_VERSION.",'$owner')");
 			} catch (Exception $e) {
 				Saint::logError($e->getMessage(),__FILE__,__LINE__);
 			}
@@ -58,24 +58,8 @@ if (phpversion() < 5) {
 								$user->loadByUsername($_POST['admin_username']);
 								$user->addToGroup("administrator");
 								$user->save();
-
-								$blog = new Saint_Model_Page();
-								$blog->setName("blog");
-								$blog->setTitle("Blog");
-								$blog->setLayout("blog/index");
-								$blog->setModel("Saint_Model_Blog");
-								$blog->save();
-								
-								$shop = new Saint_Model_Page();
-								$shop->setName("shop");
-								$shop->setTitle("Shop");
-								$shop->setLayout("shop/index");
-								$shop->setModel("Saint_Model_Shop");
-								$shop->save();
 								
 								setInstalled($_POST['admin_username']);
-								Saint::setShopPageId($shop->getId());
-								Saint::setBlogPageId($blog->getId());
 							} else {
 								$error = "There was a problem adding your user info. Please check the logs for more info and try again.";
 								include SAINT_SITE_ROOT . "/core/installer/get-details.php";

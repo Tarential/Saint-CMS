@@ -20,9 +20,9 @@ class Saint_Controller_ShoppingCart {
 			$number = 1;
 			
 		if ($sc && $sc->addItem($itemid, $number) && $sc->save()) {
-			$url = SAINT_BASE_URL."shop/view.cart";
+			$url = SAINT_URL."/shop/?view=cart";
 			if (isset($args['buynow']) && $args['buynow'] == 1) {
-				$url .= "/buynow.1"; }
+				$url .= "&buynow=1"; }
 			Saint::addNotice("Added product to cart.");
 			header("Location: ".$url);
 		} else {
@@ -49,7 +49,7 @@ class Saint_Controller_ShoppingCart {
 		
 		if ($sc && $sc->removeItem($itemid, $number) && $sc->save()) {
 			Saint::addNotice("Removed product from cart.");
-			header("Location: ".SAINT_BASE_URL."shop/view.cart");
+			header("Location: ".SAINT_URL."/shop/?view=cart");
 		} else {
 			Saint::logError("Unable to remove item from cart; cart will not initiate.",__FILE__,__LINE__);
 			$page = Saint::getCurrentPage();

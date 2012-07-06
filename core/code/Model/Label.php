@@ -234,16 +234,29 @@ class Saint_Model_Label {
 				
 				Saint::query("UPDATE `st_labels` SET `owner`='$this->_owner' WHERE `name`='$this->_name'");
 				
+				# Update the last edited time for page labels
 				if (preg_match('/^page\/([\d]+)\/n\//',$this->_name,$matches)) {
 					try {
 						Saint::query("UPDATE `st_pages` AS `p` SET `p`.`updated`=NOW() WHERE `p`.`id`='$matches[1]'");
 					} catch (Exception $f) {
 						if ($f->getCode()) {
-							Saint::logError("Unable to update page(s) associated with block '$this->_name': ".$f->getMessage(),__FILE__,__LINE__);
+							Saint::logError("Unable to update page associated with label '$this->_name': ".$f->getMessage(),__FILE__,__LINE__);
 						}
 					}
 				}
 				
+				# Update the last edited time for block labels
+				if (preg_match('/^block\/([\d]+)\/(.*)\/n\//',$this->_name,$matches)) {
+					try {
+						$id = Saint_Model_Block::getBlockUid($matches[2],$matches[1]);
+						Saint::query("UPDATE `st_blocks` AS `b` SET `b`.`updated`=NOW() WHERE `b`.`id`='$id'");
+					} catch (Exception $f) {
+						if ($f->getCode()) {
+							Saint::logError("Unable to update block associated with label '$this->_name': ".$f->getMessage(),__FILE__,__LINE__);
+						}
+					}
+				}
+				/* Old indexing method. To be eliminated.
 				# Strip the delimiters off the config name pattern to match block names within the label name.
 				$spn = trim(rtrim(SAINT_REG_NAME,'/'),'/');
 				$spn = trim(rtrim($spn,'$'),'^');
@@ -256,7 +269,7 @@ class Saint_Model_Label {
 							Saint::logError("Unable to update page(s) associated with block '$this->_name': ".$g->getMessage(),__FILE__,__LINE__);
 						}
 					}
-				}
+				} */
 				
 				return 1;
 			} catch (Exception $e) {

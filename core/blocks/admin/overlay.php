@@ -2,6 +2,7 @@
 <div class="saint-admin-code">
 	<script type="text/javascript">
 		var SAINT_URL = "<?php echo SAINT_URL; ?>";
+		var SAINT_BASE_URL = "<?php echo SAINT_BASE_URL; ?>";
 	</script>
 	<div class="blackout">&nbsp;</div>
 	<div class="saint-admin-overlay">

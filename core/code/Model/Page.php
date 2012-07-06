@@ -19,7 +19,7 @@ class Saint_Model_Page {
 			$filters = array('name'=>$filters['categories']);
 			$options = array('name');
 			$cat_where = "WHERE `c`.`id`=`pc`.`catid` AND `p`.`id`=`pc`.`pageid`" . preg_replace('/^\s*WHERE\s*/',' AND ',Saint::makeConditions($filters,$options,'c'));
-			$cat_sel = ", `st_categories` as `c`, `st_pagecats` as `pc`";
+			$cat_sel = ", `st_categories` as `c`, `st_page_categories` as `pc`";
 		}
 		try {
 			return Saint::getAll("SELECT `p`.`name` FROM `st_pages` as `p`$cat_sel $page_where$cat_where$order");
@@ -216,7 +216,7 @@ class Saint_Model_Page {
 		$this->_allow_robots = true;
 		$this->_blocks = array();
 		$this->_edit_block = null;
-		$this->_model = "Saint_Model_Page";
+		#$this->_model = "Saint_Model_Page";
 		$this->_json_data = array();
 		$this->_parent = 0;
 		$this->_weight = 0;
@@ -256,7 +256,7 @@ class Saint_Model_Page {
 				$this->_modified = $info[8];
 				$this->_created = $info[9];
 				$this->_categories = null;
-				$this->_model=Saint_Model_Page::getModel($this->_name);
+				#$this->_model=Saint_Model_Page::getModel($this->_name);
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Cannot load Page model from ID $id. Error: " . $e->getMessage(),__FILE__,__LINE__);
@@ -320,9 +320,6 @@ class Saint_Model_Page {
 	 * @param array $file New files to be associated with loaded page.
 	 */
 	public function setFiles($files) {
-		if (!isset($files[0]) || !is_array($files)) {
-			$files = array($files);
-		}
 		$this->_files = $files;
 	}
 	
@@ -1082,7 +1079,7 @@ class Saint_Model_Page {
 				return 0;
 			} else {
 				try {
-					Saint::query("INSERT INTO `st_pagecats` (`catid`,`pageid`) VALUES ('$id','$this->_id')");
+					Saint::query("INSERT INTO `st_page_categories` (`catid`,`pageid`) VALUES ('$id','$this->_id')");
 					return 1;
 				} catch (Exception $e) {
 					Saint::logError("Problem adding page id '$this->_id' to category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
@@ -1109,7 +1106,7 @@ class Saint_Model_Page {
 				return 1;
 			} else {
 				try {
-					Saint::query("DELETE FROM `st_pagecats` WHERE `catid`='$id' AND `pageid`='$this->_id'");
+					Saint::query("DELETE FROM `st_page_categories` WHERE `catid`='$id' AND `pageid`='$this->_id'");
 					return 1;
 				} catch (Exception $e) {
 					Saint::logError("Problem removing page id '$this->_id' from category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
@@ -1129,7 +1126,7 @@ class Saint_Model_Page {
 	private function loadCategories() {
 		$this->_categories = array();
 		try {
-			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_pagecats` as `p` WHERE `p`.`pageid`='$this->_id' AND `p`.`catid`=`c`.`id`");
+			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_page_categories` as `p` WHERE `p`.`pageid`='$this->_id' AND `p`.`catid`=`c`.`id`");
 			foreach ($getcats as $getcat) {
 				$this->_categories[$getcat[0]] = $getcat[1];
 			}

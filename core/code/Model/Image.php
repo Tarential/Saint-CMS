@@ -61,7 +61,7 @@ class Saint_Model_Image extends Saint_Model_File {
 			$newname = substr($matches[1],strlen(SAINT_SITE_ROOT)+1)."-".$size['width']."x".$size['height'].$matches[2];
 			$newname = "/" . preg_replace('/\//','_',$newname);
 			$fullpath = SAINT_CACHE_DIR . $newname;
-			$newurl = substr($fullpath,strlen(SAINT_SITE_ROOT));
+			$newurl = SAINT_URL . substr($fullpath,strlen(SAINT_SITE_ROOT));
 			
 			if (file_exists($fullpath))
 				return $newurl;

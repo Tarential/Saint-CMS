@@ -120,7 +120,7 @@ else
 	$installed = false;
 
 $subdir = substr(SAINT_SITE_ROOT,strlen($_SERVER['DOCUMENT_ROOT']));
-define('SAINT_URL',chop(SAINT_BASE_URL . $subdir,'/'));
+define('SAINT_URL',chop(SAINT_BASE_URL . "/" . $subdir,'/'));
 if ($get_start = strpos($_SERVER['REQUEST_URI'],'?'))
 	$uri_sans_get = trim(substr($_SERVER['REQUEST_URI'],0,$get_start),'/');
 else
@@ -170,29 +170,18 @@ try {
 
 define('SAINT_DB_VERSION',$installed);
 
-#$argument_pattern = '/[\/]*([^\/\.]+\.[^\/\.]+)\/*/';
 $args = array();
-
-/*
-if (preg_match_all($argument_pattern,$uri,$matches)) {
-	foreach ($matches[1] as $match) {
-		$mix = explode('.',$match);
-		$args[$mix[0]] = $mix[1];
-	}
-}*/
-
 foreach ($_GET as $key=>$val) {
 	if (trim($key,'/') != $uri) {
 		$args[$key] = $val;
 	}
 }
-#$uri_sans_args = preg_replace($argument_pattern,'',$uri);
-$uri_sans_args = $uri;
-if (preg_match('/^([^\/]+)\/(.*)$/',$uri_sans_args,$matches)) {
+
+if (preg_match('/^([^\/]+)\/(.*)$/',$uri,$matches)) {
 	$pid = $matches[1];
 	$args['subids'] = explode('/',$matches[2]);
 } else {
-	$pid = $uri_sans_args;
+	$pid = $uri;
 	$args['subids'] = array();
 }
 if ($pid == '')

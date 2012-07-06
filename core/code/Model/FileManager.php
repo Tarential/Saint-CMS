@@ -36,21 +36,25 @@ class Saint_Model_FileManager extends Saint_Model_Page {
 		if (!$corefiles) {
 			$where .= " AND `user`='1'";
 		}
+
+		$catsel = "";
+		$catwhere = "";
 		if (isset($arguments['categories']) && $arguments['categories'] != '') {
 			if (!is_array($arguments['categories'])) {
 				$arguments['categories'] = array($arguments['categories']);
 			}
-			$catsel = ", `st_categories` as `c`, `st_filecats` as `fc`";
-			$catwhere = " AND `c`.`id`=`fc`.`catid` AND `f`.`id`=`fc`.`fileid` AND `c`.`name` IN (";
-			foreach ($arguments['categories'] as $cat) {
-				$catwhere .= "'$cat',";
+			if (sizeof($arguments['categories'])) {
+				$catsel = ", `st_categories` as `c`, `st_file_categories` as `fc`";
+				$catwhere = " AND `c`.`id`=`fc`.`catid` AND `f`.`id`=`fc`.`fileid` AND `c`.`name` IN (";
+				foreach ($arguments['categories'] as $cat) {
+					$catwhere .= "'$cat',";
+				}
+				$catwhere = rtrim($catwhere,',') . ")";
 			}
-			$catwhere = rtrim($catwhere,',') . ")";
 		} else {
 			$arguments['categories'] = 0;
-			$catsel = "";
-			$catwhere = "";
 		}
+		
 		$limit = '';
 		if (isset($arguments['results-per-page']) && (!isset($arguments['num-results-only']) || $arguments['num-results-only'] == false)) {
 			$limit .= ' LIMIT '.$arguments['results-per-page'];
@@ -60,8 +64,9 @@ class Saint_Model_FileManager extends Saint_Model_Page {
 		}
 		try {
 			$query = "SELECT `f`.`id`,`f`.`location`,`f`.`title`,`f`.`description`,`f`.`keywords` FROM `st_files` as `f`$catsel WHERE `enabled`='1'$where$catwhere$limit";
-			if (isset($arguments['num-results-only']) && $arguments['num-results-only']) {
-				return Saint::getNumRows($query);
+			if (isset($arguments['num-results-only']) && $arguments['num-results-only'] === true) {
+				$num_rows = Saint::getNumRows($query);
+				return $num_rows;
 			} else {
 				$allfiles = Saint::getAll($query);
 				
@@ -77,8 +82,15 @@ class Saint_Model_FileManager extends Saint_Model_Page {
 				return $indexfiles;
 			}
 		} catch (Exception $e) {
-			Saint::logError("Problem selecting files from database: ".$e->getMessage(),__FILE__,__LINE__);
-			return array();
+			if ($e->getCode()) {
+				Saint::logError("Problem selecting files from database: ".$e->getMessage(),__FILE__,__LINE__);
+			}
+
+			if (isset($arguments['num-results-only']) && $arguments['num-results-only'] === true) {
+				return 0;
+			} else {
+				return array();
+			}
 		}
 	}
 	
@@ -442,7 +454,7 @@ class Saint_Model_FileManager extends Saint_Model_Page {
 				return 0;
 			} else {
 				try {
-					Saint::query("INSERT INTO `st_filecats` (`catid`,`fileid`) VALUES ('$id','$this->_id')");
+					Saint::query("INSERT INTO `st_file_categories` (`catid`,`fileid`) VALUES ('$id','$this->_id')");
 					return 1;
 				} catch (Exception $e) {
 					# We hit this regularly if the file is already in the specified category, so ignore it
@@ -466,13 +478,13 @@ class Saint_Model_FileManager extends Saint_Model_Page {
 		$scategory = Saint::sanitize($category);
 		if ($scategory) {
 			$id = Saint_Model_Category::getId($scategory);
-			Saint::logError("DELETE FROM `st_filecats` WHERE `catid`='$id' AND `fileid`='$this->_id'");
+			Saint::logError("DELETE FROM `st_file_categories` WHERE `catid`='$id' AND `fileid`='$this->_id'");
 			if (!$id) {
 				# No id... it can't be part of a category that doesn't exist, so our job is done.
 				return 1;
 			} else {
 				try {
-					Saint::query("DELETE FROM `st_filecats` WHERE `catid`='$id' AND `fileid`='$this->_id'");
+					Saint::query("DELETE FROM `st_file_categories` WHERE `catid`='$id' AND `fileid`='$this->_id'");
 					return 1;
 				} catch (Exception $e) {
 					Saint::logError("Problem removing file id '$this->_id' from category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
@@ -510,14 +522,15 @@ class Saint_Model_FileManager extends Saint_Model_Page {
 	 */
 	public function getCategories() {
 		try {
-			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_filecats` as `fc` WHERE `fc`.`fileid`='$this->_id' AND `fc`.`catid`=`c`.`id`");
+			$getcats = Saint::getAll("SELECT `c`.`id`,`c`.`name` FROM `st_categories` as `c`,`st_file_categories` as `fc` WHERE `fc`.`fileid`='$this->_id' AND `fc`.`catid`=`c`.`id`");
 			$cats = array();
 			foreach ($getcats as $getcat) {
 				$cats[$getcat[0]] = $getcat[1];
 			}
 			return $cats;
 		} catch (Exception $e) {
-			# No categories, return blank array
+			if ($e->getCode())
+				Saint::logError("Unable to get file categories: ".$e->getMessage(),__FILE__,__LINE__);
 			return array();
 		}
 	}

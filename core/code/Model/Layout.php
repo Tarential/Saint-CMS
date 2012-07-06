@@ -54,9 +54,14 @@ class Saint_Model_Layout {
 		
 		# Start by adding the root and system layouts from plain PHP files.
 		foreach ($root_layouts as $layout) {
-			if (preg_match('/layouts\/([^\/]*)\.php$/',$layout,$matches) || preg_match('/layouts\/(system\/[^\/]*)\.php$/',$layout,$matches)) {
+			if (preg_match('/layouts\/([^\/]*)\.php$/',$layout,$matches)) {
 				$layouts[$matches[1]] = array(
 					'title' => ucfirst($matches[1]),
+				);
+			} elseif (preg_match('/layouts\/(system\/[^\/]*)\.php$/',$layout,$matches)) {
+				$layouts[$matches[1]] = array(
+					'title' => ucfirst($matches[1]),
+					'show' => false,
 				);
 			}
 		}
@@ -78,6 +83,7 @@ class Saint_Model_Layout {
 				$layouts[$name] = array(
 					'model' => (string)$sparse->model,
 					'title' => (string)$sparse->title,
+					'show' => (integer)$sparse->show,
 				);
 			}
 		}
@@ -86,12 +92,16 @@ class Saint_Model_Layout {
 			$layout = new Saint_Model_Layout();
 			if ($layout->loadByName($name)) {
 				$save = false;
-				if (isset($data['title']) && $data['title'] != "" && $data['title'] != $layout->getTitle()) {
+				if (isset($data['title']) && $data['title'] !== "" && $data['title'] != $layout->getTitle()) {
 					$layout->setTitle($data['title']);
 					$save = true;
 				}
-				if (isset($data['model']) && $data['model'] != "" && $data['model'] != $layout->getModel()) {
+				if (isset($data['model']) && $data['model'] !== "" && $data['model'] != $layout->getModel()) {
 					$layout->setModel($data['model']);
+					$save = true;
+				}
+				if (isset($data['show']) && $data['show'] !== "" && $data['show'] != $layout->isVisible()) {
+					$layout->isVisible($data['show']);
 					$save = true;
 				}
 				if ($save)
@@ -119,6 +129,10 @@ class Saint_Model_Layout {
 			$keys .= ",`title`";
 			$vals .= ",'".Saint::sanitize($data['title'])."'";
 		}
+		if (isset($data['show']) && $data['show'] != "") {
+			$keys .= ",`show`";
+			$vals .= ",'".Saint::sanitize($data['show'])."'";
+		}
 		try {
 			Saint::query("INSERT INTO `st_layouts` (`name`$keys) VALUES ('$sname'$vals)");
 		} catch (Exception $e) {
@@ -132,6 +146,7 @@ class Saint_Model_Layout {
 	protected $_model;
 	protected $_saved;
 	protected $_content;
+	protected $_show;
 	
 	/**
 	 * Create a layout with blank data.
@@ -144,6 +159,7 @@ class Saint_Model_Layout {
 		$this->_model = '';
 		$this->_saved = false;
 		$this->_content = '';
+		$this->_show = false;
 	}
 	
 	/**
@@ -155,11 +171,12 @@ class Saint_Model_Layout {
 		$sname = Saint::sanitize($name,SAINT_REG_NAME);
 		if ($sname) {
 			try {
-				$data = Saint::getRow("SELECT `id`,`title`,`model` FROM `st_layouts` WHERE `name`='$sname'");
+				$data = Saint::getRow("SELECT `id`,`title`,`model`,`show` FROM `st_layouts` WHERE `name`='$sname'");
 				$this->_id = $data[0];
 				$this->_name = $sname;
 				$this->_title = $data[1];
 				$this->_model = $data[2];
+				$this->_show = $data[3];
 				return 1;
 			} catch (Exception $e) {
 				if ($e->getCode()) {
@@ -224,11 +241,22 @@ class Saint_Model_Layout {
 	}
 	
 	/**
+	 * Get or set the visibility flag for the loaded layout.
+	 * @param boolean $flag New value for visibility flag.
+	 * @return boolean Visibility status.
+	 */
+	public function isVisible($flag = null) {
+		if ($flag !== null)
+			$this->_show = Saint::sanitize($flag,SAINT_REG_BOOL);
+		return $this->_show;
+	}
+	
+	/**
 	 * Save loaded layout information to database.
 	 */
 	public function save() {
 		try {
-			Saint::query("UPDATE `st_layouts` SET `title`='$this->_title',`model`='$this->_model' WHERE `id`='$this->_id'");
+			Saint::query("UPDATE `st_layouts` SET `title`='$this->_title',`model`='$this->_model',`show`=$this->_show WHERE `id`='$this->_id'");
 		} catch (Exception $e) {
 			Saint::logError("Unable to save layout information to database: ".$e->getMessage(),__FILE__,__LINE__);
 		}

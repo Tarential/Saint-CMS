@@ -179,7 +179,7 @@ class Saint_Model_User {
 	 */
 	public static function logout() {
 		$user = Saint::getCurrentUser();
-		$user->destroySessions();
+		Saint_Model_User::destroySessions($user->getUsername());
 		if (Saint_Model_User::setCurrentUsername('')) {
 			return 1;
 		} else
@@ -528,7 +528,7 @@ class Saint_Model_User {
 		if ($this->getUsername() == "guest")
 			return array("guest");
 		try {
-			return Saint::getAll("SELECT `g`.`group` FROM `st_users` as `u`, `st_usergroups` as `g` WHERE `g`.`userid`=`u`.`id` AND `u`.`id`='".$this->getId()."'");
+			return Saint::getAll("SELECT `g`.`group` FROM `st_users` as `u`, `st_user_groups` as `g` WHERE `g`.`userid`=`u`.`id` AND `u`.`id`='".$this->getId()."'");
 		} catch (Exception $e) {
 			//Saint::logWarning($e->getMessage(),__FILE__,__LINE__);
 			return array("guest");
@@ -550,7 +550,7 @@ class Saint_Model_User {
 					return 0;
 			}
 			try {
-				$id = Saint::getOne("SELECT `g`.`id` FROM `st_users` as `u`, `st_usergroups` as `g` WHERE `g`.`userid`=`u`.`id` AND `g`.`group`='$name' AND `u`.`id`='".$this->getId()."'");
+				$id = Saint::getOne("SELECT `g`.`id` FROM `st_users` as `u`, `st_user_groups` as `g` WHERE `g`.`userid`=`u`.`id` AND `g`.`group`='$name' AND `u`.`id`='".$this->getId()."'");
 				return 1;
 			} catch (Exception $e) {
 				if ($e->getCode()) {
@@ -571,7 +571,7 @@ class Saint_Model_User {
 		if ($name == $group) {
 			if (!$this->isInGroup($group)) {
 				try {
-					Saint::query("INSERT INTO `st_usergroups` (`userid`,`group`) VALUES ('".$this->getId()."','$name')");
+					Saint::query("INSERT INTO `st_user_groups` (`userid`,`group`) VALUES ('".$this->getId()."','$name')");
 				} catch (Exception $e) {
 					Saint::logError("Could not add user ".$this->getUsername()." with id '$this->_id' to group ".$name.":".$e->getMessage(),__FILE__,__LINE__);
 					return 0;
@@ -591,7 +591,7 @@ class Saint_Model_User {
 		$name = Saint::sanitize($group,SAINT_REG_NAME);
 		if ($name == $group) {
 			try {
-				Saint::query("DELETE FROM `st_usergroups` WHERE `group`='$name' AND `userid`='".$this->getId()."'");
+				Saint::query("DELETE FROM `st_user_groups` WHERE `group`='$name' AND `userid`='".$this->getId()."'");
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError($e->getMessage(),__FILE__,__LINE__);

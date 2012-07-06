@@ -2,4 +2,5 @@
 <layout>
 	<name>gallery/slideshow</name>
 	<title>Slideshow</title>
+	<show>1</show>
 </layout>

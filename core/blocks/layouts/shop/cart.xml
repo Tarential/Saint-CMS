@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layout>
-	<name>shop/index</name>
+	<name>shop/cart</name>
 	<model>Saint_Model_Shop</model>
-	<title>Shop</title>
-	<show>1</show>
+	<title>Shopping Cart</title>
 </layout>

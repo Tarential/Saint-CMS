@@ -11,7 +11,7 @@
 define('SAINT_CODE_VERSION','1.0300');
 
 # Site location
-define('SAINT_BASE_URL',"http://" . $_SERVER['SERVER_NAME'] . "/");
+define('SAINT_BASE_URL',"http://" . $_SERVER['SERVER_NAME']);
 define('SAINT_SITE_ROOT',chop(getcwd(),'/'));
 define('SAINT_CACHE_DIR',SAINT_SITE_ROOT."/cache");
 
