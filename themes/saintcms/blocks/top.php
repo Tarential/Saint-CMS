@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Saint - <?php echo $page->getTitle(); ?></title>
+		<title><?php echo $page->getTitle(); ?> - <?php echo Saint::getSiteTitle(); ?></title>
 		<meta name="robots" content="<?php if ($page->allowsRobots()): ?>index,follow<?php else: ?>noindex,nofollow<?php endif; ?>" />
 		<meta name="keywords" content="<?php echo implode(',',$page->getKeywords()); ?>" />
 		<meta name="description" content="<?php echo $page->getDescription(); ?>" />

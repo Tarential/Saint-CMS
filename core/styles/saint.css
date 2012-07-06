@@ -18,6 +18,9 @@ a:hover {
 a.disabled:hover {
 	cursor: default; }
 
+#content a {
+	font-weight: bold; }
+
 p {
 	margin-top: 0;
 }
@@ -1074,7 +1077,7 @@ body.dark .ssm.nav-bar {
 	top: 25px;
 	bottom: 0px;
 	left: 5px;
-	right 5px;
+	right: 5px;
 	height: auto;
 	overflow: auto;
 }

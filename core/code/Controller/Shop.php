@@ -73,7 +73,8 @@ class Saint_Controller_Shop {
 			);
 			$page->setTempTitle($product->get("name"));
 			$page->setTempKeywords(explode(",",$product->get("keywords")));
-			$page->setTempDescription($product->getLabel("description","",array('container'=>false)));
+			# Description override to be implemented with custom field at a later time.
+			#$page->setTempDescription(strip_tags($product->getLabel("description","",array('container'=>false))));
 		} else {
 			$arguments = array(
 				"repeat" => 15,

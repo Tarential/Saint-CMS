@@ -262,7 +262,7 @@ INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`) VALUES ('slideshow','
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('maintenance','Site Maintenance','system/maintenance',NOW(),0);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('404','Page Not Found','system/404',NOW(),0);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap.xml','Sitemap','system/sitemap',NOW(),1);
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap','Sitemap','system/sitemap-user-friendly',NOW(),0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap','Sitemap','system/sitemap-user-friendly',NOW(),1);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('robots.txt','Robots','system/robots',NOW(),1);
 INSERT INTO `st_categories` (`name`) VALUES ('Main Menu');
 INSERT INTO `st_page_categories` (`catid`,`pageid`)

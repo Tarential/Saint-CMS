@@ -76,6 +76,7 @@ class Saint_Model_Blog extends Saint_Model_Page {
 			$posts = Saint_Model_Block::getBlocks("blog/post",array(
 				'enabled' => true,
 				'page_id' => $this->_id,
+				'repeat' => 100,
 				'collection' => true,
 			));
 			

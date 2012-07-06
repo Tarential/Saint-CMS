@@ -573,6 +573,9 @@ body.home #wrapper #content {
 	margin: 0;
 }
 
+#content .sbn-shop_product .block-item {
+	width: 100%; }
+
 /* Lyx Documentation Styles */
 
 div.toc {

@@ -47,7 +47,7 @@ ALTER TABLE `st_blocks` ADD COLUMN `updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 UPDATE `st_blocks` as `b`, `st_blocks_blog_post` as `p`, `st_blocktypes` as `t`
 SET `b`.`updated`=`p`.`postdate`,`b`.`created`=`p`.`postdate` WHERE `b`.`blockid`=`p`.`id` AND `b`.`blocktypeid`=`t`.`id` AND `t`.`name`='blog/post';
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap.xml','Sitemap','system/sitemap',NOW(),1);
-INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap','Sitemap','system/sitemap-user-friendly',NOW(),0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('sitemap','Sitemap','system/sitemap-user-friendly',NOW(),1);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('robots.txt','Robots','system/robots',NOW(),1);
 RENAME TABLE `st_blockcats` TO `st_block_categories`;
 RENAME TABLE `st_blocktypes` TO `st_block_types`;

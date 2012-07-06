@@ -659,8 +659,8 @@ class Saint {
 			$mtime = $mtime[1] + $mtime[0];
 			$endtime = $mtime;
 			$totaltime = ($endtime - $starttime);
-			echo "$query<br />\n";
-			echo "Executed in $totaltime.";
+			Saint::logEvent("$query");
+			Saint::logEvent("Executed in $totaltime.");
 		}
 		if (!$result)
 			throw new Exception(mysql_error(),1);

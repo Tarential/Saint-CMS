@@ -119,6 +119,12 @@ if (file_exists("config.php"))
 else
 	$installed = false;
 
+if (preg_match('/^(\d+)\.(\d\d)(\d\d)$/',SAINT_CODE_VERSION,$matches)) {
+	define('SAINT_FRIENDLY_VERSION',"v".$matches[1].".".ltrim($matches[2],'0'));
+} else {
+	define('SAINT_FRIENDLY_VERSION','');
+}
+
 $subdir = substr(SAINT_SITE_ROOT,strlen($_SERVER['DOCUMENT_ROOT']));
 define('SAINT_URL',chop(SAINT_BASE_URL . "/" . $subdir,'/'));
 if ($get_start = strpos($_SERVER['REQUEST_URI'],'?'))

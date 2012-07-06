@@ -7,8 +7,8 @@
 <p>Saint documentation comes in three parts:</p>
 
 <ol>
-	<li><a href="/documentation/view.user-guide">User Guide (HTML)</a> <a href="/media/saint-userguide-1.1.pdf" target="_blank">(PDF)</a>: Site administration.</li>
-	<li><a href="/documentation/view.dev-guide">Developer Guide (HTML)</a> <a href="/media/saint-devguide-1.1.pdf" target="_blank">(PDF)</a>: Site creation.</li>
+	<li><a href="/documentation/?view=user-guide">User Guide (HTML)</a> <a href="/media/saint-userguide-1.3.pdf" target="_blank">(PDF)</a>: Site administration.</li>
+	<li><a href="/documentation/?view=dev-guide">Developer Guide (HTML)</a> <a href="/media/saint-devguide-1.3.pdf" target="_blank">(PDF)</a>: Site creation.</li>
 	<li><a href="http://docs.saintcms.com/" target="_blank">API Reference (HTML):</a> Full PHPDoc reference to Saint classes and functions.</li>
 </ol>
 

@@ -14,8 +14,8 @@
 				&copy; Copyright <?php echo date('Y'); ?> <a href="http://www.aparadine.com/" target="_blank">Aparadine Software</a> 
 			</div>
 			<div class="center">
-				This site is powered by <a href="http://www.saintcms.com/">Saint CMS</a>
+				This site is powered by <a href="http://www.saintcms.com/">Saint CMS <?php echo SAINT_FRIENDLY_VERSION; ?></a>
 			</div>
 		</div>
 	</body>
-</html> 
+</html>

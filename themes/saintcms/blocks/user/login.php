@@ -1,5 +1,5 @@
 <?php echo $page->getLabel("login-intro","Enter your username/password to log in:"); ?>
-<form id="saint-login-form" method="post" action="/">
+<form id="saint-login-form" method="post" action="https://saintcms.com/">
 	<label for="username">Username:</label>
 	<input name="username" id="slf-username" class="focus" type="text" value="" />
 	<label for="password">Password:</label>

@@ -1,5 +1,5 @@
 <?php
-$products = $page->getProducts();
+$products = $page->getFiles();
 if (sizeof($products) == 1) {
 	$page->setTempUrl($products[0]->getUrl());
 } else {
