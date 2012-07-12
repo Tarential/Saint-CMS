@@ -18,7 +18,7 @@ class Saint_Controller_FileManager {
 		$page = Saint::getCurrentPage();
 		$success = false;
 		if (Saint::getCurrentUser()->hasPermissionTo("manage-files")) {
-			$model = new Saint_Model_FileManager();
+			$model = new Saint_Model_File();
 			if ($model->load($id)) {
 				$model->setTitle($title);
 				$model->setKeywords($keywords);

@@ -1505,11 +1505,16 @@ $(document).ready(function() {
 	        commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
 	    return input.replace(commentsAndPhpTags, '').replace(tags, function ($0, $1) {        return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
 	    });
-	}
+	};
 	
 	Saint.callHome = function(url, postdata, complete, timeout, retries, tcid, errorno) {
 		if (url.match(/^http/) == null) {
 			url = SAINT_URL + url;
+		}
+		if (postdata == null || postdata == "") {
+			postdata = 'saint_client_nonce='+SAINT_CLIENT_NONCE;
+		} else {
+			postdata += '&saint_client_nonce='+SAINT_CLIENT_NONCE;
 		}
 		if (timeout == null)
 			timeout = 10000;

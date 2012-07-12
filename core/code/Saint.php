@@ -646,22 +646,7 @@ class Saint {
 	 * @throws Exception Database error on failure.
 	 */
 	public static function query($query) {
-		if (SAINT_PROFILING) {
-			$mtime = microtime();
-			$mtime = explode(" ",$mtime);
-			$mtime = $mtime[1] + $mtime[0];
-			$starttime = $mtime;
-		}
 		$result = Saint::queryDb($query);
-		if (SAINT_PROFILING && Saint::getCurrentPage()->getLayout() != "system/json") {
-			$mtime = microtime();
-			$mtime = explode(" ",$mtime);
-			$mtime = $mtime[1] + $mtime[0];
-			$endtime = $mtime;
-			$totaltime = ($endtime - $starttime);
-			Saint::logEvent("$query");
-			Saint::logEvent("Executed in $totaltime.");
-		}
 		if (!$result)
 			throw new Exception(mysql_error(),1);
 		else
@@ -681,12 +666,14 @@ class Saint {
 		}
 		$result = @mysql_query($query);
 		if (SAINT_PROFILING) {
+			global $profiling_events;
+			global $script_start;
 			$mtime = microtime();
 			$mtime = explode(" ",$mtime);
 			$mtime = $mtime[1] + $mtime[0];
 			$endtime = $mtime;
 			$totaltime = ($endtime - $starttime)*1000;
-			Saint::logEvent("$query\nExecuted in $totaltime ms.");
+			$profiling_events[] = $query . "\n" . "Executed in $totaltime ms from ".($starttime-$script_start)*1000 . " ms to " . ($endtime-$script_start)*1000 . " ms";
 		}
 		return $result;
 	}

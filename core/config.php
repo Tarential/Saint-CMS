@@ -8,7 +8,7 @@
 # X = Full release
 # Y = Major revision
 # Z = Minor revision
-define('SAINT_CODE_VERSION','1.0300');
+define('SAINT_CODE_VERSION','1.0301');
 
 # Site location
 define('SAINT_BASE_URL',"http://" . $_SERVER['SERVER_NAME']);
@@ -39,6 +39,9 @@ define('SAINT_SALT_LEN',32);
 define('SAINT_NONCE_LEN',32);
 define('SAINT_SEQ_LEN',32);
 
+# Client authentication nonce length
+define('SAINT_CLIENT_NONCE_LEN',64);
+
 # For enabling/disabling sandbox
 define('SAINT_PAYPAL_URL','www.sandbox.paypal.com');
 
@@ -49,6 +52,7 @@ define('SAINT_PAYPAL_SIGNATURE','');
 
 $saint_group_access = array(
 	'administrator' => array(
+		'edit-site',
 		'admin-overlay',
 		'add-page',
 		'edit-page',
@@ -107,6 +111,11 @@ $saint_group_access = array(
 	),
 	'guest' => array(
 	),
+);
+
+
+$saint_actions = array(
+
 );
 
 $saint_filetypes = array(

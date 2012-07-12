@@ -175,6 +175,14 @@ class Saint_Model_File {
 	}
 
 	/**
+	 * Get name of loaded file.
+	 * @return string Name of loaded file.
+	 */
+	public function getFileName() {
+		return preg_replace('/^.*\/([^\/])$/','$1',$this->_location);
+	}
+	
+	/**
 	 * Get current file location.
 	 * @return string Location of loaded file.
 	 */
@@ -393,28 +401,108 @@ class Saint_Model_File {
 		return $this->_categories;
 	}
 	
+
+	/**
+	 * Add the loaded file to the given category.
+	 * @param string $category Category into which to add the file.
+	 * @return boolean True on success, false otherwise.
+	 */
+	public function addToCategory($category) {
+		$scategory = Saint::sanitize($category);
+		if ($scategory) {
+			$id = Saint_Model_Category::getId($scategory);
+			if (!$id) {
+				$id = Saint_Model_Category::addCategory($scategory);
+			}
+			if (!$id) {
+				Saint::logError("Problem assigning file to category '$scategory'. Unable to get category ID.",__FILE__,__LINE__);
+				return 0;
+			} else {
+				try {
+					Saint::query("INSERT INTO `st_file_categories` (`catid`,`fileid`) VALUES ('$id','$this->_id')");
+					return 1;
+				} catch (Exception $e) {
+					# We hit this regularly if the file is already in the specified category, so ignore it
+					# Saint::logError("Problem adding file id '$this->_id' to category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
+					return 0;
+				}
+			}
+		} else {
+			Saint::logError("Invalid category name: '$category'.",__FILE__,__LINE__);
+			return 0;
+		}
+	}
+	
+	/**
+	 * Remove the loaded file to the given category.
+	 * @param string $category Category from which to remove the file.
+	 * @return boolean True on success, false otherwise.
+	 */
+	public function removeFromCategory($category) {
+		Saint::logError("Category: ".$category);
+		$scategory = Saint::sanitize($category);
+		if ($scategory) {
+			$id = Saint_Model_Category::getId($scategory);
+			Saint::logError("DELETE FROM `st_file_categories` WHERE `catid`='$id' AND `fileid`='$this->_id'");
+			if (!$id) {
+				# No id... it can't be part of a category that doesn't exist, so our job is done.
+				return 1;
+			} else {
+				try {
+					Saint::query("DELETE FROM `st_file_categories` WHERE `catid`='$id' AND `fileid`='$this->_id'");
+					return 1;
+				} catch (Exception $e) {
+					Saint::logError("Problem removing file id '$this->_id' from category id '$id': ".$e->getMessage(),__FILE__,__LINE__);
+					return 0;
+				}
+			}
+		} else {
+			Saint::logError("Invalid category name: '$category'.",__FILE__,__LINE__);
+			return 0;
+		}
+	}
+	
+	/**
+	 * Change categories for loaded model en masse.
+	 * @param string[] $newcats New categories for loaded file.
+	 */
+	public function setCategories($newcats) {
+		if (!is_array($newcats))
+			$newcats = explode(',',$newcats);
+		
+		foreach ($this->getCategories() as $cat) {
+			Saint::logError("Testing: ".$cat);
+			if (!in_array($cat,$newcats)) {
+				$this->removeFromCategory($cat);
+			}
+		}
+		foreach ($newcats as $newcat) {
+			$this->addToCategory($newcat);
+		}
+	}
+	
 	/**
 	 * Save loaded model information to database.
-	 * @param boolean $log Log save event to file if true.
-	 * @return boolean True for success, false otherwise.
+	 * @return boolean True on success, false otherwise.
 	 */
 	public function save($log = true) {
 		if ($this->_id) {
-			try {
-				$query = "UPDATE st_pages SET ".
-				"title='$this->_title',".
-				"keywords='$this->_keywords',".
-				"description='$this->_description',".
-				"WHERE id=$this->_id";
-				Saint::query($query);
-				if ($log)
-					Saint::logEvent("Saved details for file id '$this->_id'.");
-				return 1;
-			} catch (Exception $e) {
-				Saint::logError("Couldn't save file details for id '$this->_id': ".$e->getMessage(),__FILE__,__LINE__);
-				return 0;
-			}
+			$query = "UPDATE `st_files` SET ".
+			"`title`='$this->_title',".
+			"`keywords`='$this->_keywords',".
+			"`description`='$this->_description'".
+			" WHERE `id`='$this->_id'";
 		} else {
+			$query = "INSERT INTO `st_files` (`title`,`keywords`,`description`) VALUES ".
+			"('$this->_title','$this->_keywords','$this->_description')";
+		}
+		try {
+			Saint::query($query);
+			if ($log)
+				Saint::logEvent("Saved details of file id '$this->_id' to database.",__FILE__,__LINE__);
+			return 1;
+		} catch (Exception $e) {
+			Saint::logError("Problem saving file: ".$e->getMessage(),__FILE__,__LINE__);
 			return 0;
 		}
 	}

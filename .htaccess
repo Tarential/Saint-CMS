@@ -1,14 +1,18 @@
 <IfModule mod_rewrite.c>
-    RewriteEngine On
-    
-    # If you are having problems with your web server,
-    # uncomment this and change the base to your Saint location.
-    #RewriteBase /Saint/
-    
-    #Checks to see if the user is attempting to access a valid file,
-    #such as an image or css document, if this isn't true it sends the
-    #request to index.php
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php?/$1 [L,qsa]
+		RewriteEngine On
+
+		# If you are having problems with your web server,
+		# uncomment this and change the base to your Saint location.
+		#RewriteBase /Saint/
+
+		# Block all direct access to settings and code files
+		RewriteRule ^(.*\.xml)$ index.php?/$1 [L,QSA]
+		RewriteRule ^(.*\.php)$ index.php?/$1 [L,QSA]
+
+		# Check to see if the user is attempting to access a valid file,
+		# such as an image or css document. If this isn't true it sends the
+		# request to index.php
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteCond %{REQUEST_FILENAME} !-d
+		RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
 </IfModule>

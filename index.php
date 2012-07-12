@@ -101,10 +101,13 @@ session_start();
 define("SAINT_PROFILING",false);
 
 if (SAINT_PROFILING) {
+	global $profiling_events;
+	global $script_start;
+	$profiling_events = array();
 	$mtime = microtime();
 	$mtime = explode(" ",$mtime);
 	$mtime = $mtime[1] + $mtime[0];
-	$starttime = $mtime;
+	$script_start = $mtime;
 }
 
 # Establish some basic runtime variables for use throughout the site
@@ -207,10 +210,18 @@ if (SAINT_DB_VERSION) {
 }
 
 if (SAINT_PROFILING) {
+	global $profiling_events;
+	global $script_start;
 	$mtime = microtime();
 	$mtime = explode(" ",$mtime);
 	$mtime = $mtime[1] + $mtime[0];
 	$endtime = $mtime;
-	$totaltime = ($endtime - $starttime)*1000;
-	Saint::logEvent("Page ".Saint::getCurrentPage()->getName()." was created in ".$totaltime." ms using " . memory_get_peak_usage() . " bytes.");
+	$totaltime = ($endtime - $script_start)*1000;
+	$profiling_events[] = "Page ".Saint::getCurrentPage()->getName()." was created in $totaltime ms using " . memory_get_peak_usage() . " bytes.";
+
+	$events = '';
+	foreach ($profiling_events as $event) {
+		$events .= $event . "\n\n";
+	}
+	Saint::logEvent($events);
 }

@@ -11,33 +11,26 @@ class Saint_Controller_Block {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public static function loadBlock($block) {
-		if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
-			$page = Saint::getCurrentPage();
-			$blockname = Saint_Model_Block::convertNameFromWeb($block);
-			$model = Saint_Model_Block::getBlockModel($blockname);
-			$edit_block = new $model();
-			$page->setEditBlock($edit_block);
-			
-			if (isset($_POST['blockid']) && Saint::sanitize($_POST['blockid'],SAINT_REG_ID)) {
-				$edit_block->load($blockname,$_POST['blockid']);
-			} else {
-				$edit_block->loadNew($blockname);
-			}
-
-			if (!$edit_block) {
-				$page->setTempLayout("system/error");
-				$page->addError("Failed to load block for editing. Check error logs for further details.");
-				return 0;
-			}
-			
-			$page->setTempLayout("system/block-edit");
+		$page = Saint::getCurrentPage();
+		$blockname = Saint_Model_Block::convertNameFromWeb($block);
+		$model = Saint_Model_Block::getBlockModel($blockname);
+		$edit_block = new $model();
+		$page->setEditBlock($edit_block);
+		
+		if (isset($_POST['blockid']) && Saint::sanitize($_POST['blockid'],SAINT_REG_ID)) {
+			$edit_block->load($blockname,$_POST['blockid']);
 		} else {
-			Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$block."-".$_POST['blockid'].
-				" from IP $_SERVER[REMOTE_ADDR] but was denied access.");
+			$edit_block->loadNew($blockname);
+		}
+
+		if (!$edit_block) {
 			$page->setTempLayout("system/error");
-			$page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
+			$page->addError("Failed to load block for editing. Check error logs for further details.");
 			return 0;
 		}
+		
+		$page->setTempLayout("system/block-edit");
+			
 		return 1;
 	}
 	/**
@@ -48,46 +41,41 @@ class Saint_Controller_Block {
 	 */
 	public static function editBlock($editid,$blockname) {
 		$success = false;
-		if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
-			$page = Saint::getCurrentPage();
-			$args = $page->getArgs();
-			$bname = Saint_Model_Block::convertNameFromWeb($_POST['saint-block-setting-saintname']);
-			$model = Saint_Model_Block::getBlockModel($bname);
-			$block = new $model();
-			if ($block->load($bname,$args['edit'])) {
-				$allsettings = Saint_Model_Block::getSettings($_POST['saint-block-setting-saintname']);
-				if (isset($_POST['saint-block-setting-enabled'])) {
-					if ($_POST['saint-block-setting-enabled']) {
-						$block->enable();
-					} else {
-						$block->disable();
-					}
-				}
-			
-				if (isset($_POST['saint-edit-block-categories'])) {
-					$newcats = $_POST['saint-edit-block-categories'];
+	
+		$page = Saint::getCurrentPage();
+		$args = $page->getArgs();
+		$bname = Saint_Model_Block::convertNameFromWeb($_POST['saint-block-setting-saintname']);
+		$model = Saint_Model_Block::getBlockModel($bname);
+		$block = new $model();
+		if ($block->load($bname,$args['edit'])) {
+			$allsettings = Saint_Model_Block::getSettings($_POST['saint-block-setting-saintname']);
+			if (isset($_POST['saint-block-setting-enabled'])) {
+				if ($_POST['saint-block-setting-enabled']) {
+					$block->enable();
 				} else {
-					$newcats = array();
+					$block->disable();
 				}
-				$block->setCategories($newcats);
-				
-				foreach ($allsettings as $setting) {
-					$sname = "saint-block-setting-".$setting[0];
-					if (isset($_POST[$sname]))
-						$sval = $_POST[$sname];
-					else
-						$sval = "";
-					$block->set($setting[0],$sval);
-				}
-				if ($block->save()) {
-					$success = true; }
 			}
-		} else {
-			Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$_POST['block']."-".$_POST['blockid'].
-				" from IP $_SERVER[REMOTE_ADDR] but was denied access.",__FILE__,__LINE__);
-			$page->setLayout("error");
-			$page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
+		
+			if (isset($_POST['saint-edit-block-categories'])) {
+				$newcats = $_POST['saint-edit-block-categories'];
+			} else {
+				$newcats = array();
+			}
+			$block->setCategories($newcats);
+			
+			foreach ($allsettings as $setting) {
+				$sname = "saint-block-setting-".$setting[0];
+				if (isset($_POST[$sname]))
+					$sval = $_POST[$sname];
+				else
+					$sval = "";
+				$block->set($setting[0],$sval);
+			}
+			if ($block->save()) {
+				$success = true; }
 		}
+		
 		$webname = Saint_Model_Block::convertNameToWeb($bname);
 		$page->process();
 		$output = $page->render(array('get'=>true));

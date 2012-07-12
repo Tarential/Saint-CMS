@@ -15,6 +15,7 @@
 		<script type="text/javascript" src="http://www.google.com/jsapi"></script>
 		<script type="text/javascript">
 			google.load("jquery", "1");
+			var SAINT_CLIENT_NONCE = '<?php echo Saint::getCurrentUser()->getNonce(); ?>';
 		</script>
 		<?php if (Saint::getCurrentUser()->getId() || $page->getName() == "register" || $page->getName() == "contact"): ?>
 			<script type="text/javascript" src="<?php echo SAINT_URL; ?>/core/scripts/tinymce/jquery.tinymce.js"></script>

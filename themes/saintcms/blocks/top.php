@@ -10,6 +10,7 @@
 		<script type="text/javascript" src="http://www.google.com/jsapi"></script>
 		<script type="text/javascript">
 			google.load("jquery", "1");
+			var CLIENT_NONCE = '<?php echo Saint::getCurrentUser()->getNonce(); ?>';
 		</script>
 		<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")) {
 			Saint::includeScript("tinymce/jquery.tinymce");

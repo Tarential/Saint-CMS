@@ -21,7 +21,6 @@ class Saint_Controller_Label {
 		$jsondata = array();
 		$success = false;
 		if ($label->loadByName($labelName)) {
-			if ($user->hasPermissionTo("edit-label") || $user->getUsername() == $label->getOwner()) {
 				if (isset($_POST['label-language']))
 					$language = $_POST['label-language'];
 				else
@@ -49,14 +48,6 @@ class Saint_Controller_Label {
 				$jsondata['actionlog'] = Saint::getActionLog();
 				$page->setJsonData($jsondata);
 				return 1;
-			} else {
-				Saint::logError("User ".$user->getUsername()." attempted to set label ".$label->getName().
-					" from IP $_SERVER[REMOTE_ADDR] but was denied access.");
-				$jsondata['success'] = false;
-				$jsondata['actionlog'] = Saint::getActionLog();
-				$page->setJsonData($jsondata);
-				return 0;
-			}
 		} else {
 			Saint::logError("User ".$user->getUsername()." attempted to set label ".
 				Saint::sanitize($labelName)." but that label was not found.");

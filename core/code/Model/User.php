@@ -5,16 +5,6 @@
  * @package Saint
  */
 class Saint_Model_User {
-	protected $_id;
-	protected $_username;
-	protected $_password;
-	protected $_language;
-	protected $_email;
-	protected $_fname;
-	protected $_lname;
-	protected $_phone;
-	protected $_scid;
-	
 	/**
 	 * Get matching usernames from the database.
 	 * @param array Filters to match.
@@ -104,15 +94,22 @@ class Saint_Model_User {
 	 * @param string $sequence Optional sequence number for session.
 	 * @return boolean True on success, false otherwise.
 	 */
-	public static function setCookie($sequence = null) {
+	public static function createSession($sequence = null) {
 		if ($sequence == null)
 			$sequence = substr(md5(uniqid(rand(), true)), 0, SAINT_SEQ_LEN);
 		$nonce = substr(md5(uniqid(rand(), true)), 0, SAINT_NONCE_LEN);
+		
+		# Client nonces may be greater than the md5 length, so we repeat
+		$client_nonce = '';
+		for ($i = 0; $i <= SAINT_CLIENT_NONCE_LEN; $i += 32) {
+			$client_nonce .= md5(uniqid(rand(), true));
+		}
+		$client_nonce = substr($client_nonce, 0, SAINT_CLIENT_NONCE_LEN);
 		try {
 			$username = Saint::getCurrentUsername();
 			$cookieval = $username.$sequence.$nonce;
 			setcookie("saintcookie",$cookieval,time()+60*60*24*30,'/');
-			Saint::query("INSERT INTO `st_sessions` (`username`,`sequence`,`nonce`) VALUES ('$username','$sequence','$nonce')");
+			Saint::query("INSERT INTO `st_sessions` (`username`,`sequence`,`nonce`,`client_nonce`) VALUES ('$username','$sequence','$nonce','$client_nonce')");
 			return 1;
 		} catch (Exception $e) {
 			Saint::logError("Unable to save cookie info: ".$e->getMessage());
@@ -137,7 +134,7 @@ class Saint_Model_User {
 				try {
 					Saint::query("DELETE FROM `st_sessions` WHERE `id`='$id'");
 					Saint_Model_User::setCurrentUsername($username);
-					Saint_Model_User::setCookie($sequence);
+					Saint_Model_User::createSession($sequence);
 					return 1;
 				} catch (Exception $f) {
 					Saint::logError("Problem deleting session with id $id.",__FILE__,__LINE__);
@@ -166,7 +163,7 @@ class Saint_Model_User {
 		if (Saint_Model_User::authenticate($username,$password)) {
 			Saint_Model_User::destroySessions($username);
 			Saint_Model_User::setCurrentUsername($username);
-			Saint_Model_User::setCookie();
+			Saint_Model_User::createSession();
 			return 1;
 		}
 		else
@@ -259,6 +256,17 @@ class Saint_Model_User {
     return $salt . sha1($salt . $text);
 	}
 	
+	protected $_id;
+	protected $_username;
+	protected $_password;
+	protected $_language;
+	protected $_email;
+	protected $_fname;
+	protected $_lname;
+	protected $_phone;
+	protected $_scid;
+	protected $_nonce;
+	
 	/**
 	 * Create a blank user model.
 	 */
@@ -271,6 +279,7 @@ class Saint_Model_User {
 		$this->_language = Saint::getDefaultLanguage();
 		$this->_password = '';
 		$this->_scid = 0;
+		$this->_nonce = '';
 	}
 	
 	/**
@@ -281,15 +290,17 @@ class Saint_Model_User {
 	public function loadById($id) {
 		if ($id = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {
-				$info = Saint::getRow("SELECT `username`,`email`,`fname`,`lname`,`language`,`password`,`phone` FROM `st_users` WHERE `id`='$id'");
+				$info = Saint::getRow("SELECT `u`.`username`,`u`.`email`,`u`.`fname`,`u`.`lname`,`u`.`language`,`u`.`password`,`u`.`phone`,`s`.`client_nonce` ".
+					"FROM `st_users` as `u`, `st_sessions` as `s` WHERE `u`.`id`='$id' AND `u`.`username`=`s`.`username`");
 				$this->_id = $id;
-				$this->_username=$info[0];
-				$this->_email=$info[1];
-				$this->_fname=$info[2];
-				$this->_lname=$info[3];
-				$this->_language=$info[4];
-				$this->_password=$info[5];
-				$this->_phone=$info[6];
+				$this->_username = $info[0];
+				$this->_email = $info[1];
+				$this->_fname = $info[2];
+				$this->_lname = $info[3];
+				$this->_language = $info[4];
+				$this->_password = $info[5];
+				$this->_phone = $info[6];
+				$this->_nonce = $info[7];
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Cannot load User model from ID $id. Error: " . $e->getMessage(),__FILE__,__LINE__);
@@ -325,6 +336,13 @@ class Saint_Model_User {
 	 */
 	public function getId() {
 		return $this->_id;
+	}
+	
+	/**
+	 * Get the client session nonce for the loaded user.
+	 */
+	public function getNonce() {
+		return $this->_nonce;
 	}
 	
 	/**
@@ -512,8 +530,9 @@ class Saint_Model_User {
 		$name = Saint::sanitize($action,SAINT_REG_NAME);
 		if ($name == $action) {
 			foreach ($this->getGroups() as $group) {
-				if (isset($saint_group_access[$group]) && in_array($name,$saint_group_access[$group]))
+				if (isset($saint_group_access[$group]) && in_array($name,$saint_group_access[$group])) {
 					return 1;
+				}
 			}
 			return 0;
 		} else

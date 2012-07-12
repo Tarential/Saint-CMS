@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `st_sessions` (
 	`username` VARCHAR(255) NOT NULL,
 	`sequence` VARCHAR(255) NOT NULL,
 	`nonce` VARCHAR(255) NOT NULL,
+	`client_nonce` VARCHAR(255) NOT NULL,
 	PRIMARY KEY (`id`),
 	UNIQUE INDEX `st_sessions_username` (`username`),
 	CONSTRAINT `st_sessions_username_username`

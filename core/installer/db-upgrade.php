@@ -59,6 +59,11 @@ ALTER TABLE `st_layouts` ADD COLUMN `show` BOOLEAN NOT NULL DEFAULT 1;
 UPDATE `st_config` SET `version`='1.0300';
 EOT;
 
+$upgrades['1.0300'] = <<<EOT
+ALTER TABLE `st_sessions` ADD COLUMN `client_nonce` VARCHAR(255) NOT NULL;
+UPDATE `st_config` SET `version`='1.0400';
+EOT;
+
 foreach ($upgrades as $version=>$sql) {
 	if (SAINT_DB_VERSION <= $version) {
 		foreach (explode(";",$sql) as $query) {
