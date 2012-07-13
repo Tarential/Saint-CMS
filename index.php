@@ -128,13 +128,11 @@ if (preg_match('/^(\d+)\.(\d\d)(\d\d)$/',SAINT_CODE_VERSION,$matches)) {
 	define('SAINT_FRIENDLY_VERSION','');
 }
 
-$subdir = substr(SAINT_SITE_ROOT,strlen($_SERVER['DOCUMENT_ROOT']));
-define('SAINT_URL',chop(SAINT_BASE_URL . "/" . $subdir,'/'));
 if ($get_start = strpos($_SERVER['REQUEST_URI'],'?'))
 	$uri_sans_get = trim(substr($_SERVER['REQUEST_URI'],0,$get_start),'/');
 else
 	$uri_sans_get = trim($_SERVER['REQUEST_URI'],'/');
-$uri = trim(substr($uri_sans_get,strlen($subdir)),'/');
+$uri = trim(substr($uri_sans_get,strlen(SAINT_SUB_DIR)),'/');
 
 /**
  * Saint class autoload function.
@@ -193,8 +191,9 @@ if (preg_match('/^([^\/]+)\/(.*)$/',$uri,$matches)) {
 	$pid = $uri;
 	$args['subids'] = array();
 }
-if ($pid == '')
+if ($pid == '') {
 	$pid = "home";
+}
 
 if (Saint::getCurrentUsername() == "guest" && isset($_COOKIE['saintcookie'])) {
 	Saint_Model_User::loginViaCookie($_COOKIE['saintcookie']);

@@ -56,6 +56,7 @@ class Saint_Model_Page {
 	public static function rankPages($pages = array()) {
 		$sorted_pages = array();
 		$sub_pages = array();
+		# Add main pages
 		foreach ($pages as $page) {
 			if ($page->getParent() == 0) {
 				if (!isset($sorted_pages[$page->getId()])) {
@@ -67,10 +68,9 @@ class Saint_Model_Page {
 				$sub_pages[] = $page;
 			}
 		}
+		# Add sub pages
 		foreach ($sub_pages as $page) {
-			if (!isset($sorted_pages[$page->getParent()])) {
-				$sorted_pages[$page->getParent()] = array(null,array($page));
-			} else {
+			if (isset($sorted_pages[$page->getParent()])) {
 				$sorted_pages[$page->getParent()][1][] = $page;
 			}
 		}
@@ -84,7 +84,7 @@ class Saint_Model_Page {
 	 */
 	public static function getModel($name) {
 		$default = "Saint_Model_Page";
-		if ($sname = Saint::sanitize($name,SAINT_REG_NAME)) {
+		if ($sname = Saint::sanitize($name,SAINT_REG_PAGE_NAME)) {
 			try {
 				$model = Saint::getOne("SELECT `l`.`model` FROM `st_pages` as `p`, `st_layouts` as `l` WHERE `p`.`name`='$sname' AND `p`.`layout`=`l`.`name`");
 				if (class_exists($model) && ($model == $default || is_subclass_of($model,$default))) {
@@ -108,7 +108,7 @@ class Saint_Model_Page {
 	 * @return boolean True if available, false otherwise.
 	 */
 	public static function nameAvailable($name) {
-		if ($sname = Saint::sanitize($name,SAINT_REG_NAME)) {
+		if ($sname = Saint::sanitize($name,SAINT_REG_PAGE_NAME)) {
 			try {
 				$id = Saint::getOne("SELECT `id` FROM `st_pages` WHERE `name`='$sname'");
 				return 0;
@@ -272,7 +272,7 @@ class Saint_Model_Page {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function loadByName($name) {
-		if ($name = Saint::sanitize($name,SAINT_REG_NAME)) {
+		if ($name = Saint::sanitize($name,SAINT_REG_PAGE_NAME)) {
 			try {
 				$id = Saint::getOne("SELECT `id` FROM `st_pages` WHERE `name`='$name'");
 				return $this->loadById($id);
@@ -664,7 +664,7 @@ class Saint_Model_Page {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function setName($name) {
-		if ($name = Saint::sanitize($name,SAINT_REG_NAME)) {
+		if ($name = Saint::sanitize($name,SAINT_REG_PAGE_NAME)) {
 			$this->_name = $name;
 			return 1;
 		} else
@@ -678,7 +678,7 @@ class Saint_Model_Page {
 	 */
 	public function setLayout($layout) {
 		if (Saint_Model_Layout::inUse($layout)) {
-			if ($layout = Saint::sanitize($layout,SAINT_REG_NAME)) {
+			if ($layout = Saint::sanitize($layout,SAINT_REG_PAGE_NAME)) {
 				$this->_layout = $layout;
 				return 1;
 			} else {
@@ -699,7 +699,7 @@ class Saint_Model_Page {
 	 */
 	public function setTempLayout($layout) {
 		if (Saint_Model_Layout::inUse($layout)) {
-			if ($layout = Saint::sanitize($layout,SAINT_REG_NAME)) {
+			if ($layout = Saint::sanitize($layout,SAINT_REG_BLOCK_NAME)) {
 				$this->_templayout = $layout;
 				return 1;
 			} else {

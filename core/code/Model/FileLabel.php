@@ -29,7 +29,7 @@ class Saint_Model_FileLabel {
 	 * @param string[] $arguments Arguments to change.
 	 */
 	public static function setFile($labelname, $arguments = array()) {
-		$sname = Saint::sanitize($labelname,SAINT_REG_NAME);
+		$sname = Saint::sanitize($labelname,SAINT_REG_BLOCK_NAME);
 		if ($sname) {
 			if (isset($arguments['fid'])) {
 				# Check to make sure the fileid exists
@@ -58,7 +58,7 @@ class Saint_Model_FileLabel {
 	 * @return int ID of matching file or 0 if not found.
 	 */
 	public static function getFileId($name, $arguments = array()) {
-		$sname = Saint::sanitize($name,SAINT_REG_NAME);
+		$sname = Saint::sanitize($name,SAINT_REG_BLOCK_NAME);
 		if ($sname) {
 			try {
 				return Saint::getOne("SELECT `fileid` FROM `st_file_labels` WHERE `name`='$sname'");
@@ -83,7 +83,7 @@ class Saint_Model_FileLabel {
 	 * @return int New file ID on success, 0 on failure.
 	 */
 	public static function createLabel($name,$file) {
-		$sname = Saint::sanitize($name,SAINT_REG_NAME);
+		$sname = Saint::sanitize($name,SAINT_REG_BLOCK_NAME);
 		$slocation = Saint::sanitize($file);
 		try {
 			$fileid = Saint::getOne("SELECT `id` FROM `st_files` WHERE `location`='$slocation'");

@@ -13,7 +13,7 @@ class Saint_Model_Block {
 	 * @return int ID number of current block template or zero for failure.
 	 */
 	public static function getBlockTypeId($name, $options = array()) {
-		$sname = Saint::sanitize($name,SAINT_REG_NAME);
+		$sname = Saint::sanitize($name,SAINT_REG_BLOCK_NAME);
 		if ($sname) {
 			try {
 				return Saint::getOne("SELECT `id` FROM `st_block_types` WHERE `name`='$sname'");
@@ -37,7 +37,7 @@ class Saint_Model_Block {
 	 * @return int $id ID of new block type or 0 on failure.
 	 */
 	private static function createBlockType($name,$options = array()) {
-		$sname = Saint::sanitize($name,SAINT_REG_NAME);
+		$sname = Saint::sanitize($name,SAINT_REG_BLOCK_NAME);
 		if (isset($options['model']) && $options['model'] != null) {
 			$modname = ',`model`';
 			$modval = ",'".Saint::sanitize($options['model'])."'";
@@ -59,7 +59,7 @@ class Saint_Model_Block {
 	 * @return string Name of model to use.
 	 */
 	public static function getBlockModel($name) {
-		$sname = Saint::sanitize($name,SAINT_REG_NAME);
+		$sname = Saint::sanitize($name,SAINT_REG_BLOCK_NAME);
 		$default = "Saint_Model_Block";
 		try {
 			$model = Saint::getOne("SELECT `model` FROM `st_block_types` WHERE `name`='$sname'");
@@ -107,7 +107,7 @@ class Saint_Model_Block {
 	 * @return boolean True if exists, false otherwise.
 	 */
 	public static function inUse($block) {
-		if ($block = Saint::sanitize($block,SAINT_REG_NAME)) {
+		if ($block = Saint::sanitize($block,SAINT_REG_BLOCK_NAME)) {
 			if (file_exists(Saint::getThemeDir() .  "/blocks/".$block.".php")) {
 				return 1;
 			} elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$block.".php")) {
@@ -133,7 +133,7 @@ class Saint_Model_Block {
 			else
 				$container = false;
 			if (isset($arguments['view']) && $arguments['view'] != "")
-				$view = Saint::sanitize($arguments['view'],SAINT_REG_NAME);
+				$view = Saint::sanitize($arguments['view'],SAINT_REG_BLOCK_NAME);
 			else
 				$view = false;
 			if (isset($arguments['get']) && $arguments['get'] != "")
@@ -141,7 +141,7 @@ class Saint_Model_Block {
 			else
 				$get = false;
 			$page = Saint::getCurrentPage();
-			$block_name = Saint::sanitize($block_name,SAINT_REG_NAME);
+			$block_name = Saint::sanitize($block_name,SAINT_REG_BLOCK_NAME);
 			$block_model = Saint_Model_Block::getBlockModel($block_name);
 			if ($block_name) {
 				$id = $page->getBlockId();
@@ -395,7 +395,7 @@ EOT;
 			else
 				$container = true;
 			if (isset($arguments['view']) && $arguments['view'] != "")
-				$view = Saint::sanitize($arguments['view'],SAINT_REG_NAME);
+				$view = Saint::sanitize($arguments['view'],SAINT_REG_BLOCK_NAME);
 			else
 				$view = false;
 			
@@ -648,7 +648,7 @@ EOT;
 							} else {
 								$default = "''";
 							}
-						if ($safe = Saint::sanitize($setting,SAINT_REG_NAME)) {
+						if ($safe = Saint::sanitize($setting,SAINT_REG_BLOCK_NAME)) {
 							$ctq .= "\t`$safe` $datatype NOT NULL DEFAULT $default,\n";
 						} else
 							Saint::logError("$setting is not a valid block name.",__FILE__,__LINE__);
@@ -753,7 +753,7 @@ EOT;
 			} else {
 				$this->_id = Saint::sanitize($id,SAINT_REG_ID);
 				$this->_enabled = Saint::sanitize($enabled,SAINT_REG_BOOL);
-				$this->_name = Saint::sanitize($name,SAINT_REG_NAME);
+				$this->_name = Saint::sanitize($name,SAINT_REG_BLOCK_NAME);
 				$this->_settingnames = array();
 				$this->_categories = null;
 				if (isset($settings['created'])) {
@@ -1003,7 +1003,7 @@ EOT;
 	 * @param string $setting Name of the setting.
 	 */
 	public function set($setting,$value) {
-		$setting = Saint::sanitize($setting,SAINT_REG_NAME);
+		$setting = Saint::sanitize($setting,SAINT_REG_BLOCK_NAME);
 		$value = Saint::sanitize($value);
 		$this->_settings[$setting] = $value;
 	}

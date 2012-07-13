@@ -269,6 +269,7 @@ body.dark .saint-admin-code input, body.dark .saint-admin-code select, body.dark
 	background: #fff;
 	z-index: 80;
 	overflow: auto;
+	border: 1px solid #000;
 	-moz-box-shadow: 0 0 10px 2px #195894;
 	-webkit-box-shadow: 0 0 10px 2px #195894;
 	box-shadow: 0 0 10px 2px #666;

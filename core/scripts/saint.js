@@ -508,7 +508,7 @@ $(document).ready(function() {
 	Saint.sleStartMCE = function(mcetarget) {
 		$(mcetarget).tinymce({
 			// Location of TinyMCE script
-			script_url : '/core/scripts/tinymce/tiny_mce.js',
+			script_url : SAINT_URL + '/core/scripts/tinymce/tiny_mce.js',
 
 			// General options
 			theme : "advanced",
@@ -524,7 +524,7 @@ $(document).ready(function() {
 			theme_advanced_statusbar_location : "bottom",
 			theme_advanced_resizing : true,
 			// Example content CSS (should be your site CSS)
-			content_css : "/core/styles/saint.css",
+			content_css : SAINT_URL + "/core/styles/saint.css",
 
 			// Drop lists for link/image/media/template dialogs
 			template_external_list_url : "lists/template_list.js",

@@ -64,7 +64,7 @@ class Saint_Model_Label {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function loadByName($name) {
-		if ($name = Saint::sanitize($name,SAINT_REG_NAME)) {
+		if ($name = Saint::sanitize($name,SAINT_REG_BLOCK_NAME)) {
 			$this->_name = $name;
 			return 1;
 		} else
@@ -103,7 +103,7 @@ class Saint_Model_Label {
 	 * @return int Current revision number.
 	 */
 	public function getRevision($lang = null) {
-		if ($lang = Saint::sanitize($lang,SAINT_REG_NAME)) {
+		if ($lang = Saint::sanitize($lang,SAINT_REG_BLOCK_NAME)) {
 			if ($lang == null)
 				$lang = Saint::getDefaultLanguage();
 			try {
@@ -154,7 +154,7 @@ class Saint_Model_Label {
 			$container = true;
 		}
 		if (isset($options['lang']) && $options['lang'] != null) {
-			$lang = Saint::sanitize($options['lang'],SAINT_REG_NAME);
+			$lang = Saint::sanitize($options['lang'],SAINT_REG_BLOCK_NAME);
 		} else {
 			$lang = Saint::getCurrentLanguage();
 		}
@@ -208,7 +208,7 @@ class Saint_Model_Label {
 		if ($lang == null)
 			$lang = Saint::getDefaultLanguage();
 		else
-			$lang = Saint::sanitize($lang,SAINT_REG_NAME);
+			$lang = Saint::sanitize($lang,SAINT_REG_BLOCK_NAME);
 		if ($label && $lang) {
 			$this->_new_labels[$lang] = $label;
 			return 1;
@@ -258,7 +258,7 @@ class Saint_Model_Label {
 				}
 				/* Old indexing method. To be eliminated.
 				# Strip the delimiters off the config name pattern to match block names within the label name.
-				$spn = trim(rtrim(SAINT_REG_NAME,'/'),'/');
+				$spn = trim(rtrim(SAINT_REG_BLOCK_NAME,'/'),'/');
 				$spn = trim(rtrim($spn,'$'),'^');
 				$block_pattern = '/^block\/[\d]+\/('.$spn.')\/n\//';
 				if (preg_match($block_pattern,$this->_name,$matches)) {

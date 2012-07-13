@@ -11,7 +11,7 @@ class Saint_Model_Language {
 	 * @return boolean True if in use, false otherwise.
 	 */
 	public static function inUse($language) {
-		if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
+		if ($language = Saint::sanitize($language,SAINT_REG_LANG_NAME)) {
 			try {
 				Saint::getOne("SELECT `id` FROM `st_languages` WHERE `name`='$language'");
 				return 1;
@@ -66,7 +66,7 @@ class Saint_Model_Language {
 		if (Saint_Model_Language::inUse($language))
 			return 1;
 		else {
-			if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
+			if ($language = Saint::sanitize($language,SAINT_REG_LANG_NAME)) {
 				try {
 					Saint::getOne("INSERT INTO `st_languages` (`name`,`$title`) VALUES ('$language','$title')");
 					return 1;
@@ -84,7 +84,7 @@ class Saint_Model_Language {
 	 * @return boolean True on success, false on failure.
 	 */
 	public static function removeLanguage($language) {
-		if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
+		if ($language = Saint::sanitize($language,SAINT_REG_LANG_NAME)) {
 			try {
 				Saint::getOne("DELETE FROM `st_languages` WHERE `name`='$language'");
 				return 1;
@@ -101,7 +101,7 @@ class Saint_Model_Language {
 	 * @return boolean True on success, false on failure.
 	 */
 	public static function enableLanguage($language) {
-		if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
+		if ($language = Saint::sanitize($language,SAINT_REG_LANG_NAME)) {
 			try {
 				Saint::getOne("UPDATE `st_languages` SET `enabled`=1 WHERE `name`='$language'");
 				return 1;
@@ -118,7 +118,7 @@ class Saint_Model_Language {
 	 * @return boolean True on success, false on failure.
 	 */
 	public static function disableLanguage($language) {
-		if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
+		if ($language = Saint::sanitize($language,SAINT_REG_LANG_NAME)) {
 			try {
 				Saint::getOne("UPDATE `st_languages` SET `enabled`=0 WHERE `name`='$language'");
 				return 1;

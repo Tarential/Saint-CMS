@@ -327,7 +327,7 @@ class Saint_Model_File {
 	 * @return boolean True for success, false otherwise.
 	 */
 	public function setName($name) {
-		$sname = Saint::sanitize($name,SAINT_REG_NAME);
+		$sname = Saint::sanitize($name,SAINT_REG_FILE_NAME);
 		if ($sname) {
 			$this->_name = $sname;
 			return 1;

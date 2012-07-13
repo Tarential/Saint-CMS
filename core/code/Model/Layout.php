@@ -11,7 +11,7 @@ class Saint_Model_Layout {
 	 * @return boolean True if layout is active, false otherwise.
 	 */
 	public static function inUse($layout) {
-		if ($layout = Saint::sanitize($layout,SAINT_REG_NAME)) {
+		if ($layout = Saint::sanitize($layout,SAINT_REG_BLOCK_NAME)) {
 			if (Saint_Model_Block::inUse("layouts/".$layout)) {
 				return 1;
 			}
@@ -118,7 +118,7 @@ class Saint_Model_Layout {
 	 * @param array $data Data for layout.
 	 */
 	public static function create($name, $data = array()) {
-		$sname = Saint::sanitize($name,SAINT_REG_NAME);
+		$sname = Saint::sanitize($name,SAINT_REG_BLOCK_NAME);
 		$keys = '';
 		$vals = '';
 		if (isset($data['model']) && $data['model'] != "") {
@@ -168,7 +168,7 @@ class Saint_Model_Layout {
 	 * @return boolean True if layout is active, false otherwise.
 	 */
 	public function loadByName($name) {
-		$sname = Saint::sanitize($name,SAINT_REG_NAME);
+		$sname = Saint::sanitize($name,SAINT_REG_BLOCK_NAME);
 		if ($sname) {
 			try {
 				$data = Saint::getRow("SELECT `id`,`title`,`model`,`show` FROM `st_layouts` WHERE `name`='$sname'");

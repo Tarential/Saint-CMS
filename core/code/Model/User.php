@@ -46,7 +46,7 @@ class Saint_Model_User {
 	 * @return boolean True on success, false otherwise.
 	 */
 	private static function setCurrentUsername($username) {
-		if ($sname = Saint::sanitize($username,SAINT_REG_NAME)) {
+		if ($sname = Saint::sanitize($username,SAINT_REG_USER_NAME)) {
 			$_SESSION['username'] = $sname;
 			return 1;
 		} elseif ($username == '') {
@@ -79,7 +79,7 @@ class Saint_Model_User {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public static function destroySessions($username) {
-		$username = Saint::sanitize($username,SAINT_REG_NAME);
+		$username = Saint::sanitize($username,SAINT_REG_USER_NAME);
 		try {
 			Saint::query("DELETE FROM `st_sessions` WHERE `username`='$username'");
 			return 1;
@@ -186,11 +186,11 @@ class Saint_Model_User {
 	/**
 	 * Checks if username is available for use
 	 * @param string $username Username to test
-	 * @global string SAINT_REG_NAME Pattern matching valid usernames
+	 * @global string SAINT_REG_USER_NAME Pattern matching valid usernames
 	 * @return boolean True if available, false otherwise
 	 */
 	public static function nameAvailable($username) {
-		if ($username = Saint::sanitize($username,SAINT_REG_NAME)) {
+		if ($username = Saint::sanitize($username,SAINT_REG_USER_NAME)) {
 			try {
 				$id = Saint::getOne("SELECT `id` FROM `st_users` WHERE `username`='$username'");
 				return 0;
@@ -225,7 +225,7 @@ class Saint_Model_User {
 	 * @return boolean True if username/password matches, false otherwise.
 	 */
 	public static function authenticate($username, $password) {
-		if ($username = Saint::sanitize($username,SAINT_REG_NAME)) {
+		if ($username = Saint::sanitize($username,SAINT_REG_USER_NAME)) {
 			try {
 				$hash = Saint::getOne("SELECT `password` FROM `st_users` WHERE `username`='$username'");
 				if ($hash == Saint_Model_User::genHash($password,$hash))
@@ -318,7 +318,7 @@ class Saint_Model_User {
 	public function loadByUsername($username) {
 		if ($username === "guest") {
 			return 0; }
-		if ($username = Saint::sanitize($username,SAINT_REG_NAME)) {
+		if ($username = Saint::sanitize($username,SAINT_REG_USER_NAME)) {
 			try {
 				$id = Saint::getOne("SELECT `id` FROM `st_users` WHERE `username`='$username'");
 				return $this->loadById($id);
@@ -430,7 +430,7 @@ class Saint_Model_User {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function setUsername($username) {
-		if ($username = Saint::sanitize($username,SAINT_REG_NAME)) {
+		if ($username = Saint::sanitize($username,SAINT_REG_USER_NAME)) {
 			if (Saint_Model_User::nameAvailable($username)) {
 				$this->_username = $username;
 				return 1;
@@ -446,7 +446,7 @@ class Saint_Model_User {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function setLanguage($language) {
-		if ($language = Saint::sanitize($language,SAINT_REG_NAME)) {
+		if ($language = Saint::sanitize($language,SAINT_REG_USER_NAME)) {
 			if (Saint_Model_Language::inUse($language)) {
 				$this->_language = $language;
 				return 1;
@@ -527,7 +527,7 @@ class Saint_Model_User {
 	 */
 	public function hasPermissionTo($action) {
 		global $saint_group_access;
-		$name = Saint::sanitize($action,SAINT_REG_NAME);
+		$name = Saint::sanitize($action,SAINT_REG_USER_NAME);
 		if ($name == $action) {
 			foreach ($this->getGroups() as $group) {
 				if (isset($saint_group_access[$group]) && in_array($name,$saint_group_access[$group])) {
@@ -560,7 +560,7 @@ class Saint_Model_User {
 	 * @return boolean True if user is in group, false otherwise.
 	 */
 	public function isInGroup($group) {
-		$name = Saint::sanitize($group,SAINT_REG_NAME);
+		$name = Saint::sanitize($group,SAINT_REG_USER_NAME);
 		if ($name == $group) {
 			if ($this->getUsername() == "guest") {
 				if ($name == "guest")
@@ -586,7 +586,7 @@ class Saint_Model_User {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function addToGroup($group) {
-		$name = Saint::sanitize($group,SAINT_REG_NAME);
+		$name = Saint::sanitize($group,SAINT_REG_USER_NAME);
 		if ($name == $group) {
 			if (!$this->isInGroup($group)) {
 				try {
@@ -607,7 +607,7 @@ class Saint_Model_User {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public function removeFromGroup($group) {
-		$name = Saint::sanitize($group,SAINT_REG_NAME);
+		$name = Saint::sanitize($group,SAINT_REG_USER_NAME);
 		if ($name == $group) {
 			try {
 				Saint::query("DELETE FROM `st_user_groups` WHERE `group`='$name' AND `userid`='".$this->getId()."'");

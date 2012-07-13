@@ -948,7 +948,7 @@ class Saint {
 	 * @param string $style Name of style file to include. 
 	 */
 	public static function includeStyle($style) {
-		if ($style = Saint::sanitize($style,SAINT_REG_NAME)) {
+		if ($style = Saint::sanitize($style,SAINT_REG_BLOCK_NAME)) {
 			if (file_exists(Saint::getThemeDir() .  "/styles/".$style.".css"))
 				echo '<link rel="stylesheet" type="text/css" href="'.Saint::getThemeUrl().'/styles/'.$style.'.css" />';
 			elseif (file_exists(SAINT_SITE_ROOT .  "/core/styles/".$style.".css"))
@@ -963,7 +963,7 @@ class Saint {
 	 * @param string $script Name of script file to include. 
 	 */
 	public static function includeScript($script) {
-		if ($script = Saint::sanitize($script,SAINT_REG_NAME)) {
+		if ($script = Saint::sanitize($script,SAINT_REG_BLOCK_NAME)) {
 			if (file_exists(Saint::getThemeDir() . "/scripts/".$script.".js"))
 				echo '<script type="text/javascript" src="'.Saint::getThemeUrl().'/scripts/'.$script.'.js"></script>';
 			elseif (file_exists(SAINT_SITE_ROOT .  "/core/scripts/".$script.".js"))

@@ -8,28 +8,17 @@
 # X = Full release
 # Y = Major revision
 # Z = Minor revision
-define('SAINT_CODE_VERSION','1.0301');
-
-# Site location
-define('SAINT_BASE_URL',"http://" . $_SERVER['SERVER_NAME']);
-define('SAINT_SITE_ROOT',chop(getcwd(),'/'));
-define('SAINT_CACHE_DIR',SAINT_SITE_ROOT."/cache");
+define('SAINT_CODE_VERSION','1.0300');
 
 # Set this to true if you want Saint core media files to appear in the CMS file manager
 define('SAINT_USE_CORE_MEDIA',true);
 
-# Basic settings
-define('SAINT_DEF_LANG',"english");
-define('SAINT_BLOG_LANG',"en-us");
-define('SAINT_MAINT_MODE',false);
-define('SAINT_LOG_LEVEL',3); // 0 disabled, 1 errors, 2 errors + warnings, 3 all
-define('SAINT_LOG_DIR',SAINT_SITE_ROOT.'/logs/');
-define('SAINT_ERR_FILE',SAINT_LOG_DIR.'error.log');
-define('SAINT_WARN_FILE',SAINT_LOG_DIR.'warning.log');
-define('SAINT_EVENT_FILE',SAINT_LOG_DIR.'events.log');
-
-# Special note: Name patterns cannot include underscores for reasons elaborated upon in the manual.
-define('SAINT_REG_NAME',"/^[a-zA-Z0-9\/\.\-]+$/");
+# Special note: Block name patterns cannot include underscores for reasons elaborated upon in the manual.
+define('SAINT_REG_BLOCK_NAME',"/^[a-zA-Z0-9\/\.\-]+$/");
+define('SAINT_REG_USER_NAME',"/^[a-zA-Z0-9\.\-_]+$/");
+define('SAINT_REG_PAGE_NAME',"/^[a-zA-Z0-9\.\-_]+$/");
+define('SAINT_REG_LANG_NAME',"/^[a-zA-Z0-9\.\-_]+$/");
+define('SAINT_REG_FILE_NAME',"/^[a-zA-Z0-9\.\-_]+$/");
 define('SAINT_REG_ID',"/^\d+$/");
 define('SAINT_REG_BOOL',"/^[01]$/");
 define('SAINT_REG_EMAIL',"/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/");
@@ -41,9 +30,6 @@ define('SAINT_SEQ_LEN',32);
 
 # Client authentication nonce length
 define('SAINT_CLIENT_NONCE_LEN',64);
-
-# For enabling/disabling sandbox
-define('SAINT_PAYPAL_URL','www.sandbox.paypal.com');
 
 # For future integration with PayPal API
 define('SAINT_PAYPAL_USERNAME','');
