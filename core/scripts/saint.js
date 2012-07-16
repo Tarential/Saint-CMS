@@ -1107,6 +1107,16 @@ $(document).ready(function() {
 		}
 	},'.saint-list-expanded > .trigger');
 
+	$(document).on({
+		'click': function(event) {
+			if ($('.saint-admin-overlay').hasClass("pinned")) {
+				$('.saint-admin-overlay').removeClass("pinned");
+			} else {
+				$('.saint-admin-overlay').addClass("pinned");
+			}
+		}
+	},'.saint-admin-overlay .saint-pin');
+	
 	Saint.expandOverlay = function() {
 		if ($('.saint-admin-overlay').hasClass("contracted")) {
 		$('.saint-admin-overlay').animate({
@@ -1120,7 +1130,7 @@ $(document).ready(function() {
 	};
 	
 	Saint.contractOverlay = function() {
-		if ($('.saint-admin-overlay').hasClass("expanded")) {
+		if ($('.saint-admin-overlay').hasClass("expanded") && !($('.saint-admin-overlay').hasClass("pinned"))) {
 		  $('.saint-admin-overlay').animate({
 		    width: '100px',
 		    height: '20px'

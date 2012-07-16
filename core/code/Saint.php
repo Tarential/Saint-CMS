@@ -1128,6 +1128,82 @@ class Saint {
 	}
 	
 	/**
+	 * Retrieve pages and blocks associated with given menu name.
+	 */
+	public static function includeMenu($category = 'Main Menu') {
+		$menu_blocks = array();
+		
+		# First get menu items based on pages
+		$page_items = Saint::getPages(array('categories'=>$category,'orderby'=>'weight','order'=>'ASC'));
+		foreach ($page_items as $item) {
+			if ($item->getParent() == 0) {
+				$new_item = new Saint_Model_Block();
+				$new_item->set("url",$item->getUrl());
+				$new_item->set("name",$item->getName());
+				$new_item->set("title",$item->getTitle());
+				$new_item->set("weight",$item->getWeight());
+				$new_item->set("children",array());
+				$menu_blocks[$item->getId()] = $new_item;
+			}
+		}
+		foreach ($page_items as $item) {
+			if ($item->getParent() != 0 && isset($menu_blocks[$item->getParent()])) {
+				$new_item = new Saint_Model_Block();
+				$new_item->set("url",$item->getUrl());
+				$new_item->set("name",$item->getName());
+				$new_item->set("title",$item->getTitle());
+				$new_item->set("weight",$item->getWeight());
+				$children = $menu_blocks[$item->getParent()]->get("children");
+				$children[] = $new_item;
+				$menu_blocks[$item->getParent()]->set("children",$children);
+			}
+		}
+		
+		# Then get menu items based on blocks
+		$block_items = Saint_Model_Block::getBlocks("navigation/menu-item",array('categories'=>$category,'repeat'=>100,'collection'=>true,'orderby'=>'weight','order'=>'ASC'));
+		foreach ($block_items as $key=>$item) {
+			if ($item->get("parent") == 0) {
+				$item->set("children",array());
+			} else {
+				$children = $menu_blocks[$item->get("parent")]->get("children");
+				$children[] = $item;
+				$menu_blocks[$item->get("parent")]->set("children",$children);
+				unset($block_items[$key]);
+			}
+		}
+		
+		$menu_blocks = array_merge($block_items,$menu_blocks);
+		
+		# Finally, sort the menu items
+		usort($menu_blocks,"Saint::sortByWeight");
+		foreach ($menu_blocks as $block) {
+			$children = $block->get("children");
+			usort($children,"Saint::sortByWeight");
+			$block->set("children",$children);
+		}
+		
+		$main_menu_block = new Saint_Model_Block();
+		$main_menu_block->set("menu-items",$menu_blocks);
+		Saint::includeBlock("navigation/menu",array('repeat'=>1,'container'=>false,'blocks'=>array($main_menu_block)));
+	}
+	
+	/**
+	 * Sort menu items by weight.
+	 * @param Saint_Model_Block $blocka
+	 * @param Saint_Model_Block $blockb
+	 */
+	static function sortByWeight($blocka,$blockb) {
+		$a = $blocka->get("weight");
+		$b = $blockb->get("weight");
+		if ($a == $b)
+			return 0;
+		if ($a > $b)
+			return 1;
+		if ($a < $b)
+			return -1;
+	}
+	
+	/**
 	 * Generates and returns a form field with the given parameters.
 	 * @param string $name Name of input field.
 	 * @param string $type Type of input field.

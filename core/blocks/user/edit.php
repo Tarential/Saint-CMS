@@ -18,13 +18,17 @@ else
 		<input type="hidden" name="saint-edit-user-id" value="<?php echo $user->getId(); ?>" />
 		<input type="hidden" name="saint-edit-user-original-username" id="saint-edit-user-original-username" value="<?php echo $user->getUsername(); ?>" />
 		<ul>
-			<li><?php echo Saint::genField("saint-edit-user-username","text","Username: ",
+			<li><?php if (Saint::getCurrentUser()->hasPermissionTo("edit-user")) {
+				echo Saint::genField("saint-edit-user-username","text","Username: ",
 				array(
 					'value'=>$username,
 					'static'=>true,
 					'classes' => 'saint-validate saint-validate-username',
 					'rules'=>'required',
-				)); ?><div class="hud error username" style="display:none;"></div></li>
+				)); ?><div class="hud error username" style="display:none;"></div><?php
+				} else {
+					echo $username;				
+				} ?></li>
 			<li><?php echo Saint::genField("saint-edit-user-firstname","text","First Name: ",
 				array(
 					'value'=>$user->getFirstName(),

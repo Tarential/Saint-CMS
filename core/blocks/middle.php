@@ -8,7 +8,7 @@
 			<?php endforeach; ?>
 			</div>
 		<?php endif; ?>
-		<?php Saint::includeBlock("navigation/menu"); ?>
+		<?php Saint::includeBlock("navigation/top"); ?>
 		<div id="container">
 			<a href="<?php echo SAINT_URL; ?>" class="logo">&nbsp;</a>
 			<?php Saint::includeBlock("sidebar"); ?>

@@ -49,7 +49,7 @@ class Saint_Controller_User {
 				Saint_Model_User::deleteUser($id);
 			}
 			
-			if ($_POST['saint-edit-user-username'] != $user->getUsername()) {
+			if ($_POST['saint-edit-user-username'] != $user->getUsername() && Saint::getCurrentUser()->hasPermissionTo("edit-user")) {
 				if (Saint_Model_User::nameAvailable($_POST['saint-edit-user-username'])) {
 					$user->setUsername($_POST['saint-edit-user-username']);
 				} else {

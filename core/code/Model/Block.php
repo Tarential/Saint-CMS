@@ -1003,9 +1003,12 @@ EOT;
 	 * @param string $setting Name of the setting.
 	 */
 	public function set($setting,$value) {
-		$setting = Saint::sanitize($setting,SAINT_REG_BLOCK_NAME);
-		$value = Saint::sanitize($value);
-		$this->_settings[$setting] = $value;
+		if (in_array($setting,$this->_settingnames)) {
+			# If it's not in settingnames it won't be going to the db, so no sanitization is necessary.
+			$setting = Saint::sanitize($setting,SAINT_REG_BLOCK_NAME);
+			$value = Saint::sanitize($value);
+		}
+			$this->_settings[$setting] = $value;
 	}
 	
 	/**
@@ -1212,12 +1215,17 @@ EOT;
 			$details = $options['details'];
 		}
 		
+		if (isset($options['data'])) {
+			$data = $options['data'];
+		}
+		
 		$this->_input_settings = array(
 			"name" => $name,
 			"type" => $type,
 			"label" => $label,
 			"data" => $data,
 			"details" => $details,
+			"data" => $data,
 		);
 		
 		if ($setting != "enabled")

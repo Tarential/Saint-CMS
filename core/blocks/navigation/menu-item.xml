@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<block>
+	<name>navigation/menu-item</name>
+	<model>Saint_Model_MenuItem</model>
+	<setting>title</setting>
+	<setting>url</setting>
+	<setting datatype="integer unsigned" default="0">parent</setting>
+	<setting datatype="integer" default="0">weight</setting>
+	<setting>name</setting>
+</block>
