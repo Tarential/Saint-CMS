@@ -247,14 +247,7 @@ class Saint_Controller_Page {
 				# Label controls
 				
 				if (isset($_POST['label-name']) && isset($_POST['label-value'])) {
-					if ($user->hasPermissionTo("edit-label") || $user->getUsername() == $label->getOwner()) {
-						Saint_Controller_Label::editLabel($_POST['label-name'],$_POST['label-value']);
-					} else {
-						Saint::logError("User ".$user->getUsername()." attempted to set label ".$label->getName().
-							" from IP $_SERVER[REMOTE_ADDR] but was denied access.");
-						$page->setTempLayout("system/error");
-						$page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
-					}
+					Saint_Controller_Label::editLabel($_POST['label-name'],$_POST['label-value']);
 				}
 				
 				if (isset($args['getlabel']) && $args['getlabel'] != "" && Saint::getCurrentUser()->hasPermissionTo("edit-label")) {

@@ -300,12 +300,21 @@ class Saint_Model_User {
 				$this->_language = $info[4];
 				$this->_password = $info[5];
 				$this->_phone = $info[6];
-				$this->_nonce = $info[7];
-				return 1;
 			} catch (Exception $e) {
-				Saint::logError("Cannot load User model from ID $id. Error: " . $e->getMessage(),__FILE__,__LINE__);
+				if ($e->getCode()) {
+					Saint::logError("Cannot load User model from ID '$id'. Error: " . $e->getMessage(),__FILE__,__LINE__);
+				}
 				return 0;
 			}
+			try {
+				$this->_nonce = Saint::getOne("SELECT `s`.`client_nonce` FROM `st_sessions` as `s` WHERE `s`.`username`='$this->_username'");
+			} catch (Exception $f) {
+				if ($f->getCode()) {
+					Saint::logError("Cannot load user session nonce for ID '$id'. Error: " . $f->getMessage(),__FILE__,__LINE__);
+					return 0;
+				}
+			}
+			return 1;
 		} else
 			return 0;
 	}

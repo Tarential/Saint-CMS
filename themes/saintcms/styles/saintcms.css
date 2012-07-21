@@ -286,7 +286,7 @@ body.narrow .nav-block.buy-now .info {
 
 body.narrow .nav-block.buy-now img {
 	float: none;
-	max-width: none;
+	max-width: 90%;
 }
 
 body.wide .nav-block, body.wide .nav-column.two .nav-block, body.narrow .nav-column-one .nav-block {

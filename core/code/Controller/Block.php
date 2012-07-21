@@ -67,10 +67,15 @@ class Saint_Controller_Block {
 			foreach ($allsettings as $setting) {
 				$sname = "saint-block-setting-".$setting[0];
 				if (isset($_POST[$sname]))
-					$sval = $_POST[$sname];
+					$val = $_POST[$sname];
 				else
-					$sval = "";
-				$block->set($setting[0],$sval);
+					$val = "";
+				if (Saint::getCurrentUser()->isInGroup("administrator")) {
+					$block->set($setting[0],$val);
+				} else {
+					$sval = htmlspecialchars($val);
+					$block->set($setting[0],$sval);
+				}
 			}
 			if ($block->save()) {
 				$success = true; }

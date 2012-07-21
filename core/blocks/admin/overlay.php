@@ -31,7 +31,7 @@
 						'static' => true,
 						'rules' => 'required',
 						'classes' => 'saint-validate saint-validate-add-page-name',
-					)); ?><div class="hud error add-page-name" style="display:none;"></div></li>
+					)); ?><div class="hud error add-page-name">Characters, digits, dashes, dots and underscores only.</div></li>
 					<?php
 						$options = array();
 						foreach (Saint::getLayoutNames() as $name=>$title)

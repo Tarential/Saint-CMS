@@ -25,7 +25,7 @@ else
 					'static'=>true,
 					'classes' => 'saint-validate saint-validate-username',
 					'rules'=>'required',
-				)); ?><div class="hud error username" style="display:none;"></div><?php
+				)); ?><div class="hud error username"<?php if ($user->getId()): ?> style="display:none;"<?php endif; ?>>Characters, digits, dashes, dots and underscores only.</div><?php
 				} else {
 					echo $username;				
 				} ?></li>

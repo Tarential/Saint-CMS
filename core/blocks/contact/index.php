@@ -5,7 +5,7 @@ $owner->loadByUsername(Saint::getSiteOwner());
 
 <h1><?php echo $page->getTitle(); ?></h1>
 <div id="saint-contact-info">
-<h3><?php echo SAINT_SITE_TITLE; ?></h3>
+<h3><?php echo Saint::getSiteTitle(); ?></h3>
 <?php if ($owner->getFirstName() != "" || $owner->getLastName() != ""): ?>
 <p><?php echo $owner->getFirstName() . " " . $owner->getLastName(); ?></p>
 <?php endif; ?>
