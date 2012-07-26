@@ -20,12 +20,18 @@ class Saint {
 	 * Sanitize input for use in database queries and filesystem traversal.
 	 * @param string $input Input to sanitize.
 	 * @param string $pattern Optional regex pattern to match.
+	 * @param boolean $display Optional default true to sanitize for display, false otherwise.
 	 */
-	public static function sanitize($input, $pattern = null) {
+	public static function sanitize($input, $pattern = null, $display = true) {
+		global $_user;
 		$safe = mysql_real_escape_string($input);
-		if (($pattern == null || preg_match($pattern,$safe)) && !preg_match('/\.\.\//',$safe))
-			return $safe;
-		else
+		if (($pattern == null || preg_match($pattern,$safe)) && !preg_match('/\.\.\//',$safe)) {
+			if (!$display || (is_a($_user,'Saint_Model_User') && $_user->isInGroup("administrator"))) {
+				return $safe;
+			} else {
+				return htmlspecialchars($safe);
+			}
+		} else
 			return 0;
 	}
 	

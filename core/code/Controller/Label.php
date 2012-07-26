@@ -27,12 +27,7 @@ class Saint_Controller_Label {
 					} else {
 						$language = $user->getLanguage();
 					}
-					if ($user->isInGroup("administrator")) {
-						$label->setLabel($lval);
-					} else {
-						$safe_val = htmlspecialchars($lval);
-						$label->setLabel($safe_val);
-					}
+					$label->setLabel($lval);
 					if ($label->save()) {
 						$label_data = Saint_Model_Label::parseName($labelName);
 						$message = 'Set label <span class="name">' . Saint_Model_Label::formatForDisplay($label_data['label_name']) . '</span>';

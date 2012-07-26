@@ -79,7 +79,7 @@ class Saint_Model_User {
 	 * @return boolean True on success, false otherwise.
 	 */
 	public static function destroySessions($username) {
-		$username = Saint::sanitize($username,SAINT_REG_USER_NAME);
+		$username = Saint::sanitize($username,SAINT_REG_USER_NAME, false);
 		try {
 			Saint::query("DELETE FROM `st_sessions` WHERE `username`='$username'");
 			return 1;
@@ -569,7 +569,7 @@ class Saint_Model_User {
 	 * @return boolean True if user is in group, false otherwise.
 	 */
 	public function isInGroup($group) {
-		$name = Saint::sanitize($group,SAINT_REG_USER_NAME);
+		$name = Saint::sanitize($group,SAINT_REG_USER_NAME, false);
 		if ($name == $group) {
 			if ($this->getUsername() == "guest") {
 				if ($name == "guest")

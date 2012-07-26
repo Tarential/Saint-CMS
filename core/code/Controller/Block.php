@@ -70,12 +70,8 @@ class Saint_Controller_Block {
 					$val = $_POST[$sname];
 				else
 					$val = "";
-				if (Saint::getCurrentUser()->isInGroup("administrator")) {
-					$block->set($setting[0],$val);
-				} else {
-					$sval = htmlspecialchars($val);
-					$block->set($setting[0],$sval);
-				}
+				
+				$block->set($setting[0],$val);
 			}
 			if ($block->save()) {
 				$success = true; }

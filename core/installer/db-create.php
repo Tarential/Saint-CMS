@@ -247,6 +247,15 @@ CREATE TABLE IF NOT EXISTS `st_shop_downloads` (
 	PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS `st_login_attempts` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`ip` VARCHAR(255) NOT NULL,
+	`attempts` INTEGER NOT NULL DEFAULT 1,
+	`last_attempt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`),
+	INDEX `st_login_attempts_ip` (`ip`)
+) ENGINE=InnoDB;
+
 INSERT INTO `st_languages` (`name`,`title`) VALUES ('english','English');
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('home','Home','blank',NOW(),-10);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('blog','Blog','blog/index',NOW(),-9);

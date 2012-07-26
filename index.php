@@ -180,7 +180,7 @@ define('SAINT_DB_VERSION',$installed);
 $args = array();
 foreach ($_GET as $key=>$val) {
 	if (trim($key,'/') != $uri) {
-		$args[$key] = $val;
+		$args[$key] = $val;;
 	}
 }
 

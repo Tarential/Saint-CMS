@@ -61,6 +61,14 @@ EOT;
 
 $upgrades['1.0300'] = <<<EOT
 ALTER TABLE `st_sessions` ADD COLUMN `client_nonce` VARCHAR(255) NOT NULL;
+CREATE TABLE IF NOT EXISTS `st_login_attempts` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`ip` VARCHAR(255) NOT NULL,
+	`attempts` INTEGER NOT NULL DEFAULT 1,
+	`last_attempt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`),
+	INDEX `st_login_attempts_ip` (`ip`)
+) ENGINE=InnoDB;
 UPDATE `st_config` SET `version`='1.0400';
 EOT;
 

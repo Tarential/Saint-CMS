@@ -283,11 +283,6 @@ class Saint_Controller_Page {
 
 				# User controls
 				
-				if (isset($args['action']) && $args['action'] == "logout") {
-					Saint_Model_User::logout();
-					header("Location: " . SAINT_URL);
-				}
-				
 				if (isset($_POST['saint-edit-user-id'])) {
 					if (Saint::getCurrentUser()->hasPermissionTo("edit-user") || 
 						(Saint::getCurrentUser()->getId() == $id && Saint::getCurrentUser()->hasPermissionTo("edit-self"))) {
@@ -450,6 +445,11 @@ class Saint_Controller_Page {
 			} else {
 				Saint::logError("There has been a possible hacking attempt on account '$this->_username'; client sent an invalid nonce.");
 			}
+		}
+		
+		if (isset($args['action']) && $args['action'] == "logout") {
+			Saint_Model_User::logout();
+			header("Location: " . SAINT_URL);
 		}
 		
 		/*
