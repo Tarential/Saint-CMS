@@ -225,35 +225,63 @@ class Saint_Model_User {
 	 * @return boolean True if username/password matches, false otherwise.
 	 */
 	public static function authenticate($username, $password) {
-		if ($username = Saint::sanitize($username,SAINT_REG_USER_NAME)) {
-			try {
-				$hash = Saint::getOne("SELECT `password` FROM `st_users` WHERE `username`='$username'");
-				if ($hash == Saint_Model_User::genHash($password,$hash))
-					return 1;
-				else
+		if (Saint_Model_User::failedLoginAttempts() <= 10) {
+			if ($username = Saint::sanitize($username,SAINT_REG_USER_NAME)) {
+				try {
+					$hash = Saint::getOne("SELECT `password` FROM `st_users` WHERE `username`='$username'");
+					$hasher = new Saint_Model_PasswordHasher(8, FALSE);
+					if ($hasher->CheckPassword($password,$hash)) {
+						Saint::query("DELETE FROM `st_login_attempts` WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
+						return 1;
+					} else {
+						try {
+							$qid = Saint::getOne("SELECT `id` FROM `st_login_attempts` WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
+							Saint::query("UPDATE `st_login_attempts` SET `attempts`=`attempts`+1 WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
+						} catch (Exception $f) {
+							Saint::query("INSERT INTO `st_login_attempts` (`ip`) VALUES ('$_SERVER[REMOTE_ADDR]')");
+						}
+						return 0;
+					}
+				} catch (Exception $e) {
 					return 0;
-			} catch (Exception $e) {
-				return 0;
+				}
 			}
+		} else {
+			Saint::logError("A user from $_SERVER[REMOTE_ADDR] failed login multiple times on account '$username'.",__FILE__,__LINE__);
+			return 0;
 		}
 	}
 	
 	/**
-	 * Generate SHA1-based hash for given password using given salt.
+	 * Get the number of recent failed login attempts by the current user.
+	 * @return integer Number of recent failed login attempts by the current user.
+	 */
+	public static function failedLoginAttempts() {
+		try {
+			$attempts = Saint::getRow("SELECT `id`,`attempts`,`last_attempt` FROM `st_login_attempts` WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
+			if (time() > strtotime($attempts[2]." +60 minutes")) {
+				Saint::query("DELETE FROM `st_login_attempts` WHERE `id`='$attempts[0]'");
+				$attempts[1] = 0;
+			}
+			return $attempts[1];
+		} catch (Exception $e) {
+			if ($e->getCode()) {
+				Saint::logError("Unable to select number of login attempts: ".$e->getMessage(),__FILE__,__LINE__);
+			}
+			return 0;
+		}
+	}
+	
+	/**
+	 * Generate hash for given password using random salt.
 	 * @param string $text Plain text password to be hashed.
-	 * @param string $salt Salt for hashing, null for random.
 	 * @return string Hashed password with salt prepended.
 	 */
-	protected static function genHash($text, $salt = null) {
-    if ($salt === null)
-    {
-        $salt = substr(md5(uniqid(rand(), true)), 0, SAINT_SALT_LEN);
-    }
-    else
-    {
-        $salt = substr($salt, 0, SAINT_SALT_LEN);
-    }
-    return $salt . sha1($salt . $text);
+	protected static function genHash($text) {
+		
+    $hasher = new Saint_Model_PasswordHasher(8, FALSE);
+    $hash = $hasher->HashPassword($text);
+		return $hash;
 	}
 	
 	protected $_id;
@@ -290,8 +318,8 @@ class Saint_Model_User {
 	public function loadById($id) {
 		if ($id = Saint::sanitize($id,SAINT_REG_ID)) {
 			try {
-				$info = Saint::getRow("SELECT `u`.`username`,`u`.`email`,`u`.`fname`,`u`.`lname`,`u`.`language`,`u`.`password`,`u`.`phone`,`s`.`client_nonce` ".
-					"FROM `st_users` as `u`, `st_sessions` as `s` WHERE `u`.`id`='$id' AND `u`.`username`=`s`.`username`");
+				$info = Saint::getRow("SELECT `u`.`username`,`u`.`email`,`u`.`fname`,`u`.`lname`,`u`.`language`,`u`.`password`,`u`.`phone` ".
+					"FROM `st_users` as `u` WHERE `u`.`id`='$id'");
 				$this->_id = $id;
 				$this->_username = $info[0];
 				$this->_email = $info[1];

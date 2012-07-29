@@ -1,10 +1,4 @@
 <div id="eula" class="info-block">
-	<p>Base URL: <?php echo SAINT_BASE_URL; ?></p>
-	<p>Server: <?php echo $_SERVER['SERVER_NAME']; ?></p>
-	<p>Site Root: <?php echo SAINT_SITE_ROOT; ?></p>
-	<p>Document Root: <?php echo $_SERVER['DOCUMENT_ROOT']; ?></p>
-	<p>Subdir: <?php echo $subdir = substr(SAINT_SITE_ROOT,strlen($_SERVER['DOCUMENT_ROOT'])); ?></p>
-	<p>Test: <?php echo substr(dirname(__FILE__),strlen($_SERVER['DOCUMENT_ROOT'])); ?></p>
 	<center><img src="<?php echo SAINT_URL; ?>/core/images/logo.png" /></center>
 	<p>END-USER LICENSE AGREEMENT FOR SAINT CONTENT MANAGEMENT SYSTEM. IMPORTANT: PLEASE READ THE TERMS AND CONDITIONS OF THIS LICENSE AGREEMENT CAREFULLY BEFORE CONTINUING WITH THIS PROGRAM INSTALL. Aparadine Software's End-User License Agreement ("EULA") is a legal agreement between you (either an individual or a single entity) and Aparadine Software for the Aparadine Software software product(s) identified as the "Saint Content Management System" which may include associated software components, media, printed materials, and "online" or electronic documentation. By installing, copying, or otherwise using the Saint Content Management System, you agree to be bound by the terms of this EULA. This license agreement represents the entire agreement concerning the program between you and Aparadine Software, (referred to as "licenser"), and it supersedes any prior proposal, representation, or understanding between the parties. If you do not agree to the terms of this EULA, do not install or use the Saint Content Management System.</p>
 	

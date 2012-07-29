@@ -8,7 +8,7 @@
 # X = Full release
 # Y = Major revision
 # Z = Minor revision
-define('SAINT_CODE_VERSION','1.0300');
+define('SAINT_CODE_VERSION','1.0400');
 
 # Set this to true if you want Saint core media files to appear in the CMS file manager
 define('SAINT_USE_CORE_MEDIA',true);
