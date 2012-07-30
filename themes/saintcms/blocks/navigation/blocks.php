@@ -2,32 +2,21 @@
 
 $saint = new Saint_Model_Product();
 $saint->load(2);
-$price = $saint->getPrice();
-$discount_price = $saint->getDiscountPrice();
 $name = $saint->getProductName();
 
-if ($discount_price < $price) {
-	$price_block = <<<EOT
-			<div class="special">
-				<span class="title"><a href="/buy/saint" class="buy-now">Special Offer</a></span>
-				<span class="special-price"><a href="/buy/saint" class="buy-now">\$$discount_price</a></span>
-				<span class="price"><a href="/buy/saint" class="buy-now">Regular \$$price</a></span>
-			</div>
+
+$price_block = <<<EOT
+	<span class="title"><a href="/download" class="buy-now">Get Saint Now</a></span>
+	<span class="price"><a href="/download" class="buy-now">v1.3</a></span>
 EOT;
-} else {
-	$price_block = <<<EOT
-			<span class="title"><a href="/buy/saint" class="buy-now">Get Saint Now</a></span>
-			<span class="price"><a href="/buy/saint" class="buy-now">\$$price</a></span>
-EOT;
-}
 
 $primary_links = <<<EOT
 	<div class="nav-block buy-now">
-		<h2><a href="/buy/saint" class="buy-now">Buy Now</a></h2>
-		<a href="/buy/saint" class="buy-now"><img src="/themes/saintcms/images/saint-box-left-small.png" /></a>
+		<h2><a href="/download" class="buy-now">Download</a></h2>
+		<a href="/download" class="buy-now"><img src="/themes/saintcms/images/saint-box-left-small.png" /></a>
 		<div class="info">
 $price_block
-			<p><a href="/buy/saint" class="buy-now">Buy $name</a></p>
+			<p><a href="/download" class="buy-now">Download $name</a></p>
 		</div>
 	</div>
 	<div class="nav-block demo">

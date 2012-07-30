@@ -7,7 +7,6 @@
 			<div class="left">
 				<ul>
 					<li><a href="/eula">License Agreement</a></li>
-					<li class="s"><a href="/return-policy">Return Policy</a></li>
 				</ul>
 			</div>
 			<div class="right">

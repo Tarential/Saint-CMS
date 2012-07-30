@@ -576,6 +576,13 @@ body.home #wrapper #content {
 #content .sbn-shop_product .block-item {
 	width: 100%; }
 
+.download-options {
+	float: right;
+	list-style: none;
+	border: 1px dotted #000;
+	padding: 10px;
+}
+
 /* Lyx Documentation Styles */
 
 div.toc {
