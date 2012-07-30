@@ -29,7 +29,17 @@ class Saint {
 			if (!$display || (is_a($_user,'Saint_Model_User') && $_user->isInGroup("administrator"))) {
 				return $safe;
 			} else {
-				return htmlspecialchars($safe);
+				$allowed_tags = array('p','b','i','u','em','strong');
+				foreach ($allowed_tags as $tag) {
+					$safe = str_ireplace('<'.$tag.'>','['.$tag.']',$safe);
+					$safe = str_ireplace('</'.$tag.'>','[/'.$tag.']',$safe);
+				}
+				$safe = htmlspecialchars($safe);
+				foreach ($allowed_tags as $tag) {
+					$safe = str_ireplace('['.$tag.']','<'.$tag.'>',$safe);
+					$safe = str_ireplace('[/'.$tag.']','</'.$tag.'>',$safe);
+				}
+				return $safe;
 			}
 		} else
 			return 0;
