@@ -110,11 +110,17 @@ class Saint_Model_Block {
 		if ($block = Saint::sanitize($block,SAINT_REG_BLOCK_NAME)) {
 			if (file_exists(Saint::getThemeDir() .  "/blocks/".$block.".php")) {
 				return 1;
-			} elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$block.".php")) {
-				return 1;
 			} else {
-				return 0;
+				foreach (Saint::getModules() as $mod) {
+					if (file_exists(SAINT_SITE_ROOT .  "/modules/".$mod."/blocks/".$block.".php")) {
+						return 1;
+					}
+				}
+				if (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$block.".php")) {
+					return 1;
+				}
 			}
+			return 0;
 		} else
 			return 0;
 	}
@@ -150,19 +156,33 @@ class Saint_Model_Block {
 				} else {
 					$block = new $block_model();
 				}
+				$found = false;
 				if (!$view)
 					$view = $block_name;
-				if (file_exists(Saint::getThemeDir() .  "/blocks/".$view.".php"))
+				if (file_exists(Saint::getThemeDir() .  "/blocks/".$view.".php")) {
 					$incfile = Saint::getThemeDir() .  "/blocks/".$view.".php";
-				elseif (file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$view.".php"))
-					$incfile = SAINT_SITE_ROOT .  "/core/blocks/".$view.".php";
-				else {
+					$found = true;
+				} else {
+					foreach (Saint::getModules() as $mod) {
+						if (file_exists(SAINT_SITE_ROOT .  "/modules/".$mod."/blocks/".$view.".php")) {
+							$incfile = SAINT_SITE_ROOT .  "/modules/".$mod."/blocks/".$view.".php";
+							$found = true;
+							break;
+						}
+					}
+					if (!$found && file_exists(SAINT_SITE_ROOT .  "/core/blocks/".$view.".php")) {
+						$incfile = SAINT_SITE_ROOT .  "/core/blocks/".$view.".php";
+						$found = true;
+					}
+				}
+				if (!$found) {
 					if (preg_match('/^layouts/',$view) && !preg_match('/^layouts\/system\/404$/',$view)) {
 						$page->setTempLayout("system/404");
 						$page->render();
 					}
 					Saint::logError("Cannot find view $view.",__FILE__,__LINE__); 
-					return 0; }
+					return 0;
+				}
 				if ($get) {
 					ob_start(); }
 				if (preg_match('/^layouts/',$view))
@@ -569,6 +589,13 @@ EOT;
 		$allfiles = Saint_Model_Block::recursiveScan($saintdir,"xml");
 		if ($userdir != $saintdir && file_exists($userdir))
 			$allfiles = array_merge($allfiles,Saint_Model_Block::recursiveScan($userdir,"xml"));
+		
+		foreach (Saint::getModules() as $mod) {
+			$mod_dir = SAINT_SITE_ROOT . "/modules/" . $mod . "/blocks";
+			if (file_exists($mod_dir)) {
+				$allfiles = array_merge($allfiles,Saint_Model_Block::recursiveScan($mod_dir,"xml"));
+			}
+		}
 		
 		# Parse the xml files
 		foreach ($allfiles as $file) {

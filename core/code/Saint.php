@@ -99,6 +99,11 @@ class Saint {
 		}
 	}
 	
+	public static function getModules($active = true) {
+		$active_modules = array('aparadine/blog','aparadine/gift-certificates');
+		return $active_modules;
+	}
+	
 	/**
 	 * Notices added here are displayed to the user at each page load if supported by the template.
 	 * @param string $notice Contents of notice to be displayed to user.
@@ -965,12 +970,24 @@ class Saint {
 	 */
 	public static function includeStyle($style) {
 		if ($style = Saint::sanitize($style,SAINT_REG_BLOCK_NAME)) {
-			if (file_exists(Saint::getThemeDir() .  "/styles/".$style.".css"))
+			if (file_exists(SAINT_THEME_DIR .  "/styles/".$style.".css")) {
 				echo '<link rel="stylesheet" type="text/css" href="'.Saint::getThemeUrl().'/styles/'.$style.'.css" />';
-			elseif (file_exists(SAINT_SITE_ROOT .  "/core/styles/".$style.".css"))
-				echo '<link rel="stylesheet" type="text/css" href="'.SAINT_URL.'/core/styles/'.$style.'.css" />';
-			else
-				Saint::logWarning("Cannot find style $style.");
+				return 1;
+			} else {
+				foreach (Saint::getModules() as $mod) {
+					if (file_exists(SAINT_SITE_ROOT .  "/modules/".$mod."/styles/".$style.".css")) {
+						echo '<link rel="stylesheet" type="text/css" href="'.SAINT_URL.'/modules/'.$mod.'/styles/'.$style.'.css" />';
+						return 1;
+					}
+				}
+				if (file_exists(SAINT_SITE_ROOT .  "/core/styles/".$style.".css")) {
+					echo '<link rel="stylesheet" type="text/css" href="'.SAINT_URL.'/core/styles/'.$style.'.css" />';
+					return 1;
+				}
+				return 0;
+			}
+			Saint::logWarning("Cannot find style $style.");
+			return 0;
 		}
 	}
 
@@ -980,12 +997,23 @@ class Saint {
 	 */
 	public static function includeScript($script) {
 		if ($script = Saint::sanitize($script,SAINT_REG_BLOCK_NAME)) {
-			if (file_exists(Saint::getThemeDir() . "/scripts/".$script.".js"))
+			if (file_exists(Saint::getThemeDir() . "/scripts/".$script.".js")) {
 				echo '<script type="text/javascript" src="'.Saint::getThemeUrl().'/scripts/'.$script.'.js"></script>';
-			elseif (file_exists(SAINT_SITE_ROOT .  "/core/scripts/".$script.".js"))
-				echo '<script type="text/javascript" src="'.SAINT_URL.'/core/scripts/'.$script.'.js"></script>';
-			else
-				Saint::logWarning("Cannot find script $script.");
+				return 1;
+			} else {
+				foreach (Saint::getModules() as $mod) {
+					if (file_exists(SAINT_SITE_ROOT .  "/modules/".$mod."/scripts/".$script.".js")) {
+						echo '<link rel="stylesheet" type="text/css" href="'.SAINT_URL.'/modules/'.$mod.'/scripts/'.$script.'.js" />';
+						return 1;
+					}
+				}
+				if (file_exists(SAINT_SITE_ROOT .  "/core/scripts/".$script.".js")) {
+					echo '<script type="text/javascript" src="'.SAINT_URL.'/core/scripts/'.$script.'.js"></script>';
+					return 1;
+				}
+			}
+			Saint::logWarning("Cannot find script $script.");
+			return 0;
 		}
 	}
 	

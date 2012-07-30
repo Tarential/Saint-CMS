@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modules>
+	<module>
+		<name>aparadine/blog</name>
+		<active>true</active>
+	</module>
+	<module>
+		<name>aparadine/gift-certificates</name>
+		<active>true</active>
+	</module>
+</modules>

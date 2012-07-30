@@ -35,6 +35,8 @@ if (file_exists("config.php"))
 else
 	$installed = false;
 
+require_once("core/code/Saint.php");
+
 if (preg_match('/^(\d+)\.(\d\d)(\d\d)$/',SAINT_CODE_VERSION,$matches)) {
 	define('SAINT_FRIENDLY_VERSION',"v".$matches[1].".".ltrim($matches[2],'0'));
 } else {
@@ -56,15 +58,23 @@ function st_autoload($class_name) {
 	if (preg_match('/^\w+$/',$class_name)) {
 		$class_name = preg_replace('/Saint_/','',$class_name);
 		$class_name = preg_replace('/_/','/',$class_name);
-		$saint_class_name = SAINT_SITE_ROOT . '/core/code/' . $class_name . ".php";
-		/* $user_class_name = Saint::getThemeDir() . '/code/' . $class_name . ".php";
-		if (file_exists($user_class_name)) {
-			include_once($user_class_name);
+		$core_class_name = SAINT_SITE_ROOT . '/core/code/' . $class_name . ".php";
+		$theme_class_name = SAINT_THEME_DIR . '/code/' . $class_name . ".php";
+		if (file_exists($theme_class_name)) {
+			include_once($theme_class_name);
 			return 1;
-		} else */
-		if (file_exists($saint_class_name)) {
-			include_once($saint_class_name);
-			return 1;
+		} else {
+			foreach (Saint::getModules() as $mod) {
+				$mod_class_name = SAINT_SITE_ROOT . '/modules/' . $mod . "/code/" . $class_name . ".php";
+				if (file_exists($mod_class_name)) {
+					include_once($mod_class_name);
+					return 1;
+				}
+			}
+			if (file_exists($core_class_name)) {
+				include_once($core_class_name);
+				return 1;
+			}
 		}
 	}
 	return 0;

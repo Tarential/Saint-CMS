@@ -38,6 +38,8 @@ define('SAINT_SUB_DIR',substr(SAINT_SITE_ROOT,strlen($_SERVER['DOCUMENT_ROOT']))
 #define('SAINT_URL','http://example.com/Saint');
 define('SAINT_URL',chop(SAINT_BASE_URL . "/" . SAINT_SUB_DIR,'/'));
 
+define('SAINT_THEME_DIR',SAINT_SITE_ROOT . "/themes/" . SAINT_THEME);
+
 # Basic settings
 define('SAINT_DEF_LANG',"english");
 define('SAINT_BLOG_LANG',"en-us");

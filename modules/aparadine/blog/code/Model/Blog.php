@@ -4,6 +4,7 @@
  * @author Preston St. Pierre
  * @package Saint
  */
+
 class Saint_Model_Blog extends Saint_Model_Page {
 	protected $_post_args;
 	protected $_posts;
