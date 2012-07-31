@@ -5,7 +5,7 @@
 		<active>true</active>
 	</module>
 	<module>
-		<name>aparadine/gift-certificates</name>
+		<name>aparadine/shop</name>
 		<active>true</active>
 	</module>
 </modules>

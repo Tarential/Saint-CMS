@@ -229,6 +229,8 @@ class Saint_Model_Page {
 		$this->_errors = array();
 		$this->_files = array();
 		$this->_settings = array();
+		$this->_active_modules = array();
+		$this->_inactive_modules = array();
 	}
 	
 	/**
@@ -305,7 +307,6 @@ class Saint_Model_Page {
 	public function set($setting,$value) {
 		$this->_settings[$setting] = $value;
 	}
-	
 	
 	/**
 	 * Get page files.

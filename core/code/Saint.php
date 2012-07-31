@@ -8,12 +8,47 @@
 class Saint {
 	static protected $_pc;
 	static protected $_user;
+	static protected $_active_modules = array();
+	static protected $_inactive_modules = array();
 	
 	/**
 	 * Starts the installation process.
 	 */
 	public static function runInstall() {
 		include SAINT_SITE_ROOT . "/core/installer/install.php";
+	}
+	
+	/**
+	 * Get the modules for the running system.
+	 * @param boolean $active Optional false to get all modules, default true to get only active modules.
+	 * @return array Names of modules for the running system.
+	 */
+	public static function getModules($active = true) {
+		if ($active) {
+			return array_keys(self::$_active_modules);
+		} else {
+			return array_merge(array_keys(self::$_active_modules), array_keys(self::$_inactive_modules));
+		}
+	}
+	
+	/**
+	 * Activate module of given name for current page.
+	 * @param string $module Name of module to activate.
+	 */
+	public static function activateModule($module) {
+		self::$_active_modules[$module] = true;
+		if (isset(self::$_inactive_modules[$module]))
+			unset(self::$_inactive_modules[$module]);
+	}
+
+	/**
+	 * Deactivate module of given name for current page.
+	 * @param string $module Name of module to deactivate.
+	 */
+	public static function deactivateModule($module) {
+		self::$_inactive_modules[$module] = true;
+		if (isset(self::$_active_modules[$module]))
+			unset(self::$_active_modules[$module]);
 	}
 	
 	/**
@@ -97,11 +132,6 @@ class Saint {
 			Saint::logError("Your site has no admin users... how did that happen? Reinstall the cms or see the documentation to add a user manually.",__FILE__,__LINE__);
 			die();
 		}
-	}
-	
-	public static function getModules($active = true) {
-		$active_modules = array('aparadine/blog','aparadine/gift-certificates');
-		return $active_modules;
 	}
 	
 	/**

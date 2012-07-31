@@ -37,17 +37,42 @@ else
 
 require_once("core/code/Saint.php");
 
+# Change machine-friendly version code into human-friendly version code.
 if (preg_match('/^(\d+)\.(\d\d)(\d\d)$/',SAINT_CODE_VERSION,$matches)) {
 	define('SAINT_FRIENDLY_VERSION',"v".$matches[1].".".ltrim($matches[2],'0'));
 } else {
 	define('SAINT_FRIENDLY_VERSION','');
 }
 
+# Grab URI
 if ($get_start = strpos($_SERVER['REQUEST_URI'],'?'))
 	$uri_sans_get = trim(substr($_SERVER['REQUEST_URI'],0,$get_start),'/');
 else
 	$uri_sans_get = trim($_SERVER['REQUEST_URI'],'/');
 $uri = trim(substr($uri_sans_get,strlen(SAINT_SUB_DIR)),'/');
+
+# Load modules
+$modules_file = SAINT_SITE_ROOT . "/modules/modules.xml";
+if (file_exists($modules_file)) {
+	$sxml = '';
+	$modules_file_handle = fopen($modules_file, "r");
+	if ($modules_file_handle) {
+		while (!feof($modules_file_handle))
+		   $sxml .= fgets($modules_file_handle);
+		fclose($modules_file_handle);
+	} else
+		Saint::logError("Couldn't open modules file $modules_file for reading.",__FILE__,__LINE__);
+	
+	$sparse = new SimpleXMLElement($sxml);
+	
+	foreach ($sparse->module as $module) {
+		if ($module->active == "true") {
+			Saint::activateModule((string)$module->name);
+		} else {
+			Saint::deactivateModule((string)$module->name);
+		}
+	}
+}
 
 /**
  * Saint class autoload function.
