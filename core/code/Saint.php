@@ -58,10 +58,10 @@ class Saint {
 	 * @param boolean $display Optional default true to sanitize for display, false otherwise.
 	 */
 	public static function sanitize($input, $pattern = null, $display = true) {
-		global $_user;
+		$user = Saint::getCurrentUser();
 		$safe = mysql_real_escape_string($input);
 		if (($pattern == null || preg_match($pattern,$safe)) && !preg_match('/\.\.\//',$safe)) {
-			if (!$display || (is_a($_user,'Saint_Model_User') && $_user->isInGroup("administrator"))) {
+			if ($display === false || (is_a($user,'Saint_Model_User') && $user->isInGroup("administrator"))) {
 				return $safe;
 			} else {
 				$allowed_tags = array('p','b','i','u','em','strong');

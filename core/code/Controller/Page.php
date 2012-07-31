@@ -459,7 +459,7 @@ class Saint_Controller_Page {
 		# Search controls
 		
 		if (isset($_POST['saint-search-phrase'])) {
-			$this->_page->set("search-phrase",$_POST['saint-search-phrase']);
+			$this->_page->set("search-phrase",Saint::sanitize($_POST['saint-search-phrase']));
 			$results = Saint::search($_POST['saint-search-phrase']);
 			$this->_page->set("search-results",$results);
 		}

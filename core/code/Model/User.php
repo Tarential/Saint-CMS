@@ -597,14 +597,14 @@ class Saint_Model_User {
 	 * @return boolean True if user is in group, false otherwise.
 	 */
 	public function isInGroup($group) {
-		$name = Saint::sanitize($group,SAINT_REG_USER_NAME, false);
+		if ($this->getUsername() == "guest") {
+			if ($group == "guest")
+				return 1;
+			else
+				return 0;
+		}
+		$name = Saint::sanitize($group, SAINT_REG_USER_NAME, false);
 		if ($name == $group) {
-			if ($this->getUsername() == "guest") {
-				if ($name == "guest")
-					return 1;
-				else
-					return 0;
-			}
 			try {
 				$id = Saint::getOne("SELECT `g`.`id` FROM `st_users` as `u`, `st_user_groups` as `g` WHERE `g`.`userid`=`u`.`id` AND `g`.`group`='$name' AND `u`.`id`='".$this->getId()."'");
 				return 1;
@@ -613,8 +613,10 @@ class Saint_Model_User {
 					Saint::logError($e->getMessage(),__FILE__,__LINE__); }
 				return 0;
 			}
-		} else
+		} else {
+			Saint::logError("Invalid group name: '$group'.",__FILE__,__LINE__);
 			return 0;
+		}
 	}
 	
 	/**
