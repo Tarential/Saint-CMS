@@ -411,8 +411,7 @@ class Saint {
 	 * return Saint_Model_Discount Current sales discounts.
 	 */
 	public static function getDiscounter() {
-		global $_pc;
-		return $_pc->getDiscounter();
+				return self::$_pc->getDiscounter();
 	}
 	
 	/**
@@ -511,25 +510,30 @@ class Saint {
 	 * @return boolean True if page found, false otherwise
 	 */
 	public static function callPage($name,$args) {
-		global $_pc;
-		# With maintenance mode enabled only users having proper access can view the site.
+				# With maintenance mode enabled only users having proper access can view the site.
 		# Of a necessity the login page is exempted from this limitation.
 		if (SAINT_MAINT_MODE && $name != "login" && !Saint::getCurrentUser()->hasPermissionTo("maintenance-mode")) {
 			try {
-				$_pc = new Saint_Controller_Page("maintenance",$args);
+				self::$_pc = new Saint_Controller_Page("maintenance",$args);
 			} catch (Exception $e) {
 				Saint::logWarning($e->getMessage(),__FILE__,__LINE__);
-				$_pc = new Saint_Controller_Page("404",$args);
+				self::$_pc = new Saint_Controller_Page("404",$args);
 			}
 		} else {
 			try {
-				$_pc = new Saint_Controller_Page($name,$args);
+				# Public file downloads
+				if ($name == "downloads" && isset($args['subids'][0])) {
+					Saint_Controller_Download::download($args['subids'][0]);
+					exit();
+				} else {
+					self::$_pc = new Saint_Controller_Page($name,$args);
+				}
 			} catch (Exception $e) {
 				Saint::logWarning($e->getMessage(),__FILE__,__LINE__);
-				$_pc = new Saint_Controller_Page("404",$args);
+				self::$_pc = new Saint_Controller_Page("404",$args);
 			}
 		}
-		$_pc->process();
+		self::$_pc->process();
 	}
 
 	/**
@@ -537,8 +541,7 @@ class Saint {
 	 * @param Saint_Model_Page $page New page to use.
 	 */
 	public static function setCurrentPage($page) {
-		global $_pc;
-		return $_pc->setCurrentPage($page);
+				return self::$_pc->setCurrentPage($page);
 	}
 	
 	/**
@@ -546,8 +549,7 @@ class Saint {
 	 * @return Saint_Model_Page Currently running page.
 	 */
 	public static function getCurrentPage() {
-		global $_pc;
-		return $_pc->getCurrentPage();
+				return self::$_pc->getCurrentPage();
 	}
 	
 	/**

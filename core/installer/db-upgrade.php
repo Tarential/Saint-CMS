@@ -69,6 +69,21 @@ CREATE TABLE IF NOT EXISTS `st_login_attempts` (
 	PRIMARY KEY (`id`),
 	INDEX `st_login_attempts_ip` (`ip`)
 ) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS `st_public_files` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `st_public_files_name` (`name`)
+) ENGINE=InnoDB;
+CREATE TABLE IF NOT EXISTS `st_public_downloads` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`file` INTEGER UNSIGNED NOT NULL,
+	`ip` VARCHAR(255) NOT NULL DEFAULT '',
+	`user_agent` VARCHAR(255) NOT NULL DEFAULT '',
+	`download_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`file`) REFERENCES `st_public_files`(`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
 UPDATE `st_config` SET `version`='1.0400';
 EOT;
 

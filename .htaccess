@@ -1,3 +1,5 @@
+Options -Multiviews
+
 <IfModule mod_rewrite.c>
 		RewriteEngine On
 
@@ -5,7 +7,8 @@
 		# uncomment this and change the base to your Saint location.
 		#RewriteBase /Saint/
 
-		# Block all direct access to settings and code files
+		# Block all direct access to settings, code and download files
+		RewriteRule ^(downloads\/.+)$ index.php?/$1 [L,QSA]
 		RewriteRule ^(.*\.xml)$ index.php?/$1 [L,QSA]
 		RewriteRule ^(.*\.php)$ index.php?/$1 [L,QSA]
 

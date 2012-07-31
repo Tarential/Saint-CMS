@@ -472,7 +472,7 @@ $(document).ready(function() {
 	
 	Saint.sleSave = function() {
 		var stripped;
-		var allowed_tags = '<a><i><b><u><p><ul><ol><li><img><center><h1><h2><h3><h4><h5><h6>';
+		var allowed_tags = '<strong><em><table><th><tr><td><a><i><b><u><p><ul><ol><li><img><center><h1><h2><h3><h4><h5><h6>';
 		if ($('.sle.active').hasClass("wysiwyg")) {
 			stripped = $('.sle.active textarea[name=label-value]').val();
 		} else {

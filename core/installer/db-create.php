@@ -256,6 +256,23 @@ CREATE TABLE IF NOT EXISTS `st_login_attempts` (
 	INDEX `st_login_attempts_ip` (`ip`)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS `st_public_files` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(255) NOT NULL,
+	PRIMARY KEY (`id`),
+	INDEX `st_public_files_name` (`name`)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS `st_public_downloads` (
+	`id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+	`file` INTEGER UNSIGNED NOT NULL,
+	`ip` VARCHAR(255) NOT NULL DEFAULT '',
+	`user_agent` VARCHAR(255) NOT NULL DEFAULT '',
+	`download_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`file`) REFERENCES `st_public_files`(`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
 INSERT INTO `st_languages` (`name`,`title`) VALUES ('english','English');
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('home','Home','blank',NOW(),-10);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('blog','Blog','blog/index',NOW(),-9);
