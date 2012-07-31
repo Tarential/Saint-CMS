@@ -69,7 +69,7 @@ class Saint {
 					$safe = str_ireplace('<'.$tag.'>','['.$tag.']',$safe);
 					$safe = str_ireplace('</'.$tag.'>','[/'.$tag.']',$safe);
 				}
-				$safe = htmlspecialchars($safe);
+				$safe = htmlentities(strip_tags($safe), ENT_COMPAT | ENT_HTML401, 'UTF-8');
 				foreach ($allowed_tags as $tag) {
 					$safe = str_ireplace('['.$tag.']','<'.$tag.'>',$safe);
 					$safe = str_ireplace('[/'.$tag.']','</'.$tag.'>',$safe);
