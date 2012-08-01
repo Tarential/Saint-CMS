@@ -51,6 +51,13 @@ class Saint_Model_Layout {
 			$layout_config_files = array_merge($layout_config_files,Saint_Model_Block::recursiveScan($theme_dir,"xml"));
 			$root_layouts = array_merge($root_layouts,Saint_Model_Block::recursiveScan($theme_dir,"php",2));
 		}
+			
+		foreach (Saint::getModules() as $mod) {
+			$mod_dir = SAINT_SITE_ROOT . "/modules/" . $mod . "/blocks/layouts";
+			if (file_exists($mod_dir)) {
+				$layout_config_files = array_merge($layout_config_files,Saint_Model_Block::recursiveScan($mod_dir,"xml"));
+			}
+		}
 		
 		# Start by adding the root and system layouts from plain PHP files.
 		foreach ($root_layouts as $layout) {
