@@ -192,16 +192,15 @@ class Saint {
 	 * @return Saint_Model_User Current user model.
 	 */
 	public static function getCurrentUser() {
-		global $_user;
-		if ($_user == null) {
-			$_user = new Saint_Model_User();
+		if (self::$_user == null) {
+			self::$_user = new Saint_Model_User();
 			try {
-				$_user->loadByUsername(Saint::getCurrentUsername());
+				self::$_user->loadByUsername(Saint::getCurrentUsername());
 			} catch (Exception $e) {
 				# No account by that name, so we return a guest user
 			}
 		}
-		return $_user;
+		return self::$_user;
 	}
 
 	/**
@@ -411,7 +410,7 @@ class Saint {
 	 * return Saint_Model_Discount Current sales discounts.
 	 */
 	public static function getDiscounter() {
-				return self::$_pc->getDiscounter();
+		return self::$_pc->getDiscounter();
 	}
 	
 	/**
@@ -510,7 +509,7 @@ class Saint {
 	 * @return boolean True if page found, false otherwise
 	 */
 	public static function callPage($name,$args) {
-				# With maintenance mode enabled only users having proper access can view the site.
+		# With maintenance mode enabled only users having proper access can view the site.
 		# Of a necessity the login page is exempted from this limitation.
 		if (SAINT_MAINT_MODE && $name != "login" && !Saint::getCurrentUser()->hasPermissionTo("maintenance-mode")) {
 			try {
@@ -523,9 +522,13 @@ class Saint {
 			try {
 				# Public file downloads
 				if ($name == "downloads" && isset($args['subids'][0])) {
-					Saint_Controller_Download::download($args['subids'][0]);
-					exit();
+					if (file_exists(SAINT_SITE_ROOT . "/downloads/" . $args['subids'][0])) {
+						Saint_Controller_Download::download($args['subids'][0]);
+					} else {
+						self::$_pc = new Saint_Controller_Page('404');
+					}
 				} else {
+					# Regular pages
 					self::$_pc = new Saint_Controller_Page($name,$args);
 				}
 			} catch (Exception $e) {

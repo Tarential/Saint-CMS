@@ -29,7 +29,8 @@ define('SAINT_PAYPAL_URL','www.sandbox.paypal.com');
 #define('SAINT_SUB_DIR','Saint');
 
 # Autodetect:
-define('SAINT_BASE_URL',"http://" . $_SERVER['SERVER_NAME']);
+if ($_SERVER["HTTPS"] == "on") $ssl = "s"; else $ssl = '';
+define('SAINT_BASE_URL',"http".$ssl."://" . $_SERVER['SERVER_NAME']);
 define('SAINT_SITE_ROOT',chop(getcwd(),'/'));
 define('SAINT_CACHE_DIR',SAINT_SITE_ROOT."/cache");
 define('SAINT_SUB_DIR',substr(SAINT_SITE_ROOT,strlen($_SERVER['DOCUMENT_ROOT'])));
