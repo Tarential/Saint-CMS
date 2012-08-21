@@ -12,7 +12,7 @@
 		<base href="<?php echo $page->getUrl(); ?>" />
 		<link rel="canonical" href="<?php echo $page->getUrl(); ?>" />
 		<title><?php echo $page->getTitle(); ?> - <?php echo Saint::getSiteTitle(); ?></title>
-		<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 		<script type="text/javascript">
 			google.load("jquery", "1");
 		</script>
@@ -23,7 +23,7 @@
 		<?php endif; ?>
 		<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
 			<!-- Third party scripts for BrowserPlus runtime, Plupload -->
-			<script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
+			<script type="text/javascript" src="https://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
 			<script type="text/javascript" src="<?php echo SAINT_URL; ?>/core/scripts/plupload/plupload.full.js"></script>
 		<?php endif; ?>
 		<?php Saint::includeStyle("saint"); ?>

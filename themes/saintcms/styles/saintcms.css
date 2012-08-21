@@ -108,6 +108,16 @@ nav, ul, li, a {
 	-o-transition: all 250s; /* Opera */
 }
 
+li.title {
+	margin: 5px 0 2px;
+	font-size: 14px;
+	font-style: italic;
+}
+
+li.title:first-child {
+	margin-top: 0;
+}
+
 nav a {
 	color: #fff;
 	font-weight: bold;

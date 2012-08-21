@@ -398,63 +398,63 @@ class Saint_Controller_Page {
 					));
 				}
 				
-				# Shop controls
-					
-				if (isset($args['addtocart']) && $args['addtocart'] != '') {
-					Saint_Controller_ShoppingCart::addToCart($args['addtocart']);
-				}
-					
-				if (isset($args['remfromcart']) && $args['remfromcart'] != '') {
-					Saint_Controller_ShoppingCart::removeFromCart($args['remfromcart']);
-				}
-				
-				if ($this->_page->getName() == "shop" && isset($args['view'])) {
-					switch ($args['view']) {
-						case 'cart':
-							$this->_page->setTempLayout("shop/cart");
-							break;
-						case 'checkout':
-							$this->_page->setTempLayout("shop/checkout");
-							break;
-						case 'transactions':
-							if (Saint::getCurrentUser()->hasPermissionTo("view-transactions")) {
-								$this->_page->setTempLayout("shop/admin/transactions");
-							} else {
-								Saint::logError("A user without permission has attempted to view the transactions page from IP $_SERVER[REMOTE_ADDR]."); }
-							break;
-						case 'discounts':
-							if (Saint::getCurrentUser()->hasPermissionTo("view-discounts")) {
-								$this->_page->setTempLayout("shop/admin/discounts");
-							} else {
-								Saint::logError("A user without permission has attempted to view the discounts page from IP $_SERVER[REMOTE_ADDR]."); }
-							break;
-						case 'ipn':
-							Saint_Controller_Transaction::verifyIpn();
-							break;
-						case 'download':
-							if (isset($args['id'])) {
-								if (isset($args['linkid'])) {
-									$linkid = $args['linkid'];
-								} else {
-									$linkid = null; }
-								Saint_Controller_Shop::download($args['id'],$linkid); }
-							break;
-					}
-				}
-				
 			} else {
 				Saint::logError("There has been a possible hacking attempt on account '$this->_username'; client sent an invalid nonce.");
 			}
 		}
+		
+		/*
+		 * The following section includes actions which don't require client authentication.
+		 */
 		
 		if (isset($args['action']) && $args['action'] == "logout") {
 			Saint_Model_User::logout();
 			header("Location: " . SAINT_URL);
 		}
 		
-		/*
-		 * The following section includes actions which don't require client authentication.
-		 */
+		# Shop controls
+		
+		if (isset($args['addtocart']) && $args['addtocart'] != '') {
+			Saint_Controller_ShoppingCart::addToCart($args['addtocart']);
+		}
+			
+		if (isset($args['remfromcart']) && $args['remfromcart'] != '') {
+			Saint_Controller_ShoppingCart::removeFromCart($args['remfromcart']);
+		}
+				
+		if ($this->_page->getName() == "shop" && isset($args['view'])) {
+			switch ($args['view']) {
+				case 'cart':
+					$this->_page->setTempLayout("shop/cart");
+					break;
+				case 'checkout':
+					$this->_page->setTempLayout("shop/checkout");
+					break;
+				case 'transactions':
+					if (Saint::getCurrentUser()->hasPermissionTo("view-transactions")) {
+						$this->_page->setTempLayout("shop/admin/transactions");
+					} else {
+						Saint::logError("A user without permission has attempted to view the transactions page from IP $_SERVER[REMOTE_ADDR]."); }
+					break;
+				case 'discounts':
+					if (Saint::getCurrentUser()->hasPermissionTo("view-discounts")) {
+						$this->_page->setTempLayout("shop/admin/discounts");
+					} else {
+						Saint::logError("A user without permission has attempted to view the discounts page from IP $_SERVER[REMOTE_ADDR]."); }
+					break;
+				case 'ipn':
+					Saint_Controller_Transaction::verifyIpn();
+					break;
+				case 'download':
+					if (isset($args['id'])) {
+						if (isset($args['linkid'])) {
+							$linkid = $args['linkid'];
+						} else {
+							$linkid = null; }
+						Saint_Controller_Shop::download($args['id'],$linkid); }
+					break;
+			}
+		}
 		
 		# Search controls
 		

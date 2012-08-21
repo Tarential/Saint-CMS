@@ -68,6 +68,7 @@ class Saint_Model_FileManager extends Saint_Model_Page {
 				$num_rows = Saint::getNumRows($query);
 				return $num_rows;
 			} else {
+				Saint::logError($query);
 				$allfiles = Saint::getAll($query);
 				
 				$indexfiles = array();

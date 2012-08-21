@@ -828,8 +828,8 @@ class Saint {
 	 */
 	public static function includeGallery($arguments = array()) {
 		$page = Saint::getCurrentPage();
+		$args = $page->getArgs();
 		$block = new Saint_Model_Block();
-		#$arguments['results-per-page'] = 2;
 		if (isset($arguments['results-per-page']) && $arguments['results-per-page'] != "") {
 			$block->set("results-per-page",$arguments['results-per-page']);
 		} else {
@@ -844,8 +844,9 @@ class Saint {
 		
 		$files = Saint_Model_FileManager::getAllFiles($arguments);
 		$page->setFiles($files);
-		$block->set("number-of-results",sizeof($files));
-
+		$arguments['num-results-only'] = true;
+		$block->set("number-of-results",Saint_Model_FileManager::getAllFiles($arguments));
+		Saint::logError("Num Results: '". $block->get("number-of-results")."'; RPP: '".$block->get("results-per-page")."';");
 		$block->set("number-of-pages",$block->get("number-of-results") / $block->get("results-per-page"));
 		Saint::includeBlock("gallery/gallery",array('repeat'=>1,'blocks'=>array($block),'container'=>false));
 	}

@@ -8,7 +8,7 @@ define('SAINT_THEME','');
 
 # Database connection info
 define('SAINT_DB_HOST','localhost');
-define('SAINT_DB_NAME','jack');
+define('SAINT_DB_NAME','cms');
 define('SAINT_DB_USER','cms');
 define('SAINT_DB_PASS','w4t3rm4rk');
 
@@ -30,7 +30,8 @@ define('SAINT_PAYPAL_URL','www.sandbox.paypal.com');
 
 # Autodetect:
 if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == true) $ssl = "s"; else $ssl = '';
-define('SAINT_BASE_URL',"http".$ssl."://" . $_SERVER['SERVER_NAME']);
+if ($_SERVER['SERVER_PORT'] != 80) $port = ":".$_SERVER['SERVER_PORT']; else $port = '';
+define('SAINT_BASE_URL',"http".$ssl."://" . $_SERVER['SERVER_NAME'] . $port);
 define('SAINT_SITE_ROOT',chop(getcwd(),'/'));
 define('SAINT_CACHE_DIR',SAINT_SITE_ROOT."/cache");
 define('SAINT_SUB_DIR',substr(SAINT_SITE_ROOT,strlen($_SERVER['DOCUMENT_ROOT'])));

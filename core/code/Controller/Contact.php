@@ -88,7 +88,7 @@ EOT;
 				$item_vars[$itemid] = array(
 					'id' => $itemid,
 					'price' => $prod->getDiscountPrice(),
-					'name' => $prod->getName(),
+					'name' => $prod->getProductName(),
 					'number' => $number,
 					
 				);
@@ -126,7 +126,7 @@ EOT;
 			
 			//Saint::logError("Contents:\n$contents",__FILE__,__LINE__);
 			//$contents = wordwrap($contents,70);
-			$mailhead = "From: \"".SAINT_SITE_TITLE."\" <$mailfrom>\r\n" .
+			$mailhead = "From: \"".htmlentities(strip_tags(Saint::getSiteTitle()))."\" <$mailfrom>\r\n" .
 	    "Reply-To: $mailfrom\r\n" .
 	    'X-Mailer: PHP/' . phpversion();
 			

@@ -1,13 +1,8 @@
 <?php
 
-$saint = new Saint_Model_Product();
-$saint->load(2);
-$name = $saint->getProductName();
-
-
 $price_block = <<<EOT
-	<span class="title"><a href="/download" class="buy-now">Get Saint Now</a></span>
-	<span class="price"><a href="/download" class="buy-now">v1.3</a></span>
+	<span class="title"><a href="/download" class="buy-now">Latest Version</a></span>
+	<span class="price"><a href="/download" class="buy-now">1.4.0</a></span>
 EOT;
 
 $primary_links = <<<EOT
@@ -16,7 +11,7 @@ $primary_links = <<<EOT
 		<a href="/download" class="buy-now"><img src="/themes/saintcms/images/saint-box-left-small.png" /></a>
 		<div class="info">
 $price_block
-			<p><a href="/download" class="buy-now">Download $name</a></p>
+			<p><a href="/download" class="buy-now">Download Saint</a></p>
 		</div>
 	</div>
 	<div class="nav-block demo">

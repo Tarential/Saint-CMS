@@ -18,7 +18,7 @@ define('SAINT_REG_BLOCK_NAME',"/^[a-zA-Z0-9\/\.\-]+$/");
 define('SAINT_REG_USER_NAME',"/^[a-zA-Z0-9\.\-_]+$/");
 define('SAINT_REG_PAGE_NAME',"/^[a-zA-Z0-9\.\-_]+$/");
 define('SAINT_REG_LANG_NAME',"/^[a-zA-Z0-9\.\-_]+$/");
-define('SAINT_REG_FILE_NAME',"/^[a-zA-Z0-9\.\-_]+$/");
+define('SAINT_REG_FILE_NAME',"/^[a-zA-Z0-9\/\.\-_]+$/");
 define('SAINT_REG_ID',"/^\d+$/");
 define('SAINT_REG_BOOL',"/^[01]$/");
 define('SAINT_REG_EMAIL',"/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/");

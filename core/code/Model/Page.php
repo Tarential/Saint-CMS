@@ -679,7 +679,7 @@ class Saint_Model_Page {
 	 */
 	public function setLayout($layout) {
 		if (Saint_Model_Layout::inUse($layout)) {
-			if ($layout = Saint::sanitize($layout,SAINT_REG_PAGE_NAME)) {
+			if ($layout = Saint::sanitize($layout,SAINT_REG_BLOCK_NAME)) {
 				$this->_layout = $layout;
 				return 1;
 			} else {

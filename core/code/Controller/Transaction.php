@@ -17,13 +17,16 @@ class Saint_Controller_Transaction {
 		// read the post from PayPal system and add 'cmd'
 		$req = 'cmd=_notify-validate';
 		
+		#Saint::logEvent("Grabbing POST values.");
 		foreach ($_POST as $key => $value) {
 			$value = urlencode(stripslashes($value));
 			$req .= "&$key=$value";
 		}
 		
+		#Saint::logEvent("Posting values back to PayPal.");
 		// post back to PayPal system to validate
 		$header = "POST /cgi-bin/webscr HTTP/1.0\r\n";
+		$header .= "Host: ".SAINT_PAYPAL_URL."\r\n";
 		$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
 		$header .= "Content-Length: " . strlen($req) . "\r\n\r\n";
 		$fp = fsockopen ('ssl://'.SAINT_PAYPAL_URL, 443, $errno, $errstr, 30);
@@ -39,13 +42,17 @@ class Saint_Controller_Transaction {
 		$payer_email = $_POST['payer_email'];
 		$cartid = Saint::sanitize($_POST['custom'],SAINT_REG_ID);
 		
+		#Saint::logEvent("Parsing response.");
 		if (!$fp) {
 			// HTTP ERROR
 			Saint::logError("HTTP ERROR: $fp",__FILE__,__LINE__);
 		} else {
+			#Saint::logEvent("No HTTP error.");
 			fputs ($fp, $header . $req);
 			while (!feof($fp)) {
 				$res = fgets ($fp, 1024);
+				#Saint::logEvent("Comparing string.");
+				#Saint::logEvent($res);
 				if (strcmp ($res, "VERIFIED") == 0) {
 					// check the payment_status is Completed
 					// check that txn_id has not been previously processed
@@ -54,7 +61,7 @@ class Saint_Controller_Transaction {
 					// process payment
 					# Check if payment is complete
 					if ($payment_status === "Completed") {
-						Saint::logError("Completed",__FILE__,__LINE__);
+						Saint::logEvent("Verified transaction.",__FILE__,__LINE__);
 						$transaction = new Saint_Model_Transaction();
 						
 						# Check if transaction has already been processed
@@ -76,7 +83,7 @@ class Saint_Controller_Transaction {
 									
 									# Check to ensure the prices match the payment
 									if ($payment_amount == $cart->getTotal()) {
-										Saint::logError("Success! Received payment matching cart ID '$cartid' for amount '$payment_amount'.",__FILE__,__LINE__);
+										Saint::logEvent("Success! Received payment matching cart ID '$cartid' for amount '$payment_amount'.",__FILE__,__LINE__);
 									} else {
 										Saint::logError("The received payment does not match the shopping cart total. ".$payment_amount.":".$cart->getTotal(),__FILE__,__LINE__);
 									}

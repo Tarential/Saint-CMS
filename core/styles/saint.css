@@ -795,6 +795,10 @@ span.match {
 
 .rss-feed-link {
 	clear: both;
+	padding: 1px 0 0 18px;
+	min-height: 16px;
+	display: block;
+	background: url('../images/rss.png') top left no-repeat;
 }
 
 .saint-admin-overlay label {
