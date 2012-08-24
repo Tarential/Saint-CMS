@@ -3,7 +3,8 @@
 body {
 	background: #fff;
 	padding: 0;
-	margin: 0; }
+	margin: 0;
+	font-size: 14px; }
 
 div {
 	display: block; }
@@ -166,7 +167,9 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	border-bottom-width: 1px;
 	border-left-width: 1px;
 	border-right-width: 1px;
-	overflow: hidden; }
+	overflow: hidden;
+	font-size: .750em;
+}
 
 .saint-admin-overlay h4, .saint-admin-overlay h5 {
 	margin: 2px 0 5px;
@@ -415,7 +418,7 @@ body.dark .saint-admin-options {
 }
 
 .saint-admin-options .page-list li a, .saint-admin-options .user-list li {
-	font-size: 10px;
+
 }
 
 .saint-admin-options.page-options .saint-label, .saint-admin-options.user-options .saint-label {
@@ -777,21 +780,27 @@ span.match {
 	border: 1px solid #000; 
 	width: 150px;
 	float: left;
+	margin-bottom: 4px;
 }
 
 .saint-search input.submit {
 	margin-left: 5px;
 	width: 30px;
-	float: left; }
+	float: left;
+}
+
+.saint-search input.reset {
+	color: #A3A9AE;
+}
 
 .saint-search .saint-label {
 	display: block;
 	margin-bottom: 5px;
-	font-weight: bold; }
+	font-weight: bold;
+}
 
 .saint-search-form {
-	display: block;
-	height: 40px; }
+}
 
 .rss-feed-link {
 	clear: both;

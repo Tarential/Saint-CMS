@@ -53,7 +53,7 @@ class Saint_Model_BlogPost extends Saint_Model_Block {
 	 * @see core/code/Model/Saint_Model_Block::getUrl()
 	 */
 	public function getUrl() {
-		return $this->getPageUrl() . '/' . $this->_settings['uri'];
+		return trim($this->getPageUrl(),'/') . '/' . $this->_settings['uri'];
 	}
 	
 	/**

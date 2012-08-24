@@ -32,7 +32,10 @@
 	<div id="blog-by-cat-nav" class="nav">
 		<h3>Categories</h3>
 		<?php foreach (Saint::getCategories() as $category): ?>
-			<h4><a href="<?php echo SAINT_URL . "/" . $page->getName() . "/category/" . urlencode($category); ?>/"><?php echo $category; ?></a></h4>
+			<?php $blocks_in_cat = Saint_Model_Block::getBlocks("blog/post",array('category'=>$category)); ?>
+			<?php if (sizeof($blocks_in_cat)): ?>
+				<h4><a href="<?php echo SAINT_URL . "/" . $page->getName() . "/category/" . urlencode($category); ?>/"><?php echo $category; ?></a></h4>
+			<?php endif; ?>
 		<?php endforeach; ?>
 	</div>
 

@@ -1,0 +1,164 @@
+@CHARSET "UTF-8";
+
+body {
+	background: #CCD3DA url('../images/logo-background.png');
+	font-size: 16px;
+}
+
+#container {
+	box-shadow: none;
+	border: 0;
+	padding: 10px 1%;
+	width: auto;
+}
+
+/*
+.logo {
+	position: relative;
+	background: url('../images/logo-32px.png');
+	width: 32px;
+	height: 32px;
+	margin: 5px;
+	float: left;
+	left: auto;
+	top: auto;
+	right: auto;
+	bottom: auto;
+}*/
+
+nav {
+	position: relative;
+	left: auto;
+	top: auto;
+	padding: 8px 0 0 1%;
+}
+
+nav a {
+	background: transparent;
+	box-shadow: none;
+	border: 0;
+}
+
+nav a.current {
+	box-shadow: none;
+	color: #333;
+}
+
+nav a:hover {
+	background: transparent;
+	color: inherit;
+	text-decoration: underline;
+}
+
+#menu-center {
+	margin: 0;
+}
+
+.toplevel a {
+	padding: 0;
+}
+
+.rss-feed-link {
+	font-size: .750em;
+}
+
+.nav-bg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 32px;
+	background: #fff;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+	filter: alpha(opacity=50);
+	-moz-opacity: 0.5;
+	-khtml-opacity: 0.5;
+	opacity: 0.5;
+	border-bottom: 1px solid #000;
+}
+
+.content-bg {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: #fff;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+	filter: alpha(opacity=50);
+	-moz-opacity: 0.5;
+	-khtml-opacity: 0.5;
+	opacity: 0.5;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+	z-index: -5;
+}
+
+.saint-search input.submit {
+	top: 0;
+	right: 20px;
+	width: 60px;
+	height: 20px;
+	position: absolute;
+}
+
+.saint-search input {
+	width: 100%;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	padding: 2px 4px;
+}
+
+.rss-feed-link {
+	color: #525457;
+}
+
+#content {
+	width: 79%;
+}
+
+#sidebar {
+	width: 20%;
+}
+
+.sbn-blog_post {
+	width: auto;
+}
+
+@media (max-width: 1440px) {
+	#content {
+		width: 74%; 
+	}
+	
+	#sidebar {
+		width: 25%;
+	}
+}
+
+@media (max-width: 1280px) {
+
+}
+
+@media (max-width: 1024px) {
+	#content {
+		width: 69%; 
+	}
+	
+	#sidebar {
+		width: 30%;
+	}
+}
+
+@media (max-width: 800px) {
+	#content {
+		width: 100%; 
+	}
+	
+	#sidebar {
+		width: 100%;
+	}
+}
+
+@media (max-width: 600px) {
+
+}

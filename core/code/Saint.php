@@ -1292,10 +1292,14 @@ class Saint {
 	 */
 	public static function genField ($name,$type,$label = '',$data = null) {
 		$field = '';
-		if (!isset($data['static']) || $data['static'] == false)
-			$label = Saint::getCurrentPage()->getLabel("sff-".preg_replace('/[\[\]]*/','',$name),$label);
-		else
-			$label = '<span class="saint-label">'.$label.'</span>';
+		if (!isset($data['blank']) || $data['blank'] == false) {
+			if (!isset($data['static']) || $data['static'] == false)
+				$label = Saint::getCurrentPage()->getLabel("sff-".preg_replace('/[\[\]]*/','',$name),$label);
+			else
+				$label = '<span class="saint-label">'.$label.'</span>';
+		} else {
+			$label = '';
+		}
 		if (isset($data['value']))
 			$val = $data['value'];
 		else

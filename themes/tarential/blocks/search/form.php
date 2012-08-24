@@ -3,12 +3,11 @@
 		$value = Saint::sanitize($_POST['saint-search-phrase']);
 	 	$class = '';
 	} else {
-		$value = 'Search...';
+		$value = 'Search tarential...';
 		$class = 'reset';
 	} ?>
 	<form class="saint-search" method="post" action="<?php echo SAINT_URL; ?>/search">
-		<?php echo Saint::genField("saint-search-phrase","text","Search",array("value"=>$value,'classes'=>$class)); ?>
-		<input name="saint-search-submit" class="submit" type="submit" value="Go" />
+		<?php echo Saint::genField("saint-search-phrase","text","Search",array("value"=>$value,'blank'=>true,'classes'=>$class)); ?>
 	</form>
 </div>
 <script type="text/javascript">
