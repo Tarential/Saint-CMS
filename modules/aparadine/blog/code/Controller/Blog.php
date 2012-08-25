@@ -31,7 +31,7 @@ class Saint_Controller_Blog {
 				} else {
 					# Looking to make a 404 page instead of defaulting to the index?
 					# Uncomment this:
-					# $page->setTempLayout("system/404");
+					$page->setTempLayout("system/404");
 				}
 			}
 		}

@@ -536,6 +536,12 @@ class Saint {
 				self::$_pc = new Saint_Controller_Page("404",$args);
 			}
 		}
+		# Allow the main page to handle unfound pages.
+		# This allows skipping of /home part of URL when linking to sub-page names with no matching parent name.
+		if (self::$_pc->getCurrentPage()->getId() === 0) {
+			$args['subids'] = array($name);
+			self::$_pc = new Saint_Controller_Page('home',$args);
+		}
 		self::$_pc->process();
 	}
 

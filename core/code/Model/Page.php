@@ -1004,10 +1004,14 @@ class Saint_Model_Page {
 	}
 	
 	/**
-	 * Process input using a custom controller. Skeleton only; used in child classes.
+	 * Process input using a custom controller. 
 	 */
 	public function process() {
-		
+		# This action throws 404 pages when a subpage is given and no overriding controller is available to handle it.
+		if (isset($this->_args['subids'][0]) && $this->_args['subids'][0] != "") {
+			#$this->loadByName("404",$this->_args);
+			Saint::callPage("404",$this->_args);
+		}
 	}
 
 	/**
