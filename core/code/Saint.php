@@ -527,6 +527,36 @@ class Saint {
 					} else {
 						self::$_pc = new Saint_Controller_Page('404');
 					}
+				} elseif ($name == "cache" && isset($args['subids'][0])) {
+					# Allow direct request of resized images
+					# Cache them to avoid multiple resizings
+					if (preg_match('/^(.*)-(\d{1,5})x(\d{1,5})(\.\w{3,4})$/',$args['subids'][0],$matches)) {
+						$width = $matches[2];
+						$height = $matches[3];
+						$raw = $matches[1] . $matches[4];
+					} else {
+						$width = 0;
+						$height = 0;
+						$raw = $args['subids'][0];
+					}
+					
+					$file_loc = '/' . preg_replace('/_/','/',$raw);
+					
+					$file = new Saint_Model_Image();
+					#echo $file_loc;
+					$file->loadByLocation($file_loc);
+					if ($file->getId()) {
+						$arguments = array();
+						if ($width) {
+							$arguments['width'] = $width;
+						}
+						if ($height) {
+							$arguments['height'] = $height;
+						}
+						$res_url = $file->getResizedUrl($arguments);
+						header('Location: '.$res_url, true, 307);
+					}
+					die();
 				} else {
 					# Regular pages
 					self::$_pc = new Saint_Controller_Page($name,$args);
@@ -550,7 +580,7 @@ class Saint {
 	 * @param Saint_Model_Page $page New page to use.
 	 */
 	public static function setCurrentPage($page) {
-				return self::$_pc->setCurrentPage($page);
+		return self::$_pc->setCurrentPage($page);
 	}
 	
 	/**
@@ -558,7 +588,7 @@ class Saint {
 	 * @return Saint_Model_Page Currently running page.
 	 */
 	public static function getCurrentPage() {
-				return self::$_pc->getCurrentPage();
+		return self::$_pc->getCurrentPage();
 	}
 	
 	/**

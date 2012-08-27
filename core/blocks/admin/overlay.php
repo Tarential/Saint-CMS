@@ -235,6 +235,7 @@
 					<button class="link a" title="Link">&nbsp;</button>
 					<button class="link ul" title="Unordered List">&nbsp;</button>
 					<button class="link ol" title="Ordered List">&nbsp;</button>
+					<button class="link img" title="Image">&nbsp;</button>
 					<select name="heading" class="link heading">
 						<option selected="selected" value="none">Heading</option>
 						<option value="p">P</option>

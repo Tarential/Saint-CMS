@@ -1509,6 +1509,12 @@ body.sle-active .blackout {
 	background: url('../images/ol.png');
 }
 
+.sle .toolbar .img {
+	width: 20px;
+	height: 20px;
+	background: url('../images/image-small.png');
+}
+
 .sle .toolbar .heading {
 	width: 90px;
 }

@@ -1349,7 +1349,8 @@ $(document).ready(function() {
 	Saint.openFileManager = function(label,file) {
 		if (label != null) {
 			Saint.sfmFileToEdit = file;
-			Saint.sfmLabelToEdit = label; }
+			Saint.sfmLabelToEdit = label;
+		}
 		Saint.fileManagerIsOpen = true;
 		var callurl = "/filemanager";
 		if (file != null) {
