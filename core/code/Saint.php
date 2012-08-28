@@ -543,7 +543,6 @@ class Saint {
 					$file_loc = '/' . preg_replace('/_/','/',$raw);
 					
 					$file = new Saint_Model_Image();
-					#echo $file_loc;
 					$file->loadByLocation($file_loc);
 					if ($file->getId()) {
 						$arguments = array();
@@ -555,8 +554,10 @@ class Saint {
 						}
 						$res_url = $file->getResizedUrl($arguments);
 						header('Location: '.$res_url, true, 307);
+						die();
+					} else {
+						self::$_pc = new Saint_Controller_Page('404');
 					}
-					die();
 				} else {
 					# Regular pages
 					self::$_pc = new Saint_Controller_Page($name,$args);

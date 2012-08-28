@@ -100,30 +100,40 @@ class Saint_Controller_FileManager {
 				Saint_Controller_FileManager::saveFileDetails($_POST['saint-file-id'],
 					$_POST['saint-file-title'],$_POST['saint-file-keywords'],
 					$_POST['saint-file-description'],$categories);
-				if (isset($_POST['saint-file-label']) && $_POST['saint-file-label']) {
-					if (Saint_Model_FileLabel::setFile(
-						Saint::convertNameFromWeb($_POST['saint-file-label']),
-						array('fid'=>$_POST['saint-file-id']))) {
-						$success = true;
-					} else {
-						$success = false;
+				if (isset($_POST['saint-file-label']) || isset($_POST['saint-file-sle'])) {
+					$page->setTempLayout("system/json");
+					$jsondata = array();
+					
+					if (isset($_POST['saint-file-label']) && $_POST['saint-file-label']) {
+						if (Saint_Model_FileLabel::setFile(
+							Saint::convertNameFromWeb($_POST['saint-file-label']),
+							array('fid'=>$_POST['saint-file-id']))) {
+							$success = true;
+						} else {
+							$success = false;
+						}
+						$jsondata['success'] = $success;
+						$jsondata['sfl'] = $_POST['saint-file-label'];
+						$jsondata['sfid'] = $_POST['saint-file-id'];
 					}
 					
-					$page->setTempLayout("system/json");
-					$jsondata = array(
-						"success" => $success,
-						"sfl" => $_POST['saint-file-label'],
-						"sfid" => $_POST['saint-file-id'],
-					);
+					if (isset($_POST['saint-file-sle']) && $_POST['saint-file-sle']) {
+						$jsondata['success'] = true;
+						$jsondata['sle'] = $_POST['saint-file-sle'];
+					}
+					
+					$img = new Saint_Model_Image($_POST['saint-file-id']);
+					
 					if (isset($_POST['saint-file-label-width']) && $_POST['saint-file-label-width'] != "0" 
 						&& isset($_POST['saint-file-label-height']) && $_POST['saint-file-label-height'] != "0" ) {
 						$arguments = array(
 							"max-width" => $_POST['saint-file-label-width'],
 							"max-height" => $_POST['saint-file-label-height'],
 						);
-						$img = new Saint_Model_Image($_POST['saint-file-id']);
-						$jsondata['url'] = $img->getResizedUrl($arguments);
+					} else {
+						$arguments = array();
 					}
+					$jsondata['url'] = $img->getResizedUrl($arguments);
 					$page->setJsonData($jsondata);
 				}
 			}
