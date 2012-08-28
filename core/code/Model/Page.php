@@ -343,7 +343,7 @@ class Saint_Model_Page {
 	 */
 	public function includeBlock($name, $options = array()) {
 		$options['page_id'] = Saint::getCurrentPage()->getId();
-		Saint_Model_Block::includeBlock($name,$options);
+		Saint_Model_Block::incBlock($name,$options);
 	}
 	
 	/**

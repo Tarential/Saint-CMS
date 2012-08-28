@@ -1023,10 +1023,10 @@ class Saint {
 	}
 
 	/**
-	 * Shortcut for Saint_Model_Block::includeBlock($block,$container, $view).
+	 * Shortcut for Saint_Model_Block::incBlock($block,$container, $view).
 	 */
 	public static function includeBlock($block, $arguments = array()) {
-		return Saint_Model_Block::includeBlock($block, $arguments);
+		return Saint_Model_Block::incBlock($block, $arguments);
 	}
 	
 	/**
@@ -1034,7 +1034,7 @@ class Saint {
 	 */
 	public static function getBlock($block, $arguments = array()) {
 		$arguments['get'] = true;
-		return Saint_Model_Block::includeBlock($block,$arguments);
+		return Saint_Model_Block::incBlock($block,$arguments);
 	}
 	
 	/**

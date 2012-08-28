@@ -143,7 +143,7 @@ if ($pid == '') {
 	$pid = "home";
 }
 
-if (Saint::getCurrentUsername() == "guest" && isset($_COOKIE['saintcookie'])) {
+if (!isset($_SESSION['username']) && isset($_COOKIE['saintcookie'])) {
 	Saint_Model_User::loginViaCookie($_COOKIE['saintcookie']);
 }
 

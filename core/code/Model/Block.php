@@ -130,7 +130,7 @@ class Saint_Model_Block {
 	 * @param string $block Name of block.
 	 * @return boolean True if successful, false otherwise.
 	 */
-	public static function includeBlock($block_name, $arguments = array()) {
+	public static function incBlock($block_name, $arguments = array()) {
 		if (isset($arguments['repeat']) && $arguments['repeat'] > 0) {
 			return Saint::includeRepeatingBlock($block_name,$arguments);
 		} else {
@@ -268,6 +268,9 @@ class Saint_Model_Block {
 				if (isset($arguments['page_id'])) {
 					$where .= " AND `u`.`page_id`='".Saint::sanitize($arguments['page_id'],SAINT_REG_ID)."'";
 				}
+				if (isset($arguments['parent_id'])) {
+					$where .= " AND `u`.`parent_id`='".Saint::sanitize($arguments['parent_id'],SAINT_REG_ID)."'";
+				}
 				if (isset($arguments['search'])) {
 					if (is_array($arguments['search'][0])) {
 						foreach ($arguments['search'] as $match)
@@ -322,7 +325,7 @@ EOT;
 			}
 			$where .= " AND `b`.`enabled`='$enabled'";
 			
-			return "SELECT `b`.$sel,`u`.`id`,`u`.`page_id`,`u`.`created`,`u`.`updated` FROM $tables $where $obs $ls";
+			return "SELECT `b`.$sel,`u`.`id`,`u`.`page_id`,`u`.`created`,`u`.`updated`,`u`.`owner` FROM $tables $where $obs $ls";
 		} else {
 			Saint::logError("Invalid block name '$block'.",__FILE__,__LINE__);
 			return 0;
@@ -362,6 +365,7 @@ EOT;
 					$settings['page_id'] = $sb[sizeof($setting_names)+1];
 					$settings['created'] = $sb[sizeof($setting_names)+2];
 					$settings['updated'] = $sb[sizeof($setting_names)+3];
+					$settings['owner'] = $sb[sizeof($setting_names)+4];
 					$real_blocks[] = new $model($block,$sb[0],$sb[1],$settings);
 				}
 				$saved_blocks = $real_blocks;
@@ -751,6 +755,7 @@ EOT;
 	
 	protected $_id;
 	protected $_uid;
+	protected $_owner;
 	protected $_name;
 	protected $_settings;
 	protected $_settingnames;
@@ -759,6 +764,7 @@ EOT;
 	protected $_cats_to_delete;
 	protected $_cats_to_add;
 	protected $_page_id;
+	protected $_parent_id;
 	protected $_created;
 	protected $_updated;
 	protected $_files;
@@ -793,6 +799,11 @@ EOT;
 				} else {
 					$this->_updated = null;
 				}
+				if (isset($settings['parent_id'])) {
+					$this->_parent_id = $settings['parent_id'];
+				} else {
+					$this->_parent_id = 0;
+				}
 				if (isset($settings['page_id'])) {
 					$this->_page_id = $settings['page_id'];
 				} else {
@@ -802,6 +813,11 @@ EOT;
 					$this->_uid = $settings['uid'];
 				} else {
 					$this->_uid = 0;
+				}
+				if (isset($settings['owner'])) {
+					$this->_owner = $settings['owner'];
+				} else {
+					$this->_owner = Saint::getCurrentUser()->getId();
 				}
 				foreach ($settings as $key=>$val) {
 					$sname = Saint::sanitize($key);
@@ -813,7 +829,9 @@ EOT;
 		} else {
 			$this->_id = 0;
 			$this->_uid = 0;
+			$this->_owner = Saint::getCurrentUser()->getId();
 			$this->_page_id = 0;
+			$this->_parent_id = 0;
 			$this->_settings = array();
 			$this->_settingnames = array();
 			$this->_categories = array();
@@ -849,20 +867,22 @@ EOT;
 			try {
 				$bname = Saint_Model_Block::formatForTable($name);
 
-				$info = Saint::getRow("SELECT `u`.`id`,`u`.`page_id`,`u`.`created`,`u`.`updated`,$columns FROM `st_blocks_$bname` as `b`, `st_blocks` as `u`, `st_block_types` as `t` WHERE `b`.`id`='$id' AND `u`.`blockid`=`b`.`id` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$name'");
+				$info = Saint::getRow("SELECT `u`.`id`,`u`.`page_id`,`u`.`created`,`u`.`updated`,`u`.`owner`,`u`.`parent_id`,$columns FROM `st_blocks_$bname` as `b`, `st_blocks` as `u`, `st_block_types` as `t` WHERE `b`.`id`='$id' AND `u`.`blockid`=`b`.`id` AND `u`.`blocktypeid`=`t`.`id` AND `t`.`name`='$name'");
 				$this->_id = $id;
 				$this->_uid = $info[0];
 				$this->_page_id = $info[1];
 				$this->_created = $info[2];
 				$this->_updated = $info[3];
-				$this->_enabled = $info[5];
+				$this->_owner = $info[4];
+				$this->_parent_id = $info[5];
+				$this->_enabled = $info[7];
 				$this->_name = $name;
 				$this->_settingnames = $settingnames;
 				$this->_categories = null;
 				$this->_cats_to_add = array();
 				$this->_cats_to_delete = array();
 				for ($i = 0; $i < sizeof($settingnames); $i++)
-					$this->_settings[$settingnames[$i]]=$info[$i+4];
+					$this->_settings[$settingnames[$i]]=$info[$i+6];
 				
 				return 1;
 			} catch (Exception $e) {
@@ -880,15 +900,17 @@ EOT;
 	 * @param string $name Name of block template.
 	 * @return boolean True for success, false otherwise.
 	 */
-	public function loadNew($name) {
+	public function loadNew($name,$parent = 0) {
 		if ($name = Saint::sanitize($name)) {
 			$fname = Saint_Model_Block::formatForTable($name);
 			try {
 				Saint::query("INSERT INTO `st_blocks_$fname` () VALUES ()");
 				$btid = Saint_Model_Block::getBlockTypeId($name);
 				$bid = Saint::getLastInsertId();
+				$oid = Saint::getCurrentUser()->getId();
+				$pid = Saint::sanitize($parent,SAINT_REG_ID);
 				try {
-					Saint::query("INSERT INTO `st_blocks` (`blocktypeid`,`blockid`,`created`) VALUES ('$btid','$bid',NOW())");
+					Saint::query("INSERT INTO `st_blocks` (`blocktypeid`,`blockid`,`created`,`owner`,`parent_id`) VALUES ('$btid','$bid',NOW(),'$oid','$pid')");
 				} catch (Exception $h) {
 					Saint::logError("Unable to add block: ".$h->getMessage(),__FILE__,__LINE__);
 					return 0;
@@ -962,6 +984,22 @@ EOT;
 	 */
 	public function getUid() {
 		return $this->_uid;
+	}
+	
+	/**
+	 * Get the user ID of the block's owner.
+	 * @return int User ID for the loaded block's owner.
+	 */
+	public function getOwner() {
+		return $this->_owner;
+	}
+	
+	/**
+	 * Get the ID of the block's parent.
+	 * @return int User ID for the loaded block's parent.
+	 */
+	public function getParent() {
+		return $this->_parent_id;
 	}
 	
 	/**
@@ -1260,6 +1298,19 @@ EOT;
 	}
 	
 	/**
+	 * Create category selection.
+	 * @param array $arguments Filters for categories.
+	 * @return string Category selection code.
+	 */
+	public function renderCategories($arguments = array()) {
+		$options = array();
+		foreach (Saint::getCategories() as $category)
+			$options[$category] = $category;
+		return '<div>'.Saint::genField("saint-edit-block-categories[]","select","Categories:",
+			array('options'=>$options,'selected'=>$this->getCategories(),'multiple'=>true,'static'=>true)).'</div>';
+	}
+	
+	/**
 	 * Render a preview for editing the current block.
 	 * In this default method the standard view is used. Override it in your child class to customize the preview.
 	 * See Saint_Model_BlogPost for an example.
@@ -1272,6 +1323,16 @@ EOT;
 			$arguments['blocks'] = array($this);
 		}
 		Saint::includeBlock($this->_name,$arguments);
+	}
+	
+	/**
+	 * Include blocks of given name unique to this block.
+	 * @param string $name Name of blocks to retrieve.
+	 * @param array $options Options to apply to block inclusion.
+	 */
+	public function includeBlock($name, $options = array()) {
+		$options['parent_id'] = $this->getId();
+		Saint_Model_Block::incBlock($name,$options);
 	}
 	
 	/**
@@ -1303,7 +1364,7 @@ EOT;
 				} else {
 					$scp = "";
 				}
-				Saint::query("UPDATE `st_blocks` SET `updated`=NOW()$scp WHERE `id`='$this->_uid'");
+				Saint::query("UPDATE `st_blocks` SET `updated`=NOW(),`owner`='$this->_owner',`parent_id`='$this->_parent_id'$scp WHERE `id`='$this->_uid'");
 				return 1;
 			} catch (Exception $e) {
 				Saint::logError("Failed to save block $name with id $id because ".$e->getMessage(),__FILE__,__LINE__);

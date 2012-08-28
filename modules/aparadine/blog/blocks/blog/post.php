@@ -16,4 +16,8 @@
 	<a class="addthis_button_preferred_8"></a>
 	</div>
 	<!-- AddThis Button END -->
+	<div class="comments sbn-blog_comment saint-block repeating parent-block-<?php echo $block->getId(); ?>">
+		<div class="add-button inline">Add New Comment</div>
+		<?php $block->includeBlock("blog/comment",array('matches'=>array('enabled','1'),'repeat' => 100,'container'=>false,'label'=>'')); ?>
+	</div>
 </div>

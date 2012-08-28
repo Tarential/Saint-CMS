@@ -87,6 +87,11 @@ CREATE TABLE IF NOT EXISTS `st_public_downloads` (
 UPDATE `st_config` SET `version`='1.0400';
 EOT;
 
+$upgrades['1.0300'] = <<<EOT
+ALTER TABLE `st_blocks` ADD COLUMN `owner` INTEGER UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `st_blocks` ADD COLUMN `parent_id` INTEGER UNSIGNED NOT NULL DEFAULT 0;
+EOT;
+
 foreach ($upgrades as $version=>$sql) {
 	if (SAINT_DB_VERSION <= $version) {
 		foreach (explode(";",$sql) as $query) {

@@ -1,0 +1,1 @@
+<?php echo $block->getLabel("comment","Enter your comment here..."); ?>

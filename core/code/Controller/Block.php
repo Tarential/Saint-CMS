@@ -20,7 +20,11 @@ class Saint_Controller_Block {
 		if (isset($_POST['blockid']) && Saint::sanitize($_POST['blockid'],SAINT_REG_ID)) {
 			$edit_block->load($blockname,$_POST['blockid']);
 		} else {
-			$edit_block->loadNew($blockname);
+			if (isset($_POST['parent']))
+				$parent = $_POST['parent'];
+			else
+				$parent = 0;
+			$edit_block->loadNew($blockname,$parent);
 		}
 
 		if (!$edit_block) {

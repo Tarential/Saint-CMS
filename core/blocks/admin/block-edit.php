@@ -8,7 +8,7 @@
 	<form id="saint-add-block-settings">
 		<?php echo Saint::genField("saint-block-setting-saintname","hidden","",array("value"=>$block->getName())); ?>
 		<?php echo Saint::genField("saint-block-setting-enabled","hidden","",array("value"=>1)); ?>
-		<?php
+		<?php /*
 			$options = array();
 			foreach (Saint::getCategories() as $category)
 				$options[$category] = $category;
@@ -16,17 +16,15 @@
 				"options" => $options,
 				"static" => true,
 				"multiple" => true,
-			);
+			); */
 		?>
-		<div>
-		<?php echo Saint::genField("saint-edit-block-categories[]","select","Categories:",
-			array('options'=>$options,'selected'=>$block->getCategories(),'multiple'=>true,'static'=>true)); ?></div>
+		<?php echo $block->renderCategories(); ?>
 		<?php foreach ($block->getAllSettings() as $key=>$val): ?>
 			<?php echo $block->renderInput($key); ?>
 		<?php endforeach; ?>
 	</form>
 </div>
-<div id="saint-add-block-data" class="saint-add-block-data">
+<div id="saint-add-block-data" class="saint-add-block-data editing">
 	<div class="saint-new-block">
 		<?php $block->renderPreview(); ?>
 	</div>

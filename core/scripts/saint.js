@@ -45,22 +45,19 @@ $(document).ready(function() {
 	 */
 	$(document).on({
 		'click': function(event) {
-			if (Saint.editing) {
-				target = this;
-				while (!$(target).hasClass('saint-label') && $(target).prop("tagName") != "BODY") {
-					target = $(target).parent();
-				}
-				if ($(this).hasClass('editing')) {
-					event.stopPropagation();
-				} else {
-					Saint.sleStart($(target));
-				}
-				return false;
-			} else {
-				return true;
+			target = this;
+			while (!$(target).hasClass('saint-label') && $(target).prop("tagName") != "BODY") {
+				target = $(target).parent();
 			}
+			if ($(this).hasClass('editing')) {
+				event.stopPropagation();
+			} else {
+				Saint.sleStart($(target));
+			}
+			return false;
 		}
-	},'body:not(.sle-active) div.saint-label.editable, body:not(.sle-active) div.saint-label.editable *');
+	},'body:not(.sle-active).editing div.saint-label.editable, body:not(.sle-active).editing div.saint-label.editable *'+
+		',body:not(.sle-active) .editing div.saint-label.editable, body:not(.sle-active) .editing div.saint-label.editable *');
 	
 	/**
 	 * Stop label editor.
@@ -352,8 +349,8 @@ $(document).ready(function() {
 		var margin = 10;
 		var paddingX = 16;
 		var paddingY = 54;
-		var minX = 200;
-		var minY = 50;
+		var minX = 300;
+		var minY = 400;
 
 		// WYSIWYG labels need more room for the interface
 		if (label.hasClass("wysiwyg")) {
@@ -984,7 +981,7 @@ $(document).ready(function() {
 	$(document).on({
 		'click': function(event) {
 			Saint.addBlockId = 0;
-			postdata = 'block='+Saint.sbeGetName(event.target);
+			postdata = 'block='+Saint.sbeGetName(event.target)+'&parent='+Saint.sbeGetParent(event.target);
 			url = '/system/';
 			Saint.callHome(url, postdata, Saint.loadAddBox);
 			Saint.openAddBox();
@@ -1075,6 +1072,10 @@ $(document).ready(function() {
 	
 	Saint.sbeGetName = function(elem) {
 		return Saint.bubbleGet(elem,".saint-block, .repeating",/^sbn-(.*)$/);
+	};
+	
+	Saint.sbeGetParent = function(elem) {
+		return Saint.bubbleGet(elem,".saint-block, .repeating",/^parent-block-(.*)$/);
 	};
 	
 	Saint.sbeGetId = function(elem) {
