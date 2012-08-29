@@ -14,11 +14,14 @@ else
 	$username = $user->getUsername();
 ?>
 <div class="user-edit-form <?php if ($user->getId()): ?>edit-user<?php else: ?>add-user<?php endif; ?>">
-	<form>
+	<form method="post" action="<?php echo SAINT_URL; ?>/register">
 		<input type="hidden" name="saint-edit-user-id" value="<?php echo $user->getId(); ?>" />
 		<input type="hidden" name="saint-edit-user-original-username" id="saint-edit-user-original-username" value="<?php echo $user->getUsername(); ?>" />
+		<?php if (Saint::getCurrentUser()->getId() === 0): ?>
+		<input type="hidden" name="saint_client_nonce" value="" />
+		<?php endif; ?>
 		<ul>
-			<li><?php if (Saint::getCurrentUser()->hasPermissionTo("edit-user")) {
+			<li><?php if ($user->getId() === 0 || Saint::getCurrentUser()->hasPermissionTo("edit-user")) {
 				echo Saint::genField("saint-edit-user-username","text","Username: ",
 				array(
 					'value'=>$username,

@@ -580,7 +580,7 @@ $(document).ready(function() {
 	
 	$(document).on({
 		'click': function(event) {
-			window.location.replace(SAINT_URL + "/?action=logout");
+			window.location.replace(SAINT_URL + "/system/?action=logout");
 		}
 	},'.link.logout');
 	

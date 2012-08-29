@@ -93,6 +93,24 @@ a.addthis_button_compact {
 	font-size: 14px;
 }
 
+.addthis_toolbox {
+	margin: 10px 0;
+}
+
+.comments .add-button {
+	margin: 10px 0;
+}
+
+.comment {
+	padding-left: 10px;
+	font-size: .875em;
+}
+
+.blog-post .comment h6 {
+	font-weight: normal;
+	font-size: .750em;
+}
+
 nav {
 	position: absolute;
 	left: 50%;
@@ -733,6 +751,10 @@ body.dark .saint-admin-options {
 
 .blog-post h6 {
 	margin: 2px 0 10px;
+	font-style: normal;
+}
+
+.blog-post h6 em {
 	font-style: italic;
 }
 
@@ -1616,5 +1638,14 @@ body.sle-active .blackout {
 
 .saint-notices p {
 	margin: 5px 0;
+	font-weight: bold;
+}
+
+.saint-user-status {
+	text-align: center;
+	font-size: .750em;
+}
+
+.saint-user-status a {
 	font-weight: bold;
 }

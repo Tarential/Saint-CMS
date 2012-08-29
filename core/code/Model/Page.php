@@ -758,7 +758,7 @@ class Saint_Model_Page {
 	 */
 	public function addError($error) {
 		if (is_array($error))
-			$this->_errors = array_merge($this->_errors,$errors);
+			$this->_errors = array_merge($this->_errors,$error);
 		else
 			$this->_errors[] = $error;
 	}

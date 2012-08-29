@@ -49,7 +49,7 @@ class Saint_Controller_User {
 				Saint_Model_User::deleteUser($id);
 			}
 			
-			if ($_POST['saint-edit-user-username'] != $user->getUsername() && Saint::getCurrentUser()->hasPermissionTo("edit-user")) {
+			if ($_POST['saint-edit-user-username'] != $user->getUsername() && Saint::getCurrentUser()->hasPermissionTo("edit-user") || $user->getId() === 0) {
 				if (Saint_Model_User::nameAvailable($_POST['saint-edit-user-username'])) {
 					$user->setUsername($_POST['saint-edit-user-username']);
 				} else {
@@ -87,8 +87,10 @@ class Saint_Controller_User {
 					$errors[] = "Passwords do not match.";
 			}
 			
-			if (sizeof($errors) == 0) {
-				$user->save();
+			if (count($errors) === 0) {
+				if (!$user->save()) {
+					$errors[] = "Unable to save user.";
+				}
 			
 				if (isset($_POST['saint-edit-user-groups'])) {
 					if (is_array($_POST['saint-edit-user-groups'])) {
@@ -157,10 +159,12 @@ class Saint_Controller_User {
 		} else {
 			if (sizeof($errors) == 0) {
 				$page->setTempLayout("system/error");
-				$page->addError("Registration Successful.");
+				$page->addError('Registration Successful. Use your new username and password to <a href="'.SAINT_URL.'/login">login</a>.');
 			} else {
 				$page->setTempLayout("system/user-register");
-				$page->addError($errors);
+				foreach ($errors as $error) {
+					Saint::addNotice($error);
+				}
 			}
 		}
 	}

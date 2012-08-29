@@ -1,6 +1,7 @@
+<?php $owner = new Saint_Model_User(); $owner->loadById($block->getOwner()); ?>
 <div class="blog-post">
 	<h3><a href="<?php echo $block->getUrl(); ?>"><?php echo $block->get("title"); ?></a></h3>
-	<h6>Posted on <?php echo $block->getPostDate(); ?></h6>
+	<h6>Posted by <em><?php echo $owner->getUsername(); ?></em> on <?php echo date('F jS, Y \a\t g:ia',strtotime($block->getPostDate())); ?></h6>
 	<div class="content"><?php echo $block->getLabel("content","This is your post content. Click here to edit this text."); ?></div>
 	<!-- AddThis Button BEGIN -->
 	<div class="addthis_toolbox addthis_default_style " addthis:url="<?php echo $block->getUrl(); ?>">
@@ -18,7 +19,7 @@
 	<!-- AddThis Button END -->
 	<div class="comments sbn-blog_comment saint-block repeating parent-block-<?php echo $block->getId(); ?>">
 		<div class="add-button inline">Add New Comment</div>
-		<?php $block->includeBlock("blog/comment",array('matches'=>array('enabled','1'),'repeat' => 100,'container'=>false,'label'=>'')); ?>
+		<?php $block->includeBlock("blog/comment",array('matches'=>array('enabled','1'),'repeat' => 100,'label'=>'')); ?>
 	</div>
 	<script type="text/javascript">
 		var loaded = false;

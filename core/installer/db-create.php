@@ -281,6 +281,7 @@ INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('blo
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`weight`) VALUES ('shop','Shop','shop/index',NOW(),-8);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('user','User','system/user-edit',NOW(),0);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('login','Login','system/user-login',NOW(),0);
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('register','Register','system/user-register',NOW(),0);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('search','Search','system/search-results',NOW(),0);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('system','Saint','system/system',NOW(),0);
 INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('filemanager','Saint','system/file-manager',NOW(),0);

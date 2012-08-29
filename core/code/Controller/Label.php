@@ -20,7 +20,7 @@ class Saint_Controller_Label {
 		if ($label->loadByName($labelName)) {
 			Saint::logError("Revision: '".$label->getRevision()."' vs Username: '".$user->getUsername()."'.");
 			if ($user->hasPermissionTo("edit-label") || $user->getUsername() === $label->getOwner() ||
-				($label->getRevision() === 0 && $user->getUsername() === 'guest')) {
+				($label->getRevision() === 0)) {
 				if ($label->getRevision() === 0 && $user->getUsername() === 'guest') {
 					Saint::logError("A guest is adding label ".$label->getName());
 				}

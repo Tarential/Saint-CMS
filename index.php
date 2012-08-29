@@ -39,7 +39,7 @@ require_once("core/code/Saint.php");
 
 # Change machine-friendly version code into human-friendly version code.
 if (preg_match('/^(\d+)\.(\d\d)(\d\d)$/',SAINT_CODE_VERSION,$matches)) {
-	define('SAINT_FRIENDLY_VERSION',"v".$matches[1].".".ltrim($matches[2],'0'));
+	define('SAINT_FRIENDLY_VERSION',"v".$matches[1].".".ltrim($matches[2],'0').".".ltrim($matches[3],'0'));
 } else {
 	define('SAINT_FRIENDLY_VERSION','');
 }

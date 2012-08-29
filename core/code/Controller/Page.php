@@ -271,14 +271,15 @@ class Saint_Controller_Page {
 				
 				if (isset($_POST['saint-edit-user-id'])) {
 					if (Saint::getCurrentUser()->hasPermissionTo("edit-user") || 
-						(Saint::getCurrentUser()->getId() == $id && Saint::getCurrentUser()->hasPermissionTo("edit-self"))) {
+						(Saint::getCurrentUser()->getId() == $_POST['saint-edit-user-id'] && Saint::getCurrentUser()->hasPermissionTo("edit-self")) ||
+						(Saint::getCurrentUser()->getId() === 0 && $_POST['saint-edit-user-id'] == 0)) {
 						
 						Saint_Controller_User::saveUser($_POST['saint-edit-user-id']);
 					} else {
 						Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit user with id ".$_POST['saint-edit-user-id'].
 							" from IP $_SERVER[REMOTE_ADDR] but was denied access.");
-						$page->setTempLayout("system/error");
-						$page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
+						$this->_page->setTempLayout("system/error");
+						$this->_page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
 					}
 				}
 				

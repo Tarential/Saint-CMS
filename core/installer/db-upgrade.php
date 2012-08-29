@@ -90,6 +90,7 @@ EOT;
 $upgrades['1.0400'] = <<<EOT
 ALTER TABLE `st_blocks` ADD COLUMN `owner` INTEGER UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE `st_blocks` ADD COLUMN `parent_id` INTEGER UNSIGNED NOT NULL DEFAULT 0;
+INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES ('register','Register','system/user-register',NOW(),0);
 UPDATE `st_config` SET `version`='1.0401';
 EOT;
 

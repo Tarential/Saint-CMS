@@ -3,6 +3,5 @@
 	<name>blog/comment</name>
 	<model>Saint_Model_BlogComment</model>
 	<setting datatype="timestamp" default="now">postdate</setting>
-	<setting datatype="integer unsigned not null" default="0">post</setting>
 	<setting datatype="boolean" default="0">finalized</setting>
 </block>
