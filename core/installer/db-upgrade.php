@@ -87,9 +87,10 @@ CREATE TABLE IF NOT EXISTS `st_public_downloads` (
 UPDATE `st_config` SET `version`='1.0400';
 EOT;
 
-$upgrades['1.0300'] = <<<EOT
+$upgrades['1.0400'] = <<<EOT
 ALTER TABLE `st_blocks` ADD COLUMN `owner` INTEGER UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE `st_blocks` ADD COLUMN `parent_id` INTEGER UNSIGNED NOT NULL DEFAULT 0;
+UPDATE `st_config` SET `version`='1.0401';
 EOT;
 
 foreach ($upgrades as $version=>$sql) {

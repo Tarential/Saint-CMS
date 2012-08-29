@@ -38,16 +38,55 @@ class Saint_Model_BlogComment extends Saint_Model_Block {
 	 * @see core/code/Model/Saint_Model_Block::renderInput()
 	 */
 	public function renderInput($setting, $options = array()) {
-		switch ($setting) {
-			case "postdate":
-				echo '<span class="saint-label">Posted on:</span>';
-				echo '<p>'.$this->get($setting).'</p>';
-				break;
-			case "post":
-				echo "Associated post: ".$this->getParent();
-				break;
-			default:
-				parent::renderInput($setting,$options);
+		if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
+			switch ($setting) {
+				case "post":
+					echo "Associated post: ".$this->getParent();
+					break;
+				case "finalized":
+					echo Saint::genField("saint-block-setting-finalized","select","Enabled",
+						array('options'=>array('1'=>'Yes','0'=>'No'),'selected'=>$this->get("finalized")));
+					break;
+				default:
+					parent::renderInput($setting,$options);
+			}
+		} else {
+			switch ($setting) {
+				case "postdate":
+					echo '<span class="saint-label">Posted on:</span>';
+					echo '<p>'.$this->get($setting).'</p>';
+					break;
+				case "post":
+					echo "Associated post: ".$this->getParent();
+					break;
+				case "finalized":
+					break;
+				default:
+					parent::renderInput($setting,$options);
+			}
+		}
+	}
+	
+	/**
+	 * Custom permissions for blog comments.
+	 * @param Saint_Model_User $user User requesting action to be performed.
+	 * @param string $action Action being requested.
+	 * @return boolean True grants permission, false otherwise.
+	 */
+	public function hasPermissionTo($user, $action) {
+		if ($user->hasPermissionTo('edit-block')) {
+			return 1;
+		} elseif ($user->getId() == $this->getOwner()) {
+			# Guest users can't edit posts once saved (to avoid security problems).
+			if ($user->getId() == 0) {
+				if ($this->get('finalized') === '0') {
+					return 1;
+				}
+				return 0;
+			}
+			return 1;
+		} else {
+			return 0;
 		}
 	}
 	
@@ -65,6 +104,14 @@ class Saint_Model_BlogComment extends Saint_Model_Block {
 	 * @see core/code/Model/Saint_Model_Block::save()
 	 */
 	public function save() {
-		return parent::save();
+		if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
+			return parent::save();
+		} else {
+			Saint::addNotice("Thank you for your comment. It will appear on the site after it has been approved by a moderator.");
+			$this->set('finalized',1);
+			$this->disable();
+			$this->set('postdate',date('Y-m-d H:i:s'));
+			return parent::save();
+		}
 	}
 }

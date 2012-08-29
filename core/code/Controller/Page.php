@@ -223,25 +223,11 @@ class Saint_Controller_Page {
 				# Block controls
 				
 				if (isset($_POST['block']) && $_POST['block'] != "") {
-					if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
-						Saint_Controller_Block::loadBlock($_POST['block']);
-					} else {
-						Saint::logError("User '".Saint::getCurrentUsername()."' attempted to edit block ".$_POST['block']."-".$_POST['blockid'].
-							" from IP $_SERVER[REMOTE_ADDR] but was denied access.",__FILE__,__LINE__);
-						$page->setLayout("error");
-						$page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
-					}
+					Saint_Controller_Block::loadBlock($_POST['block']);
 				}
 				
 				if (isset($args['edit']) && $args['edit'] != '' && isset($_POST['saint-block-setting-saintname']) && $_POST['saint-block-setting-saintname'] != '') {
-					if (Saint::getCurrentUser()->hasPermissionTo('edit-block')) {
-						Saint_Controller_Block::editBlock($args['edit'],$_POST['saint-block-setting-saintname']);
-					} else {
-						Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$block."-".$_POST['blockid'].
-							" from IP $_SERVER[REMOTE_ADDR] but was denied access.");
-						$page->setTempLayout("system/error");
-						$page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
-					}
+					Saint_Controller_Block::editBlock($args['edit'],$_POST['saint-block-setting-saintname']);
 				}
 				
 				# Label controls
@@ -407,9 +393,20 @@ class Saint_Controller_Page {
 		 * The following section includes actions which don't require client authentication.
 		 */
 		
-		if (isset($args['action']) && $args['action'] == "logout") {
-			Saint_Model_User::logout();
-			header("Location: " . SAINT_URL);
+		if ($this->_page->getName() == "system") {
+			
+			# Clear notices
+			
+			if (isset($args['action'])) {
+				Saint::clearNotices();
+			}
+			
+			# Logout
+			
+			if (isset($args['action']) && $args['action'] == "logout") {
+				Saint_Model_User::logout();
+				header("Location: " . SAINT_URL);
+			}
 		}
 		
 		# Shop controls

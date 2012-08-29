@@ -1598,3 +1598,23 @@ body.sle-active .blackout {
 .saint-errors {
 	display: none;
 }
+
+.saint-notices {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: auto;
+	background: #fff;
+	padding: 10px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	z-index: 85;
+	border-bottom: 1px solid #000;
+}
+
+.saint-notices p {
+	margin: 5px 0;
+	font-weight: bold;
+}

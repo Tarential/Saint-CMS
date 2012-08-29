@@ -1336,6 +1336,17 @@ EOT;
 	}
 	
 	/**
+	 * Skeleton permissions function for loaded block.
+	 * @param Saint_Model_User $user User requesting action to be performed.
+	 * @param string $action Action being requested.
+	 * @return boolean True grants permission, false otherwise.
+	 */
+	public function hasPermissionTo($user, $action) {
+		# By default we use system permissions with no target
+		return $user->hasPermissionTo($action);
+	}
+	
+	/**
 	 * Save the loaded information to the database.
 	 * @return boolean True for success, false for failure.
 	 */

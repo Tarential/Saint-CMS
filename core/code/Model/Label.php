@@ -87,7 +87,8 @@ class Saint_Model_Label {
 		# Loading of owner information moved to this function to optimize display times
 		if (!isset($this->_owner) || $this->_owner == "") {
 			try {
-				return Saint::getOne("SELECT `owner` FROM `st_labels` WHERE `name`='$name' ORDER BY `revision` DESC LIMIT 1");
+				$this->_owner = Saint::getOne("SELECT `owner` FROM `st_labels` WHERE `name`='$this->_name' ORDER BY `revision` DESC LIMIT 1");
+				return $this->_owner;
 			} catch (Exception $e) {
 				if ($e->getCode()) {
 					Saint::logError("Unable to get label owner for name $this->_name:".$e->getMessage()); }
@@ -103,11 +104,14 @@ class Saint_Model_Label {
 	 * @return int Current revision number.
 	 */
 	public function getRevision($lang = null) {
+		if ($lang == null)
+			$lang = Saint::getDefaultLanguage();
 		if ($lang = Saint::sanitize($lang,SAINT_REG_BLOCK_NAME)) {
-			if ($lang == null)
-				$lang = Saint::getDefaultLanguage();
 			try {
-				return Saint::getOne("SELECT MAX(`revision`) FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'");
+				$revision = Saint::getOne("SELECT MAX(`revision`) FROM `st_labels` WHERE `name`='$this->_name' AND `language`='$lang'");
+				if ($revision == "")
+					$revision = 0;
+				return $revision;
 			} catch (Exception $e) {
 				if ($e->getCode()) {
 					Saint::logError("Unable to get the highest revision for current label: ".$e->getMessage(),__FILE__,__LINE__);
@@ -185,9 +189,9 @@ class Saint_Model_Label {
 			$label = $default;
 		}
 		
-		$styles = "";
-		if (Saint::getCurrentUser()->hasPermissionTo("edit-label") || Saint::getCurrentUsername() == $this->_owner)
-			$styles .= " editable";
+		$styles = " editable";
+		#if (Saint::getCurrentUser()->hasPermissionTo("edit-label") || Saint::getCurrentUsername() == $this->_owner)
+		#	$styles .= " editable";
 		if ($wysiwyg)
 			$styles .= " wysiwyg";
 		if ($container)

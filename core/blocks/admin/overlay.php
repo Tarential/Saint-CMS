@@ -1,11 +1,12 @@
-<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
 <div class="saint-admin-code">
 	<script type="text/javascript">
 		var SAINT_URL = "<?php echo SAINT_URL; ?>";
 		var SAINT_BASE_URL = "<?php echo SAINT_BASE_URL; ?>";
+		var SAINT_USER = "<?php echo Saint::getCurrentUser()->getUsername(); ?>";
 		var SAINT_CLIENT_NONCE = '<?php echo Saint::getCurrentUser()->getNonce(); ?>';
 	</script>
 	<div class="blackout">&nbsp;</div>
+	<?php if (Saint::getCurrentUser()->hasPermissionTo("admin-overlay")): ?>
 	<div class="saint-admin-overlay">
 		<div class="saint-ajax-indicator">&nbsp;</div>
 		<div class="saint-logo">&nbsp;</div>
@@ -204,12 +205,6 @@
 				<span class="link save">Save</span>
 			</form>
 		</div>
-		<?php endif; ?>
-		
-		<div class="saint-admin-block add-block">
-			<div class="overlay">&nbsp;</div>
-			<div class="load">&nbsp;</div>
-		</div>
 		
 		<div class="saint-admin-block file-manager">
 			<div class="overlay">&nbsp;</div>
@@ -220,6 +215,12 @@
 			<div class="overlay">&nbsp;</div>
 			<div class="load">&nbsp;</div>
 			<?php Saint::includeBlock("shop/admin/nav"); ?>
+		</div>
+		<?php endif; ?>
+		
+		<div class="saint-admin-block add-block">
+			<div class="overlay">&nbsp;</div>
+			<div class="load">&nbsp;</div>
 		</div>
 		
 		<div class="sle template hidden">
@@ -235,7 +236,9 @@
 					<button class="link a" title="Link">&nbsp;</button>
 					<button class="link ul" title="Unordered List">&nbsp;</button>
 					<button class="link ol" title="Ordered List">&nbsp;</button>
+					<?php if (Saint::getCurrentUser()->hasPermissionTo("manage-files")): ?>
 					<button class="link img" title="Image">&nbsp;</button>
+					<?php endif; ?>
 					<select name="heading" class="link heading">
 						<option selected="selected" value="none">Heading</option>
 						<option value="p">P</option>
@@ -271,3 +274,20 @@
 		
 	</div>
 </div>
+<?php if (count(Saint::getNotices())): ?>
+<div class="saint-notices">
+	<?php foreach (Saint::getNotices() as $notice): ?>
+		<p><?php echo $notice; ?></p>
+	<?php endforeach; ?>
+	<script type="text/javascript">
+		function clearNotices() {
+			$.ajax(SAINT_URL+'/system/?action=clear-notices');
+			$('.saint-notices').hide();
+		}
+		
+		$(document).ready(function() {
+			setTimeout(clearNotices,5000);
+		});
+	</script>
+</div>
+<?php endif; ?>

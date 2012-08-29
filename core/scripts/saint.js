@@ -10,6 +10,7 @@ $(document).ready(function() {
 	});
 	
 	var Saint = {};
+	window.Saint = Saint;
 	Saint.connections = new Array();
 	Saint.errors = new Array();
 	Saint.editing = false;
@@ -293,7 +294,6 @@ $(document).ready(function() {
 	};
 	
 	Saint.sleExecute = function(cmd,parm) {
-
 		if (cmd.indexOf('<')==0){
 			parm=cmd;
 			cmd="FormatBlock";
@@ -485,6 +485,11 @@ $(document).ready(function() {
 	};
 	
 	Saint.sleSave = function() {
+		if (SAINT_USER == 'guest') {
+			if (!confirm("Guest users are unable to edit labels once saved. Are you sure you wish to save at this time?")) {
+				return 0;
+			}
+		}
 		var stripped;
 		var allowed_tags = '<strong><em><table><th><tr><td><a><i><b><u><p><ul><ol><li><img><center><h1><h2><h3><h4><h5><h6>';
 		if ($('.sle.active').hasClass("wysiwyg")) {
@@ -506,11 +511,20 @@ $(document).ready(function() {
 		try {
 			realdata = JSON.parse(data);
 			if (realdata['success']) {
-				$('.sle.active .toolbar select[name=revision] option.null').attr('selected','selected');
-				Saint.sleActiveRevision = 0;
-				Saint.sleGetNumRevs();
+				if (SAINT_USER == 'guest') {
+					$('.sle-editing').removeClass('editable');
+					Saint.sleStop();
+				} else {
+					$('.sle.active .toolbar select[name=revision] option.null').attr('selected','selected');
+					Saint.sleActiveRevision = 0;
+					Saint.sleGetNumRevs();	
+				}
 			} else {
-				$('.saint-ajax-indicator').addClass("error");
+				if (SAINT_USER == 'guest') {
+					alert("Unable to save label. Please try again and inform an administrator if the problem persists.");
+				} else {
+					$('.saint-ajax-indicator').addClass("error");
+				}
 			}
 			Saint.setActionLog(realdata.actionlog);
 		} catch (e) {

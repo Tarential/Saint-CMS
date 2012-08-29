@@ -562,18 +562,20 @@ class Saint_Model_User {
 	 * @param string $action Name of action user is requesting to perform.
 	 * @return boolean True if permission granted, false otherwise.
 	 */
-	public function hasPermissionTo($action) {
+	public function hasPermissionTo($action, $target = null) {
 		global $saint_group_access;
 		$name = Saint::sanitize($action,SAINT_REG_USER_NAME);
-		if ($name == $action) {
+		if ($target == null) {
 			foreach ($this->getGroups() as $group) {
 				if (isset($saint_group_access[$group]) && in_array($name,$saint_group_access[$group])) {
 					return 1;
 				}
 			}
 			return 0;
-		} else
-			return 0;
+		} else {
+			return $target->hasPermissionTo($this,$name);
+		}
+		return 0;
 	}
 
 	/**

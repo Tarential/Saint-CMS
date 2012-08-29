@@ -15,10 +15,14 @@ class Saint_Controller_Block {
 		$blockname = Saint_Model_Block::convertNameFromWeb($block);
 		$model = Saint_Model_Block::getBlockModel($blockname);
 		$edit_block = new $model();
-		$page->setEditBlock($edit_block);
 		
-		if (isset($_POST['blockid']) && Saint::sanitize($_POST['blockid'],SAINT_REG_ID)) {
-			$edit_block->load($blockname,$_POST['blockid']);
+		if (isset($_POST['blockid'])) {
+			$bid = Saint::sanitize($_POST['blockid'],SAINT_REG_ID);
+		} else {
+			$bid = 0;
+		}
+		if ($bid) {
+			$edit_block->load($blockname,$bid);
 		} else {
 			if (isset($_POST['parent']))
 				$parent = $_POST['parent'];
@@ -26,16 +30,26 @@ class Saint_Controller_Block {
 				$parent = 0;
 			$edit_block->loadNew($blockname,$parent);
 		}
-
-		if (!$edit_block) {
+		
+		if (Saint::getCurrentUser()->hasPermissionTo('edit-block',$edit_block)) {
+			$page->setEditBlock($edit_block);
+	
+			if (!$edit_block) {
+				$page->setTempLayout("system/error");
+				$page->addError("Failed to load block for editing. Check error logs for further details.");
+				return 0;
+			}
+			
+			$page->setTempLayout("system/block-edit");
+				
+			return 1;
+		} else {
+			Saint::logError("User '".Saint::getCurrentUsername()."' attempted to edit block ".$block."-".$bid.
+				" from IP $_SERVER[REMOTE_ADDR] but was denied access.",__FILE__,__LINE__);
 			$page->setTempLayout("system/error");
-			$page->addError("Failed to load block for editing. Check error logs for further details.");
+			$page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
 			return 0;
 		}
-		
-		$page->setTempLayout("system/block-edit");
-			
-		return 1;
 	}
 	/**
 	 * Modify block based on input data.
@@ -52,33 +66,44 @@ class Saint_Controller_Block {
 		$model = Saint_Model_Block::getBlockModel($bname);
 		$block = new $model();
 		if ($block->load($bname,$args['edit'])) {
-			$allsettings = Saint_Model_Block::getSettings($_POST['saint-block-setting-saintname']);
-			if (isset($_POST['saint-block-setting-enabled'])) {
-				if ($_POST['saint-block-setting-enabled']) {
-					$block->enable();
-				} else {
-					$block->disable();
-				}
-			}
-		
-			if (isset($_POST['saint-edit-block-categories'])) {
-				$newcats = $_POST['saint-edit-block-categories'];
-			} else {
-				$newcats = array();
-			}
-			$block->setCategories($newcats);
 			
-			foreach ($allsettings as $setting) {
-				$sname = "saint-block-setting-".$setting[0];
-				if (isset($_POST[$sname]))
-					$val = $_POST[$sname];
-				else
-					$val = "";
+			if (Saint::getCurrentUser()->hasPermissionTo('edit-block',$block)) {
 				
-				$block->set($setting[0],$val);
+				$allsettings = Saint_Model_Block::getSettings($_POST['saint-block-setting-saintname']);
+				if (isset($_POST['saint-block-setting-enabled'])) {
+					if ($_POST['saint-block-setting-enabled']) {
+						$block->enable();
+					} else {
+						$block->disable();
+					}
+				}
+			
+				if (isset($_POST['saint-edit-block-categories'])) {
+					$newcats = $_POST['saint-edit-block-categories'];
+				} else {
+					$newcats = array();
+				}
+				$block->setCategories($newcats);
+				
+				foreach ($allsettings as $setting) {
+					$sname = "saint-block-setting-".$setting[0];
+					if (isset($_POST[$sname]))
+						$val = $_POST[$sname];
+					else
+						$val = "";
+					
+					$block->set($setting[0],$val);
+				}
+				if ($block->save()) {
+					$success = true;
+				}
+				
+			} else {
+				Saint::logError("User ".Saint::getCurrentUsername()." attempted to edit block ".$block."-".$_POST['blockid'].
+					" from IP $_SERVER[REMOTE_ADDR] but was denied access.");
+				$page->setTempLayout("system/error");
+				$page->addError("You do not have access to edit data which belongs to other users. This attempt has been logged.");
 			}
-			if ($block->save()) {
-				$success = true; }
 		}
 		
 		$webname = Saint_Model_Block::convertNameToWeb($bname);

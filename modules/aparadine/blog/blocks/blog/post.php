@@ -20,4 +20,22 @@
 		<div class="add-button inline">Add New Comment</div>
 		<?php $block->includeBlock("blog/comment",array('matches'=>array('enabled','1'),'repeat' => 100,'container'=>false,'label'=>'')); ?>
 	</div>
+	<script type="text/javascript">
+		var loaded = false;
+		$(document).on({
+			'click': function(event) {
+				if (typeof window.Saint === "undefined" && loaded === false) {
+					loaded = true;
+					$.getScript(SAINT_URL+"/core/scripts/saint.js")
+					.done(function(script, textStatus) {
+					  $(event.currentTarget).trigger("click");
+					})
+					.fail(function(jqxhr, settings, exception) {
+						loaded = false;
+					  alert("Sorry, there was an error loading the Saint client. Please try again later.");
+					});
+				}
+			}
+		},'.saint-block .add-button');
+	</script>
 </div>
