@@ -1,5 +1,5 @@
 	</head>
-	<body>
+	<body class="saint-page <?php echo $page->getName(); ?>">
 		<?php Saint::includeBlock("admin/overlay"); ?>
 		<?php if (sizeof($page->getErrors())): ?>
 			<div class="saint-errors">

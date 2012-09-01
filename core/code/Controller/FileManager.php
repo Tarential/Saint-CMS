@@ -100,7 +100,7 @@ class Saint_Controller_FileManager {
 				Saint_Controller_FileManager::saveFileDetails($_POST['saint-file-id'],
 					$_POST['saint-file-title'],$_POST['saint-file-keywords'],
 					$_POST['saint-file-description'],$categories);
-				if (isset($_POST['saint-file-label']) || isset($_POST['saint-file-sle'])) {
+				if (isset($_POST['saint-file-label']) &&  $_POST['saint-file-label'] != 0) {
 					$page->setTempLayout("system/json");
 					$jsondata = array();
 					

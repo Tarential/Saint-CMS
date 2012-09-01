@@ -57,7 +57,10 @@ class Saint_Model_BlogComment extends Saint_Model_Block {
 					echo '<p>'.$this->get($setting).'</p>';
 					break;
 				case "post":
-					echo "Associated post: ".$this->getParent();
+					$ap = new Saint_Model_BlogPost();
+					$ap->load($this->getParent());
+					echo '<span class="saint-label">In reply to:</span>';
+					echo '<p>'.$ap->get("title").'</p>';
 					break;
 				case "finalized":
 					break;

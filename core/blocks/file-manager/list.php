@@ -11,13 +11,14 @@
 	<div id="sfm-preview-block">
 		<div class="saint-new-block">
 			<?php if (sizeof($files)): ?>
-			<table class="saint-file-preview">
+			<div class="saint-file-preview">
 			<?php $closed = true;	$img = new Saint_Model_Image();	?>
 			<?php for ($i = 0; $i < sizeof($files); $i++): $img->loadByLocation($files[$i]['location']); ?>
-				<?php if ($i % 3 == 0): $closed = false; ?><tr><?php endif; ?>
-				<td>
+				<div class="saint-file">
 					<div class="sfm-editblock hidden">
-						<img src="<?php echo $files[$i]['location']; ?>" />
+						<div class="sfm-editblock-inner">
+							<img src="<?php echo $files[$i]['location']; ?>" />
+						</div>
 					</div>
 					<div class="details hidden">
 						<p class="id"><?php echo $files[$i]['id']; ?></p>
@@ -35,11 +36,9 @@
 					?>
 					<img id="sfm-<?php echo $files[$i]['id']; ?>" class="link" src="<?php echo $resizedurl ?>" />
 					<h3><?php echo $files[$i]['title']; ?></h3>
-				</td>
-				<?php if ($i % 3 == 2): $closed = true; ?></tr><?php endif; ?>
+				</div>
 			<?php endfor; ?>
-			<?php if (!$closed): ?></tr><?php endif; ?>
-			</table>
+			</div>
 			<?php else: ?>
 				<p>Sorry, no files matched your selected criteria.</p>
 			<?php endif; ?>

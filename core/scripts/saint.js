@@ -1343,7 +1343,7 @@ $(document).ready(function() {
 	};
 	
 	Saint.sfmCenterImage = function(target) {
-		var curFile = $(target).find(".sfm-editblock");
+		var curFile = $(target).find(".sfm-editblock-inner");
 		var parentHeight = curFile.innerHeight();
 		var imgHeight = $(target).find("img").outerHeight();
 		var margin = (parentHeight/2)-(imgHeight/2);
@@ -1352,19 +1352,25 @@ $(document).ready(function() {
 	
 	Saint.startEditFile = function(target) {
 		Saint.sfmCurrentlyEditing = target;
-		var curFile = $(target).find(".sfm-editblock");
-		curFile.removeClass("hidden");
+		var curFile = $(target).find(".sfm-editblock-inner");
+		curFile.parent().removeClass("hidden");
 		
 		Saint.sfmCenterImage(target);
+
+		var curParent = $(target);
 		
 		// Copy the file data to the form
 		$("#saint-file-mode").val("edit");
-		$("#saint-file-id").val(curFile.parent().find(".id").html());
+		$("#saint-file-id").val(curParent.find(".id").html());
 		$("#saint-file-label").val(Saint.sfmLabelToEdit);
-		$("#saint-file-title").val(curFile.parent().find(".title").html());
-		$("#saint-file-keywords").val(curFile.parent().find(".keywords").html());
-		$("#saint-file-description").val(curFile.parent().find(".description").html());
-		$("#saint-file-categories").val(curFile.parent().find(".categories").html().split(","));
+		$("#saint-file-title").val(curParent.find(".title").html());
+		$("#saint-file-keywords").val(curParent.find(".keywords").html());
+		$("#saint-file-description").val(curParent.find(".description").html());
+		var curCats = curParent.find(".categories").html();
+		if (curCats != "" && curCats != null) {
+			curCats = curCats.split(",");
+		}
+		$("#saint-file-categories").val(curCats);
 		
 		if (Saint.sfmSelecting) {
 			$('#saint-file-info .form-submit').html('Use This File');

@@ -487,10 +487,9 @@ body.dark .saint-admin-options {
 
 .saint-admin-block {
 	position: fixed;
-	width: 900px;
 	height: 90%;
-	left: 50%;
-	margin-left: -450px;
+	left: 4%;
+	right: 4%;
 	border: 1px solid #333;
 	background: #eee;
 	z-index: 85;
@@ -565,10 +564,11 @@ body.dark .saint-admin-options {
 }
 
 .saint-add-block-data {
-	position: relative;
-	float: left;
-	height: 100%;
-	width: 590px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 309px;
+	bottom: 0;
 	overflow: auto;
 	border-right: 1px solid #333;
 }
@@ -577,6 +577,7 @@ body.dark .saint-admin-options {
 	position: absolute;
 	height: auto;
 	width: 289px;
+	z-index: 90;
 	overflow: auto;
 	right: 0;
 	top: 0;
@@ -914,31 +915,44 @@ span.match {
 	margin: -10px 0 10px;
 }
 
-.saint-file-preview td {
+.saint-file-preview .saint-file {
 	text-align: center;
-	width: 180px;
-	height: auto;
+	width: 200px;
+	height: 200px;
+	float: left;
 }
 
 .saint-file-preview img.link {
 	max-width: 180px;
+	max-height: 180px;
 	height: auto;
 }
 
 #saint-file-manager-data {
-	position: relative;
+	
 }
 
 .sfm-editblock {
 	position: fixed;
-	z-index: 89;
 	top: 4%;
 	height: 90%;
-	left: 50%;
-	margin-left: -450px;
-	width: 590px;
+	left: 4%;
+	right: 4%;
+	padding: 1px 0;
+	z-index: 89;
 	background: #eee;
 	border: 1px solid #000;
+}
+
+.sfm-editblock-inner {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 309px;
+	bottom: 0;
+	z-index: 89;
+	background: #eee;
+	border-right: 1px solid #000;
 }
 
 .sfm-editblock img {
@@ -970,6 +984,7 @@ span.match {
 	background-image: url('../images/up-arrows.png');
 	background-position: 0px -1px;
 	height: 200px;
+	overflow: auto;
 }
 
 #saint-uploader h3 {
@@ -1648,4 +1663,65 @@ body.sle-active .blackout {
 
 .saint-user-status a {
 	font-weight: bold;
+}
+
+#content .user-edit-form ul {
+	font-weight: bold;
+	padding: 0;
+}
+
+#content .user-edit-form li:first-child {
+	border-top: 1px dotted #999;
+}
+
+#content .user-edit-form li {
+	list-style: none;
+	clear: both;
+	border-bottom: 1px dotted #999;
+	padding: 5px 0;
+}
+
+#content .user-edit-form .hud {
+	clear: both;
+	text-align: right;
+}
+
+#content .user-edit-form input {
+	float: right;
+	border: 1px solid #999;
+	margin: 0 0 5px;
+}
+
+@media (min-width: 625px) {
+	.saint-file-preview .saint-file {
+		width: 50%;
+	}
+}
+
+@media (min-width: 800px) {
+	.saint-file-preview .saint-file {
+		width: 33%;
+	}
+}
+
+@media (min-width: 1024px) {
+	.saint-file-preview .saint-file {
+		width: 25%;
+	}
+}
+
+@media (min-width: 1280px) {
+	.saint-file-preview .saint-file {
+		width: 20%;
+	}
+}
+
+@media (min-width: 1440px) {
+	
+}
+
+@media (min-width: 2048px) {
+	.saint-file-preview .saint-file {
+		width: 10%;
+	}
 }
