@@ -14,29 +14,31 @@ class Saint_Controller_Contact {
 		$owner = new Saint_Model_User();
 		$owner->loadByUsername(Saint::getSiteOwner());
 		$page = Saint::getCurrentPage();
-		if (isset($details['E-Mail']))
+		if (isset($details['E-Mail'])) {
 			$mailfrom = $details['E-Mail'];
+		} else {
+			$owner = new Saint_Model_User();
+			$owner->loadByUsername(Saint::getSiteOwner());
+			$mailfrom = $owner->getEmail();
+		}
+		if (isset($details['Subject']))
+			$mailsub = $details['Subject'];
 		else
-			$mailfrom = Saint::getCurrentUser()->getEmail();
-		$mailsub = "Website Contact Form Submission";
-		$mailcon = "A user from IP ".$_SERVER['REMOTE_ADDR']." has submitted the following information to your contact form:\n\n";
-		foreach ($details as $key=>$val) {
-			$mailcon .= "$key: $val\n";
+			$mailsub = "Saint Calling Admin";
+		if (isset($details['Message'])) {
+			$mailcon = $details['Message'];
+		} else {
+			$mailcon = "A user from IP ".$_SERVER['REMOTE_ADDR']." has submitted the following information to your contact form:\n\n";
+			foreach ($details as $key=>$val) {
+				$mailcon .= "$key: $val\n";
+			}
 		}
 		$mailcon = wordwrap($mailcon,70);
-		$mailhead = "From: \"Website Form Submission\" <$mailfrom>\r\n" .
+		$mailhead = "From: \"Saint\" <$mailfrom>\r\n" .
 		    "Reply-To: $mailfrom\r\n" .
 		    'X-Mailer: PHP/' . phpversion();
 		
-		$page->setTempLayout("system/error");
-		if (mail($owner->getEmail(),$mailsub,$mailcon,$mailhead)) {
-			$page->addError("Thank you for submitting your contact request. We will reply to you as soon as availability allows.");
-			return 1;
-		} else {
-			Saint::logError("Cannot connect to the mail server. Check your host php settings and mail server status for more information.",__FILE__,__LINE__);
-			$page->addError("We're sorry, but due to technical difficulties our contact form is not working. If you don't mind, please e-mail <a href=\"".$owner->getEmail()."\">".$owner->getEmail()."</a> and we will look into the problem as soon as possible.");
-			return 0;
-		}
+		return mail($owner->getEmail(),$mailsub,$mailcon,$mailhead);
 	}
 	
 	/**

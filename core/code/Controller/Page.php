@@ -374,16 +374,6 @@ class Saint_Controller_Page {
 						$page->addError("You do not have permission to edit categories. This attempt has been logged.");
 					}
 				}
-
-				# Contact form controls
-				
-				if (isset($_POST['saint-contact-name']) && isset($_POST['saint-contact-email']) && isset($_POST['saint-contact-message'])) {
-					Saint_Controller_Contact::emailAdmin(array(
-						'Name' => $_POST['saint-contact-name'],
-						'E-Mail' => $_POST['saint-contact-email'],
-						'Message' => $_POST['saint-contact-message'],
-					));
-				}
 				
 			} else {
 				Saint::logError("There has been a possible hacking attempt on account '$this->_username'; client sent an invalid nonce.");
@@ -407,6 +397,25 @@ class Saint_Controller_Page {
 			if (isset($args['action']) && $args['action'] == "logout") {
 				Saint_Model_User::logout();
 				header("Location: " . SAINT_URL);
+			}
+			
+			# Contact form controls
+			
+			if (isset($_POST['saint-contact-name']) && isset($_POST['saint-contact-email']) && isset($_POST['saint-contact-message'])) {
+				Saint::logError("Trying:");
+				$success = Saint_Controller_Contact::emailAdmin(array(
+					'Name' => $_POST['saint-contact-name'],
+					'E-Mail' => $_POST['saint-contact-email'],
+					'Message' => $_POST['saint-contact-message'],
+					'Subject' => "Website Contact Form Submission",
+				));
+				$this->_page->setTempLayout("system/error");
+				if ($success) {
+					$this->_page->addError("Thank you for submitting your contact request. We will reply to you as soon as availability allows.");
+				} else {
+					Saint::logError("Cannot connect to the mail server. Check your host php settings and mail server status for more information.",__FILE__,__LINE__);
+					$this->_page->addError("We're sorry, but due to technical difficulties our contact form is not working. If you don't mind, please e-mail <a href=\"".$owner->getEmail()."\">".$owner->getEmail()."</a> and we will look into the problem as soon as possible.");
+				}
 			}
 		}
 		

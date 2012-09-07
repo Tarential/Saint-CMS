@@ -114,7 +114,7 @@ nav a:hover {
 }
 
 #content {
-	width: 79%;
+	width: 78%;
 }
 
 #sidebar {
@@ -125,9 +125,37 @@ nav a:hover {
 	width: auto;
 }
 
+.inline {
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.inline img {
+	display: block;
+	max-width: 100%;
+	border: 1px solid #333;
+	margin: 0 auto;
+}
+
+.inline a:hover {
+	text-decoration: none;
+}
+
+#sidebar h4 {
+	margin: 10px 0 2px;
+}
+
+#sidebar .about a {
+	font-weight: bold;
+}
+
+body.home #content ul, body.home #content ol {
+	clear: both;
+}
+
 @media (max-width: 1440px) {
 	#content {
-		width: 74%; 
+		width: 73%; 
 	}
 	
 	#sidebar {
@@ -141,17 +169,21 @@ nav a:hover {
 
 @media (max-width: 1024px) {
 	#content {
-		width: 69%; 
+		width: 68%; 
 	}
 	
 	#sidebar {
 		width: 30%;
 	}
+
+	.inline {
+		float: none;
+	}
 }
 
 @media (max-width: 800px) {
 	#content {
-		width: 100%; 
+		width: 100%;
 	}
 	
 	#sidebar {

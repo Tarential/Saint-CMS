@@ -1,4 +1,4 @@
-<form method="post" name="saint-contact-form" id="saint-contact-form">
+<form method="post" name="saint-contact-form" id="saint-contact-form" action="<?php echo SAINT_URL; ?>/system">
 	<ul>
 		<li><?php echo Saint::genField("saint-contact-name","text","Your Name: "); ?></li>
 		<li><?php echo Saint::genField("saint-contact-email","text","Your E-Mail: "); ?></li>

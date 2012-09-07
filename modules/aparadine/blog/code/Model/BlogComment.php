@@ -114,6 +114,7 @@ class Saint_Model_BlogComment extends Saint_Model_Block {
 			$this->set('finalized',1);
 			$this->disable();
 			$this->set('postdate',date('Y-m-d H:i:s'));
+			Saint_Controller_Contact::emailAdmin(array('Message' => "There is a new comment awaiting moderation on your Saint blog."));
 			return parent::save();
 		}
 	}

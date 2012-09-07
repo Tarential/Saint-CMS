@@ -2,7 +2,7 @@
 
 $price_block = <<<EOT
 	<span class="title"><a href="/download" class="buy-now">Latest Version</a></span>
-	<span class="price"><a href="/download" class="buy-now">1.4.0</a></span>
+	<span class="price"><a href="/download" class="buy-now">1.4.1</a></span>
 EOT;
 
 $primary_links = <<<EOT
