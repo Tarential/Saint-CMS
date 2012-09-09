@@ -4,7 +4,7 @@
  */
 
 # Theme
-define('SAINT_THEME','');
+define('SAINT_THEME','tarential-dark');
 
 # Database connection info
 define('SAINT_DB_HOST','localhost');

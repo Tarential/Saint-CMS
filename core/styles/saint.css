@@ -206,7 +206,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 body.dark .saint-admin-overlay, body.dark .saint-admin-options.current-page, body.dark .saint-admin-block {
 	background: #000510;
 	color: #ccc;
-	border-color: #ccc;
+	border-color: #666;
 }
 
 body.dark .saint-admin-overlay .saint-logo {
@@ -266,7 +266,7 @@ body.dark .link {
 }
 
 body.dark .saint-admin-menu {
-	border-color: #ccc;
+	border-color: #666;
 }
 
 body.dark .saint-admin-code input, body.dark .saint-admin-code select, body.dark .saint-admin-code textarea {
@@ -415,7 +415,7 @@ body.dark .close-button {
 }
 
 body.dark .saint-admin-options {
-	border-color: #ccc;
+	border-color: #666;
 }
 
 .hud {
@@ -663,6 +663,9 @@ body.dark .saint-admin-options {
 	background: transparent;
 }
 
+.dark .add-button.inline {
+	color: #ccc;
+}
 
 .edit-button {
 	position: absolute;
@@ -724,8 +727,16 @@ body.dark .saint-admin-options {
 .editing .saint-label.editable {
 	border: 1px dotted red; }
 
+.dark .editing .saint-label.editable {
+	border-color: #6f0000;
+}
+
 .editing .block-item {
 	border: 1px dotted #000; }
+
+.dark .editing .block-item {
+	border-color: #333;
+}
 
 .block-item {
 	position: relative; }
@@ -1445,6 +1456,10 @@ body.dark .ssm.nav-bar {
 	resize: both;
 }
 
+.dark .sle.active {
+	background: #666;
+}
+
 .blackout {
 	position: fixed;
 	top: 0;
@@ -1497,6 +1512,10 @@ body.sle-active .blackout {
 	float: left;
 }
 
+.dark .sle .toolbar button {
+	color: #111;
+}
+
 .sle .toolbar button:hover {
 	text-decoration: none; }
 
@@ -1504,6 +1523,10 @@ body.sle-active .blackout {
 	margin: 1px 2px 0;
 	display: block;
 	float: left; }
+
+.dark .sle .toolbar select {
+	color: #111;
+}
 
 .sle .toolbar .save {
 	width: 20px;
@@ -1585,6 +1608,11 @@ body.sle-active .blackout {
 	color: #000;
 	border: 1px solid #000;
 	padding: 2px 5px;
+}
+
+.dark .sle div.label-value {
+	background: #000510;
+	color: #ccc;
 }
 
 .sle div.label-value * {
