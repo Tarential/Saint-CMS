@@ -94,6 +94,10 @@ INSERT INTO `st_pages` (`name`,`title`,`layout`,`created`,`allow_robots`) VALUES
 UPDATE `st_config` SET `version`='1.0401';
 EOT;
 
+$upgrades['1.0401'] = <<<EOT
+UPDATE `st_config` SET `version`='1.0402';
+EOT;
+
 foreach ($upgrades as $version=>$sql) {
 	if (SAINT_DB_VERSION <= $version) {
 		foreach (explode(";",$sql) as $query) {

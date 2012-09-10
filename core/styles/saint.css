@@ -929,14 +929,36 @@ span.match {
 .saint-file-preview .saint-file {
 	text-align: center;
 	width: 200px;
-	height: 200px;
+	height: 180px;
 	float: left;
+	padding: 20px 0 0;
+	position: relative;
+	margin: 10px 0;
+}
+
+.saint-file-preview .image-container {
+	display: block;
+	position: absolute;
+	top: 25px;
+	left: 0;
+	right: 0;
+	bottom: 0;
 }
 
 .saint-file-preview img.link {
 	max-width: 180px;
 	max-height: 180px;
 	height: auto;
+}
+
+.saint-file-preview h3 {
+	position: absolute;
+	width: 100%;
+	height: 20px;
+	overflow: hidden;
+	top: 0;
+	left: 0;
+	margin: 0;
 }
 
 #saint-file-manager-data {

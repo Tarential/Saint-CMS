@@ -29,13 +29,15 @@
 					</div>
 					<?php
 					$resizeargs = array(
-						'max-height' => 250,
+						'max-height' => 200,
 						'max-width' => 180,
 					);
 					$resizedurl = $img->getResizedUrl($resizeargs);
 					?>
-					<img id="sfm-<?php echo $files[$i]['id']; ?>" class="link" src="<?php echo $resizedurl ?>" />
 					<h3><?php echo $files[$i]['title']; ?></h3>
+					<div class="image-container">
+						<img id="sfm-<?php echo $files[$i]['id']; ?>" class="link" src="<?php echo $resizedurl ?>" />
+					</div>
 				</div>
 			<?php endfor; ?>
 			</div>
