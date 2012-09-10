@@ -29,9 +29,10 @@
 	</div>
 	<div id="sfm-close-button" class="close-button link">&nbsp;</div>
 </div>
+<div id="sfm-selector">&nbsp;</div>
 <div id="saint-file-manager-data" class="saint-add-block-data">
-<div class="saint-admin-block-overlay"></div>
-<div class="saint-loadable-content">
-	<?php Saint::includeBlock("file-manager/list"); ?>
-</div>
+	<div class="saint-admin-block-overlay"></div>
+	<div class="saint-loadable-content">
+		<?php Saint::includeBlock("file-manager/list"); ?>
+	</div>
 </div>

@@ -933,22 +933,32 @@ span.match {
 	float: left;
 	padding: 20px 0 0;
 	position: relative;
-	margin: 10px 0;
+	margin: 20px 0;
+	cursor: default;
 }
 
 .saint-file-preview .image-container {
 	display: block;
 	position: absolute;
 	top: 25px;
-	left: 0;
-	right: 0;
+	left: 1px;
+	right: 1px;
 	bottom: 0;
+}
+
+.saint-file-preview .saint-file.selected .image-container, .saint-file-preview .saint-file.reselected .image-container {
+	border: 1px dotted #4791d7;
+}
+
+.saint-file-preview .saint-file.selected.deselected .image-container {
+	border: none;
 }
 
 .saint-file-preview img.link {
 	max-width: 180px;
 	max-height: 180px;
 	height: auto;
+	cursor: default;
 }
 
 .saint-file-preview h3 {
@@ -1103,6 +1113,12 @@ body.dark .sfm-pager, body.dark #saint-uploader {
 	left: 0;
 	right: 0;
 	overflow: auto;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 #sfm-message {
@@ -1122,6 +1138,15 @@ body.dark .sfm-pager, body.dark #saint-uploader {
 
 #sfm-message.enabled {
 	display: block;
+}
+
+#sfm-selector {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	border: 1px dotted #000;
+	z-index: 200;
 }
 
 #slides .pagination li {

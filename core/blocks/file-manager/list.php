@@ -36,7 +36,7 @@
 					?>
 					<h3><?php echo $files[$i]['title']; ?></h3>
 					<div class="image-container">
-						<img id="sfm-<?php echo $files[$i]['id']; ?>" class="link" src="<?php echo $resizedurl ?>" />
+						<img draggable="false" id="sfm-<?php echo $files[$i]['id']; ?>" class="link" src="<?php echo $resizedurl ?>" />
 					</div>
 				</div>
 			<?php endfor; ?>
