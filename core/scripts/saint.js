@@ -1284,23 +1284,27 @@ $(document).ready(function() {
 	},'.editing .saint-image.editable img');
 
 	$(document).on({
-		'click': function(event) {
-			Saint.sfmOpenFile(event.currentTarget.parentNode.parentNode);
-		},
 		'mousedown': function(event) {
-			if (event.ctrlKey) {
-				Saint.sfmSelectOr = true;
+			if ($(this).hasClass('double-click')) {
+				Saint.sfmOpenFile(event.currentTarget.parentNode.parentNode);
 			} else {
-				Saint.sfmSelectOr = false;
+				var clicked = $(this);
+				clicked.addClass('double-click');
+				setTimeout(function(){clicked.removeClass('double-click')},500);
+				if (event.ctrlKey) {
+					Saint.sfmSelectOr = true;
+				} else {
+					Saint.sfmSelectOr = false;
+				}
+				if (event.shiftKey || event.ctrlKey) {
+					Saint.sfmSelectAnd = true;
+				} else {
+					Saint.sfmSelectAnd = false;
+				}
+				Saint.sfmStartSelecting(event.pageX,event.pageY);
+				event.preventDefault();
+				return false;
 			}
-			if (event.shiftKey || event.ctrlKey) {
-				Saint.sfmSelectAnd = true;
-			} else {
-				Saint.sfmSelectAnd = false;
-			}
-			Saint.sfmStartSelecting(event.pageX,event.pageY);
-			event.preventDefault();
-			return false;
 		}
 	},'#saint-file-manager-data img.link');
 
