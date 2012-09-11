@@ -375,7 +375,7 @@ class Saint_Controller_Page {
 					}
 				}
 				
-			} else {
+			} elseif (isset($this->_username) && $this->_username != "" && $this->_username != "guest") {
 				Saint::logError("There has been a possible hacking attempt on account '$this->_username'; client sent an invalid nonce.");
 			}
 		}

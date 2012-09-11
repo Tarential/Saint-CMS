@@ -1352,7 +1352,7 @@ class Saint {
 				$field .= $label . '<input type="radio" id="'.$name.'" name="'.$name.'" value="'.$val.'" class="'.$classes.'" />'."\n";
 				break;
 			case 'check':
-				$field .= $label . '<input type="checkbox" id="'.$name.'" name="'.$name.'" class="'.$classes.'" />' . $label . "\n";
+				$field .= '<input type="checkbox" id="'.$name.'" name="'.$name.'" class="'.$classes.'" />' . $label . "\n";
 				break;
 			case 'hidden':
 				$field .= '<input type="hidden" id="'.$name.'" name="'.$name.'" class="'.$classes.'" value="'.$val.'" />' . "\n";

@@ -1248,6 +1248,17 @@ $(document).ready(function() {
 	Saint.sfmAnchorLeft = true;
 	Saint.sfmSelectAnd = false;
 	Saint.sfmSelectOr = false;
+	Saint.sfmSelectedCount = 0;
+	
+	$(document).on({
+		'keypress': function(event) {
+			if ($('body').hasClass('sfm-active') && (event.which == 97 || event.which == 65) && event.ctrlKey) {
+				$('#sfm-preview-block .saint-file').addClass('selected');
+				event.preventDefault();
+				return false;
+			}
+		}
+	},'body');
 	
 	$(document).on({
 		'click': function(event) {
@@ -1285,25 +1296,29 @@ $(document).ready(function() {
 
 	$(document).on({
 		'mousedown': function(event) {
-			if ($(this).hasClass('double-click')) {
-				Saint.sfmOpenFile(event.currentTarget.parentNode.parentNode);
+			if (event.which == 1) {
+				if ($(this).hasClass('double-click')) {
+					Saint.sfmOpenFile(event.currentTarget.parentNode.parentNode);
+				} else {
+					var clicked = $(this);
+					clicked.addClass('double-click');
+					setTimeout(function(){clicked.removeClass('double-click')},500);
+					if (event.ctrlKey) {
+						Saint.sfmSelectOr = true;
+					} else {
+						Saint.sfmSelectOr = false;
+					}
+					if (event.shiftKey || event.ctrlKey) {
+						Saint.sfmSelectAnd = true;
+					} else {
+						Saint.sfmSelectAnd = false;
+					}
+					Saint.sfmStartSelecting(event.pageX,event.pageY);
+					event.preventDefault();
+					return false;
+				}
 			} else {
-				var clicked = $(this);
-				clicked.addClass('double-click');
-				setTimeout(function(){clicked.removeClass('double-click')},500);
-				if (event.ctrlKey) {
-					Saint.sfmSelectOr = true;
-				} else {
-					Saint.sfmSelectOr = false;
-				}
-				if (event.shiftKey || event.ctrlKey) {
-					Saint.sfmSelectAnd = true;
-				} else {
-					Saint.sfmSelectAnd = false;
-				}
-				Saint.sfmStartSelecting(event.pageX,event.pageY);
-				event.preventDefault();
-				return false;
+				return true;
 			}
 		}
 	},'#saint-file-manager-data img.link');
@@ -1366,6 +1381,9 @@ $(document).ready(function() {
 				Saint.sfmSelectAnd = false;
 			}
 			Saint.sfmStartSelecting(event.pageX,event.pageY);
+			if (event.which != 1) {
+				Saint.sfmStopSelecting();
+			}
 		},
 		'mousemove': function(event) {
 			if (Saint.sfmSelecting) {
@@ -1375,10 +1393,18 @@ $(document).ready(function() {
 			}
 		},
 		'mouseup': function(event) {
-			Saint.sfmStopSelecting();
+			if (event.which == 1) {
+				Saint.sfmStopSelecting();
+			}
 		}
 	},'#sfm-preview-block, #sfm-selector');
 
+	$(document).on({
+		'click': function(event) {
+			$(this).parent().find('.options').toggle();
+		}
+	},'#sfm-bulk-actions input[type=checkbox]');
+	
 	Saint.sfmStartSelecting = function(curX, curY) {
 		Saint.sfmSelecting = true;
 		var offset = $('.saint-admin-block.file-manager.active .load').offset();
@@ -1446,6 +1472,12 @@ $(document).ready(function() {
 				$(this).removeClass('reselected').addClass('selected');
 			}
 		});
+		Saint.sfmSelectedCount = $('#sfm-preview-block .saint-file.selected').length;
+		if (Saint.sfmSelectedCount) {
+			$('#sfm-bulk-actions').show();
+		} else {
+			$('#sfm-bulk-actions').hide();
+		}
 	};
 	
 	Saint.sfmUpdateSelected = function() {
@@ -1454,21 +1486,28 @@ $(document).ready(function() {
 		var startY = offset.top;
 		var finX = startX + $('#sfm-selector').width();
 		var finY = startY + $('#sfm-selector').height();
-		$('#sfm-preview-block .saint-file').each(function() {
-			var suboffset = $(this).offset();
+		$('#sfm-preview-block .saint-file .image-container').each(function() {
+			var tn = $(this);
+			var tp = tn.parent();
+			var suboffset = tn.offset();
 			var substartX = suboffset.left;
 			var substartY = suboffset.top;
-			var subfinX = substartX + $(this).width();
-			var subfinY = substartY + $(this).height();
+			var subfinX = substartX + tn.width();
+			var subfinY = substartY + tn.height();
 			if (startX < subfinX && startY < subfinY && finX > substartX && finY > substartY) {
-				if (Saint.sfmSelectOr && $(this).hasClass('selected')) {
-					$(this).addClass('deselected');
+				if (Saint.sfmSelectOr && tp.hasClass('selected')) {
+					tp.addClass('deselected');
 				} else {
-					$(this).addClass('reselected');
+					tp.addClass('reselected');
 				}
 			} else {
 				if (!Saint.sfmSelectAnd) {
-					$(this).removeClass('selected');
+					tp.removeClass('selected').removeClass('reselected');
+				} else {
+					tp.removeClass('reselected');
+				}
+				if (Saint.sfmSelectOr) {
+					tp.removeClass('deselected');
 				}
 			}
 		});
