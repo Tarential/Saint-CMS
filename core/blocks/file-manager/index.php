@@ -33,6 +33,7 @@
 		<h3>Edit Selected Files</h3>
 		<p>I want to:</p>
 		<form>
+			<?php echo Saint::genField("sfm-bulk-ids","hidden"); ?>
 			<div class="action">
 				<?php echo Saint::genField("sfm-bulk-edit-title","check","Set the title",array('static'=>true)); ?>
 				<div class="options">
@@ -46,33 +47,34 @@
 				</div>
 			</div>
 			<div class="action">
-				<?php echo Saint::genField("sfm-bulk-add-keywords","check","Add keywords",array('static'=>true)); ?>
+				<?php echo Saint::genField("sfm-bulk-add-keys","check","Add keywords",array('static'=>true)); ?>
 				<div class="options">
 					<?php echo Saint::genField("sfm-bulk-add-keywords","text","Keywords to add:",array('static'=>true)); ?>
 					<p><i>Comma separated values: example,key,words,here</i></p>
 				</div>
 			</div>
 			<div class="action">
-				<?php echo Saint::genField("sfm-bulk-remove-keywords","check","Remove keywords",array('static'=>true)); ?>
+				<?php echo Saint::genField("sfm-bulk-remove-keys","check","Remove keywords",array('static'=>true)); ?>
 				<div class="options">
 					<?php echo Saint::genField("sfm-bulk-remove-keywords","text","Keywords to remove:",array('static'=>true)); ?>
 					<p><i>Comma separated values: example,key,words,here</i></p>
 				</div>
 			</div>
 			<div class="action">
-				<?php echo Saint::genField("sfm-bulk-add-categories","check","Add categories",array('static'=>true)); ?>
+				<?php echo Saint::genField("sfm-bulk-add-cats","check","Add categories",array('static'=>true)); ?>
 				<div class="options">
 					<?php echo Saint::genField("sfm-bulk-add-categories[]","select","Categories to add: ",
 						array('options'=>$options,'selected'=>array(),'multiple'=>true,'static'=>true)); ?>
 				</div>
 			</div>
 			<div class="action">
-				<?php echo Saint::genField("sfm-bulk-remove-categories","check","Remove categories",array('static'=>true)); ?>
+				<?php echo Saint::genField("sfm-bulk-remove-cats","check","Remove categories",array('static'=>true)); ?>
 				<div class="options">
 					<?php echo Saint::genField("sfm-bulk-remove-categories[]","select","Categories to remove: ",
 						array('options'=>$options,'selected'=>array(),'multiple'=>true,'static'=>true)); ?>
 				</div>
 			</div>
+			<button type="submit">Save Changes</button>
 		</form>
 	</div>
 </div>

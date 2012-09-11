@@ -99,7 +99,7 @@ class Saint_Model_File {
 			$this->_location = '';
 			$this->_title = '';
 			$this->_name = null;
-			$this->_keywords = '';
+			$this->_keywords = array();
 			$this->_description = '';
 			$this->_extension = '';
 			$this->_type = '';
@@ -123,7 +123,7 @@ class Saint_Model_File {
 				$this->_location = SAINT_SITE_ROOT . $info[0];
 				$this->_url = SAINT_URL . $info[0];
 				$this->_title = $info[1];
-				$this->_keywords = $info[2];
+				$this->_keywords = explode(',',$info[2]);
 				$this->_description = $info[3];
 				$this->_extension = $info[4];
 				$this->_type = $info[5];
@@ -368,6 +368,35 @@ class Saint_Model_File {
 	}
 	
 	/**
+	 * Add keyword(s).
+	 * @param string[] $keywords New keyword(s).
+	 */
+	public function addKeywords($keywords) {
+		if (!is_array($keywords))
+			$keywords = explode(',',$keywords);
+		
+		foreach ($keywords as $key=>$keyword)
+			$keywords[$key] = Saint::sanitize($keyword);
+		
+		$this->_keywords = array_unique(
+		array_merge($this->_keywords,$keywords));
+	}
+	
+	/**
+	 * Remove keyword(s).
+	 * @param string[] $keywords Keyword(s) to remove.
+	 */
+	public function removeKeywords($keywords) {
+		if (!is_array($keywords))
+			$keywords = explode(',',$keywords);
+		foreach ($keywords as $keyword) {
+			if (in_array($keyword,$this->_keywords)) {
+				unset($this->_keywords[array_search($keyword,$this->_keywords)]);
+			}
+		}
+	}
+	
+	/**
 	 * Set new file description.
 	 * @param string $description New description to use.
 	 * @return boolean True for success, false otherwise.
@@ -489,7 +518,7 @@ class Saint_Model_File {
 		if ($this->_id) {
 			$query = "UPDATE `st_files` SET ".
 			"`title`='$this->_title',".
-			"`keywords`='$this->_keywords',".
+			"`keywords`='".implode(',',$this->_keywords)."',".
 			"`description`='$this->_description'".
 			" WHERE `id`='$this->_id'";
 		} else {

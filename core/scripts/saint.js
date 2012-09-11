@@ -22,7 +22,6 @@ $(document).ready(function() {
 	Saint.sfmFileToEdit = 0; // File id being edited
 	Saint.sfmLabelToEdit = 0; // Label id being edited
 	Saint.sfmImageToLoad = 0; // Image to be autoloaded when manager is opened
-	Saint.sfmCurrentlyEditing = 0; // The currently selected file element
 	Saint.sfmAnimationComplete = true;
 	Saint.sflHeight = 0;
 	Saint.sflWidth = 0;
@@ -1232,6 +1231,7 @@ $(document).ready(function() {
 	
 	/* START File Manager */
 	
+	Saint.sfmCurrentlyEditing = 0; // The currently selected file element
 	Saint.sfmPicking = false;
 	Saint.sfmPickingSle = false;
 	Saint.sfmUploader = null;
@@ -1254,6 +1254,7 @@ $(document).ready(function() {
 		'keypress': function(event) {
 			if ($('body').hasClass('sfm-active') && (event.which == 97 || event.which == 65) && event.ctrlKey) {
 				$('#sfm-preview-block .saint-file').addClass('selected');
+				Saint.sfmStopSelecting();
 				event.preventDefault();
 				return false;
 			}
@@ -1400,10 +1401,41 @@ $(document).ready(function() {
 	},'#sfm-preview-block, #sfm-selector');
 
 	$(document).on({
+		'mouseup': function(event) {
+			if (Saint.sfmSelecting) {
+				Saint.sfmStopSelecting();
+			}
+		},
+		'mouseleave': function(event) {
+			if (Saint.sfmSelecting) {
+				Saint.sfmStopSelecting();
+			}
+		}
+	},'body');
+	
+	$(document).on({
 		'click': function(event) {
 			$(this).parent().find('.options').toggle();
 		}
 	},'#sfm-bulk-actions input[type=checkbox]');
+	
+	$(document).on({
+		'click': function(event) {
+			Saint.sfmBulkSave();
+			event.preventDefault();
+			return 0;
+		}
+	},'#sfm-bulk-actions button[type=submit]');
+	
+	Saint.sfmBulkSave = function() {
+		var postdata = $('#sfm-bulk-actions form').serialize();
+		$('#saint-file-manager-data .saint-admin-block .overlay').addClass("loading");
+		Saint.callHome("/system/", postdata, Saint.sfmBulkSaved);
+	};
+	
+	Saint.sfmBulkSaved = function(data) {
+		alert('Received reply: '+data);
+	};
 	
 	Saint.sfmStartSelecting = function(curX, curY) {
 		Saint.sfmSelecting = true;
@@ -1472,8 +1504,15 @@ $(document).ready(function() {
 				$(this).removeClass('reselected').addClass('selected');
 			}
 		});
+		
+		var selectedString = '';
 		Saint.sfmSelectedCount = $('#sfm-preview-block .saint-file.selected').length;
-		if (Saint.sfmSelectedCount) {
+		$('#sfm-preview-block .saint-file.selected').each(function() {
+			selectedString += $(this).find('img.link').attr('id').replace('sfm-','') + ",";
+		});
+		$('#sfm-bulk-ids').val(selectedString.slice(0,-1));
+		
+		if (Saint.sfmSelectedCount && Saint.sfmCurrentlyEditing == 0) {
 			$('#sfm-bulk-actions').show();
 		} else {
 			$('#sfm-bulk-actions').hide();
@@ -1494,7 +1533,9 @@ $(document).ready(function() {
 			var substartY = suboffset.top;
 			var subfinX = substartX + tn.width();
 			var subfinY = substartY + tn.height();
+			// Is the current element is within the selection area?
 			if (startX < subfinX && startY < subfinY && finX > substartX && finY > substartY) {
+				// Are we using exclusive OR on a selected object? If so, deselect it. Otherwise, select it.
 				if (Saint.sfmSelectOr && tp.hasClass('selected')) {
 					tp.addClass('deselected');
 				} else {
@@ -1517,6 +1558,7 @@ $(document).ready(function() {
 		if (newpage == null) {
 			newpage = 0;
 		}
+		Saint.sfmCurrentlyEditing = 0;
 		Saint.clearForm('#saint-file-info form');
 		$('#saint-file-mode').val("search");
 		Saint.sfmSelectPage(newpage);
@@ -1575,6 +1617,7 @@ $(document).ready(function() {
 			$('#saint-file-info .form-submit').html('Save');
 			$('#saint-file-info .form-cancel').html('Cancel');
 		}
+		$('#sfm-bulk-actions').hide();
 	};
 	
 	Saint.sfmCloseFile = function() {
@@ -1618,6 +1661,7 @@ $(document).ready(function() {
 		Saint.sfmPickingSle = false;
 		Saint.sfmFileToEdit = 0;
 		Saint.fileManagerIsOpen = false;
+		Saint.sfmCurrentlyEditing = 0;
 		$('#saint-file-manager-data .saint-loadable-content').html("&nbsp;");
 		$('.saint-admin-block.file-manager').removeClass("active");
 	};

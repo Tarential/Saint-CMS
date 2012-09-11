@@ -220,6 +220,12 @@ class Saint_Controller_Page {
 					));
 				}
 
+				# File controls
+				
+				if (isset($_POST['sfm-bulk-ids']) && strlen($_POST['sfm-bulk-ids']) > 0) {
+					Saint_Controller_FileManager::bulkSave(explode(',',$_POST['sfm-bulk-ids']));
+				}
+				
 				# Block controls
 				
 				if (isset($_POST['block']) && $_POST['block'] != "") {

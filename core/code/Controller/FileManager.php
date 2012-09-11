@@ -43,6 +43,74 @@ class Saint_Controller_FileManager {
 		}
 		return $success;
 	}
+	
+	/**
+	 * Save information for all submitted files and send a JSON format reply.
+	 */
+	public static function bulkSave($files = array()) {
+		$page = Saint::getCurrentPage();
+		$success = false;
+		if (Saint::getCurrentUser()->hasPermissionTo("manage-files")) {
+			$model = new Saint_Model_File();
+			foreach ($files as $id) {
+				if ($model->load($id)) {
+					
+					if (isset($_POST['sfm-bulk-edit-title']) && $_POST['sfm-bulk-edit-title'] != ''
+						&& isset($_POST['sfm-bulk-title'])) {
+						$model->setTitle($_POST['sfm-bulk-title']);
+					}
+					
+					if (isset($_POST['sfm-bulk-add-keys']) && $_POST['sfm-bulk-add-keys'] != ''
+						&& isset($_POST['sfm-bulk-add-keywords'])) {
+						$model->addKeywords(explode(',',$_POST['sfm-bulk-add-keywords']));
+					}
+					
+					if (isset($_POST['sfm-bulk-remove-keys']) && $_POST['sfm-bulk-remove-keys'] != ''
+						&& isset($_POST['sfm-bulk-remove-keywords'])) {
+						$model->removeKeywords(explode(',',$_POST['sfm-bulk-remove-keywords']));
+					}
+					
+					if (isset($_POST['sfm-bulk-edit-description']) && $_POST['sfm-bulk-edit-description'] != ''
+						&& isset($_POST['sfm-bulk-description'])) {
+						$model->setDescription($_POST['sfm-bulk-description']);
+					}
+					
+					if (isset($_POST['sfm-bulk-add-cats']) && $_POST['sfm-bulk-add-cats'] != ''
+						&& isset($_POST['sfm-bulk-add-categories'])) {
+						if (is_array($_POST['sfm-bulk-add-categories'])) {
+							$cats = $_POST['sfm-bulk-add-categories'];
+						} else {
+							$cats = array($_POST['sfm-bulk-add-categories']);
+						}
+						foreach ($cats as $cat) {
+							$model->addToCategory($cat);
+						}
+					}
+					
+					if (isset($_POST['sfm-bulk-remove-cats']) && $_POST['sfm-bulk-remove-cats'] != ''
+						&& isset($_POST['sfm-bulk-remove-categories'])) {
+						if (is_array($_POST['sfm-bulk-remove-categories'])) {
+							$cats = $_POST['sfm-bulk-remove-categories'];
+						} else {
+							$cats = array($_POST['sfm-bulk-remove-categories']);
+						}
+						foreach ($cats as $cat) {
+							$model->removeFromCategory($cat);
+						}
+					}
+					
+					if ($model->save()) {
+						$success = true;
+					}
+				}
+			}
+		} else {
+			$page->addError("Sorry, but you don't have access to change file meta data.");
+			Saint::logError("User ".Saint::getCurrentUsername()." tried to change file meta data for file id '".
+				$id."' from IP $_SERVER[REMOTE_ADDR] but was denied access.",__FILE__,__LINE__);
+		}
+		$page->setJsonData(array('success'=>$success));
+	}
 
 	/**
 	 * Process file manager arguments.
