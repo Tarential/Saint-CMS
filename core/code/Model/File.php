@@ -516,9 +516,10 @@ class Saint_Model_File {
 	 */
 	public function save($log = true) {
 		if ($this->_id) {
+			$keywords = is_array($this->_keywords) ? implode(',',$this->_keywords) : $this->_keywords;
 			$query = "UPDATE `st_files` SET ".
 			"`title`='$this->_title',".
-			"`keywords`='".implode(',',$this->_keywords)."',".
+			"`keywords`='$keywords',".
 			"`description`='$this->_description'".
 			" WHERE `id`='$this->_id'";
 		} else {

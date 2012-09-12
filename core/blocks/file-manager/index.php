@@ -6,7 +6,8 @@
 		<a id="pickfiles" href="#">[Select files]</a>
 	</div>
 	<div id="saint-file-info">
-		<h3>Search Files</h3>
+		<h3 class="search">Search Files</h3>
+		<h3 class="edit">Edit File</h3>
 		<form>
 			<?php echo Saint::genField("saint-file-mode","hidden","",array('value'=>'search')); ?>
 			<?php echo Saint::genField("saint-file-id","hidden"); ?>
@@ -75,6 +76,7 @@
 				</div>
 			</div>
 			<button type="submit">Save Changes</button>
+			<button type="reset">Reset Form</button>
 		</form>
 	</div>
 </div>

@@ -1,16 +1,18 @@
 @CHARSET "UTF-8";
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
 
 body {
 	background: #fff;
 	padding: 0;
 	margin: 0;
-	font-size: 14px; }
+	font-size: 10px;
+}
 
 div {
 	display: block; }
 
 a {
-	color: #000;
+	color: #333;
 	text-decoration: none; }
 
 a:hover {
@@ -24,6 +26,7 @@ a.disabled:hover {
 
 p {
 	margin-top: 0;
+	font-size: 1.4em;
 }
 
 .hidden {
@@ -40,15 +43,33 @@ p {
 	cursor: pointer;
 	text-decoration: underline; }
 
+.link.bubble {
+	display: inline;
+	padding: 2px 5px 0;
+	border: 1px solid #d1d1d1;
+	color: #444;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+	background: rgb(219,219,219);
+	background: -moz-linear-gradient(top, rgba(219,219,219,1) 0%, rgba(225,229,234,1) 27%, rgba(225,229,234,1) 48%, rgba(219,219,219,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(219,219,219,1)), color-stop(27%,rgba(225,229,234,1)), color-stop(48%,rgba(225,229,234,1)), color-stop(100%,rgba(219,219,219,1)));
+	background: -webkit-linear-gradient(top, rgba(219,219,219,1) 0%,rgba(225,229,234,1) 27%,rgba(225,229,234,1) 48%,rgba(219,219,219,1) 100%);
+	background: -o-linear-gradient(top, rgba(219,219,219,1) 0%,rgba(225,229,234,1) 27%,rgba(225,229,234,1) 48%,rgba(219,219,219,1) 100%);
+	background: -ms-linear-gradient(top, rgba(219,219,219,1) 0%,rgba(225,229,234,1) 27%,rgba(225,229,234,1) 48%,rgba(219,219,219,1) 100%);
+	background: linear-gradient(to bottom, rgba(219,219,219,1) 0%,rgba(225,229,234,1) 27%,rgba(225,229,234,1) 48%,rgba(219,219,219,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dbdbdb', endColorstr='#dbdbdb',GradientType=0 );
+}
+
 #container {
 	width: 880px;
 	margin: 0 auto -25px;
 	position: relative;
-	border-left: 1px solid #000;
-	border-right: 1px solid #000;
-	border-bottom: 1px solid #000;
+	border-left: 1px solid #333;
+	border-right: 1px solid #333;
+	border-bottom: 1px solid #333;
 	border-top: none;
-	box-shadow: 0px 0px 15px #000;
+	box-shadow: 0px 0px 15px #333;
 	padding: 175px 20px 0;
 }
 
@@ -103,12 +124,12 @@ a.addthis_button_compact {
 
 .comment {
 	padding-left: 10px;
-	font-size: .875em;
+	font-size: 1.4em;
 }
 
 .blog-post .comment h6 {
 	font-weight: normal;
-	font-size: .750em;
+	font-size: 1em;
 }
 
 nav {
@@ -123,7 +144,7 @@ nav {
 }
 
 nav a {
-	color: #000;
+	color: #333;
 	font-weight: bold;
 	text-decoration: none;
 	display: inline-block;
@@ -131,7 +152,9 @@ nav a {
 	margin-right: 10px;
 	background: #fff;
 	box-shadow: 3px 3px 5px #888888;
-	border: 1px solid #000; }
+	border: 1px solid #333;
+	font-size: 1.6em;
+}
 
 nav a.current {
 	color: #003366;
@@ -178,19 +201,27 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 	height: 20px;
 	right: 10px;
 	width: 100px;
-	background: #fff;
+	background: #efefef;
 	border-style: solid;
-	border-color: #000;
+	border-color: #b7b7b7;
 	border-top-width: 0px;
 	border-bottom-width: 1px;
 	border-left-width: 1px;
 	border-right-width: 1px;
 	overflow: hidden;
-	font-size: .750em;
+}
+
+.saint-admin-overlay .saint-label {
+	font-size: 1.2em;
+}
+
+.saint-templates, .saint-admin-overlay, .saint-block .add-button {
+	font-family: "Open Sans", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 
 .saint-admin-overlay h4, .saint-admin-overlay h5 {
 	margin: 2px 0 5px;
+	clear: both;
 }
 
 .saint-admin-overlay .saint-logo {
@@ -204,7 +235,7 @@ nav .toplevel:hover > ul, #saint_navigation_menu .toplevel ul:hover {
 }
 
 body.dark .saint-admin-overlay, body.dark .saint-admin-options.current-page, body.dark .saint-admin-block {
-	background: #000510;
+	background: #333510;
 	color: #ccc;
 	border-color: #666;
 }
@@ -249,11 +280,10 @@ body.dark .link {
 	position: absolute;
 	margin: 0;
 	padding: 0;
-	right: 0px;
-	top: 5px;
+	right: 0;
+	top: 0;
 	width: 500px;
-	height: 17px;
-	border-bottom: solid 1px #000;
+	height: 22px;
 	z-index: 100;
 }
 
@@ -275,13 +305,22 @@ body.dark .saint-admin-code input, body.dark .saint-admin-code select, body.dark
 	border-color: #666;
 }
 
-.saint-admin-menu li {
-	display: inline;
-	margin-left: 10px;
+.saint-admin-menu li.link.bubble {
+	display: block;
+	float: left;
+	height: 17px;
+	margin: 0 0 0 5px;
+	border-top: none;
+  -moz-border-top-left-radius: 0px;
+  -webkit-border-top-left-radius: 0px;
+  border-top-left-radius: 0px;
+  -moz-border-top-right-radius: 0px;
+  -webkit-border-top-right-radius: 0px;
+  border-top-right-radius: 0px;
 }
 
 .saint-admin-menu a {
-	color: #000;
+	color: #333;
 	font-weight: bold;
 	text-decoration: none;
 }
@@ -289,10 +328,10 @@ body.dark .saint-admin-code input, body.dark .saint-admin-code select, body.dark
 .saint-action-log {
 	position: absolute;
 	right: 0px;
-	top: 23px;
+	top: 28px;
 	width: 230px;
 	padding: 5px 10px;
-	height: 277px;
+	height: 262px;
 	overflow: auto;
 }
 
@@ -311,7 +350,7 @@ body.dark .saint-admin-code input, body.dark .saint-admin-code select, body.dark
 	background: #fff;
 	z-index: 80;
 	overflow: auto;
-	border: 1px solid #000;
+	border: 1px solid #333;
 	-moz-box-shadow: 0 0 10px 2px #195894;
 	-webkit-box-shadow: 0 0 10px 2px #195894;
 	box-shadow: 0 0 10px 2px #666;
@@ -355,6 +394,7 @@ body.dark .saint-admin-code input, body.dark .saint-admin-code select, body.dark
 	height: 15px;
 	width: 15px;
 	background-size: 15px 15px;
+	z-index: 94;
 }
 
 #ssm-close-button {
@@ -399,6 +439,10 @@ body.dark .close-button {
 .saint-admin-options.current-page .close-button:hover {
 	cursor: pointer; }
 
+.saint-label {
+	font-size: 1.4em;
+}
+
 .saint-label textarea {
 	width: 100%;
 	height: auto; }
@@ -406,12 +450,11 @@ body.dark .close-button {
 .saint-admin-options {
 	position: absolute;
 	right: 250px;
-	top: 23px;
+	top: 28px;
 	width: 230px;
-	padding: 5px 10px 0;
-	height: 272px;
+	padding: 5px 10px;
+	height: 262px;
 	overflow: auto;
-	border-right: 1px solid #000;
 }
 
 body.dark .saint-admin-options {
@@ -460,18 +503,21 @@ body.dark .saint-admin-options {
 }
 
 .saint-admin-options ul li {
+	display: block;
 	margin-bottom: 10px;
 	clear: both; }
 
 .saint-admin-options input, .saint-admin-options select, .saint-admin-options textarea {
 	border: 1px solid #333;
-	width: 100%; }
+	width: 100%;
+	margin: 2px 0 5px;
+}
 
 .saint-action-log span.name {
 	font-weight: bold; }
 
 .sublist .link {
-	color: #000;
+	color: #333;
 	font-weight: normal;
 	text-decoration: none;
 }
@@ -570,7 +616,7 @@ body.dark .saint-admin-options {
 	right: 309px;
 	bottom: 0;
 	overflow: auto;
-	border-right: 1px solid #333;
+	border-right: 1px solid #d1d1d1;
 }
 
 .saint-add-block-sidebar {
@@ -656,6 +702,10 @@ body.dark .saint-admin-options {
 	margin-top: 2px;
 }
 
+#saint-file-info h3.edit {
+	display: none;
+}
+
 #saint-block-setting-SKU, #saint-block-setting-Price {
 	width: 60px;
 	text-align: right;
@@ -673,7 +723,7 @@ body.dark .saint-admin-options {
 
 .add-button {
 	position: absolute;
-	border: 1px dotted #000;
+	border: 1px dotted #333;
 	top: -23px;
 	padding: 2px;
 	height: 15px;
@@ -690,7 +740,7 @@ body.dark .saint-admin-options {
 	left: auto;
 	right: auto;
 	padding: 0;
-	color: #000;
+	color: #333;
 	background: transparent;
 }
 
@@ -700,8 +750,8 @@ body.dark .saint-admin-options {
 
 .edit-button {
 	position: absolute;
-	border-bottom: 1px dotted #000;
-	border-left: 1px dotted #000;
+	border-bottom: 1px dotted #333;
+	border-left: 1px dotted #333;
 	top: 0px;
 	padding: 3px 3px 2px 2px;
 	right: 0px;
@@ -718,7 +768,7 @@ body.dark .saint-admin-options {
 	bottom: auto;
 	left: auto;
 	right: auto;
-	color: #000;
+	color: #333;
 	background: transparent;
 }
 
@@ -763,7 +813,7 @@ body.dark .saint-admin-options {
 }
 
 .editing .block-item {
-	border: 1px dotted #000; }
+	border: 1px dotted #333; }
 
 .dark .editing .block-item {
 	border-color: #333;
@@ -842,7 +892,7 @@ span.match {
 
 .saint-search input {
 	margin-bottom: 2px;
-	border: 1px solid #000; 
+	border: 1px solid #333; 
 	width: 150px;
 	float: left;
 	margin-bottom: 4px;
@@ -902,6 +952,7 @@ span.match {
 	bottom: 0;
 	left: 0;
 	height: 25px;
+	font-size: 1.2em;
 }
 
 .saint-wysiwyg {
@@ -940,7 +991,7 @@ span.match {
 }
 
 #saint-contact-form input,textarea {
-	border: 1px solid #000;
+	border: 1px solid #333;
 	margin-bottom: 10px;
 }
 
@@ -1021,7 +1072,7 @@ span.match {
 	padding: 1px 0;
 	z-index: 89;
 	background: #eee;
-	border: 1px solid #000;
+	border: 1px solid #333;
 }
 
 .sfm-editblock-inner {
@@ -1032,7 +1083,7 @@ span.match {
 	bottom: 0;
 	z-index: 89;
 	background: #eee;
-	border-right: 1px solid #000;
+	border-right: 1px solid #333;
 }
 
 .sfm-editblock img {
@@ -1048,7 +1099,7 @@ span.match {
 	right: 0px;
 	overflow: hidden;
 	background: #ccc;
-	border-bottom: 1px solid #000;
+	border-bottom: 1px solid #333;
 	background-repeat: no-repeat;
 	background-image: url('../images/down-arrows.png');
 	background-position: 0px -3px;
@@ -1073,7 +1124,7 @@ span.match {
 	height: 16px;
 	padding: 1px 20px 0;
 	margin: 0;
-	border-bottom: 1px solid #000;
+	border-bottom: 1px solid #333;
 }
 
 #saint-file-info textarea, #saint-file-info select {
@@ -1122,7 +1173,7 @@ span.match {
 	overflow: hidden;
 	border-style: solid;
 	border-width: 0;
-	border-color: #000;
+	border-color: #333;
 }
 
 body.dark .sfm-pager, body.dark #saint-uploader {
@@ -1171,7 +1222,7 @@ body.dark .sfm-pager, body.dark #saint-uploader {
 	padding: 6px 0 0;
 	display: none;
 	z-index:90;
-	border-bottom: 1px solid #000;
+	border-bottom: 1px solid #333;
 }
 
 #sfm-message.enabled {
@@ -1183,7 +1234,7 @@ body.dark .sfm-pager, body.dark #saint-uploader {
 	position: absolute;
 	top: 0;
 	left: 0;
-	border: 1px dotted #000;
+	border: 1px dotted #333;
 	z-index: 200;
 }
 
@@ -1224,7 +1275,7 @@ body.dark .sfm-pager, body.dark #saint-uploader {
 	height: 17px;
 	background: #ccc;
 	overflow: hidden;
-	border-bottom: 1px solid #000;
+	border-bottom: 1px solid #333;
 }
 
 body.dark .ssm.nav-bar {
@@ -1329,14 +1380,6 @@ body.dark .ssm.nav-bar {
 .saint-cart-items ul {
 	list-style: none;
 	padding: 0;
-}
-
-.saint-cart-items {
-	
-}
-
-.saint-cart-items {
-	
 }
 
 .ssm-discount h6 {
@@ -1536,7 +1579,7 @@ body.dark .ssm.nav-bar {
 	width: 400px;
 	height: 50px;
 	background: #ccc;
-	border: 1px solid #000;
+	border: 1px solid #333;
 	overflow: hidden;
 	resize: both;
 }
@@ -1552,7 +1595,7 @@ body.dark .ssm.nav-bar {
 	bottom: 0;
 	left: 0;
 	z-index: 89;
-	background: #000;
+	background: #333;
 	filter: alpha(opacity=70);
 	-khtml-opacity: 0.7;
 	-moz-opacity: 0.7;
@@ -1569,6 +1612,10 @@ body.sle-active {
 
 body.sle-active .blackout {
 	display: block;
+}
+
+.sle {
+	font-size: 1.4em;
 }
 
 .sle div.source {
@@ -1690,18 +1737,18 @@ body.sle-active .blackout {
 	bottom: 2px;
 	overflow: auto;
 	background: #fff;
-	color: #000;
-	border: 1px solid #000;
+	color: #333;
+	border: 1px solid #333;
 	padding: 2px 5px;
 }
 
 .dark .sle div.label-value {
-	background: #000510;
+	background: #333510;
 	color: #ccc;
 }
 
 .sle div.label-value * {
-	color: #000;
+	color: #333;
 }
 
 .sle.active .blackout {
@@ -1761,7 +1808,7 @@ body.sle-active .blackout {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	z-index: 85;
-	border-bottom: 1px solid #000;
+	border-bottom: 1px solid #333;
 }
 
 .saint-notices p {
@@ -1771,7 +1818,7 @@ body.sle-active .blackout {
 
 .saint-user-status {
 	text-align: center;
-	font-size: .750em;
+	font-size: 1.2em;
 }
 
 .saint-user-status a {

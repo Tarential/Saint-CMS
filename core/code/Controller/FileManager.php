@@ -109,6 +109,7 @@ class Saint_Controller_FileManager {
 			Saint::logError("User ".Saint::getCurrentUsername()." tried to change file meta data for file id '".
 				$id."' from IP $_SERVER[REMOTE_ADDR] but was denied access.",__FILE__,__LINE__);
 		}
+		$page->setTempLayout("system/json");
 		$page->setJsonData(array('success'=>$success));
 	}
 

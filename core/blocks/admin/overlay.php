@@ -13,14 +13,14 @@
 		<div class="saint-pin" title="Pin this overlay open">&nbsp;</div>
 		
 		<ul class="saint-admin-menu">
-			<li class="link settings">Settings</li>
-			<li class="link pages">Pages</li>
-			<li class="link users">Users</li>
+			<li class="link bubble settings">Settings</li>
+			<li class="link bubble pages">Pages</li>
+			<li class="link bubble users">Users</li>
 			<?php if (sizeof(Saint::getPages(array('layout'=>'shop/index')))): ?>
-			<li class="link shop">Shop</li>
+			<li class="link bubble shop">Shop</li>
 			<?php endif; ?>
-			<li class="link files">Files</li>
-			<li class="link logout">Logout</li>
+			<li class="link bubble files">Files</li>
+			<li class="link bubble logout">Logout</li>
 		</ul>
 		
 		<div class="saint-admin-options page-add hidden">
