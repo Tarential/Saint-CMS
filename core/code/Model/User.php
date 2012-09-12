@@ -233,18 +233,22 @@ class Saint_Model_User {
 					if ($hasher->CheckPassword($password,$hash)) {
 						Saint::query("DELETE FROM `st_login_attempts` WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
 						return 1;
-					} else {
-						try {
-							$qid = Saint::getOne("SELECT `id` FROM `st_login_attempts` WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
-							Saint::query("UPDATE `st_login_attempts` SET `attempts`=`attempts`+1 WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
-						} catch (Exception $f) {
-							Saint::query("INSERT INTO `st_login_attempts` (`ip`) VALUES ('$_SERVER[REMOTE_ADDR]')");
-						}
-						return 0;
 					}
 				} catch (Exception $e) {
-					return 0;
+					if ($e->getCode()) {
+						Saint::logError("Unable to select password hash from database for username '$username': ".$e->getMessage(),__FILE__,__LINE__);
+					}
 				}
+				try {
+					$qid = Saint::getOne("SELECT `id` FROM `st_login_attempts` WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
+					Saint::query("UPDATE `st_login_attempts` SET `attempts`=`attempts`+1 WHERE `id`='$qid'");
+				} catch (Exception $f) {
+					if ($f->getCode()) {
+						Saint::logError("Unable to update the number of failed login attempts: ".$f->getMessage(),__FILE__,__LINE__);
+					}
+					Saint::query("INSERT INTO `st_login_attempts` (`ip`) VALUES ('$_SERVER[REMOTE_ADDR]')");
+				}
+				return 0;
 			}
 		} else {
 			Saint::logError("A user from $_SERVER[REMOTE_ADDR] failed login multiple times on account '$username'.",__FILE__,__LINE__);
@@ -259,7 +263,8 @@ class Saint_Model_User {
 	public static function failedLoginAttempts() {
 		try {
 			$attempts = Saint::getRow("SELECT `id`,`attempts`,`last_attempt` FROM `st_login_attempts` WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
-			if (time() > strtotime($attempts[2]." +60 minutes")) {
+			Saint::logError("Time: ".time() . " DB Time: " . strtotime($attempts[2]) . " Added: " .strtotime("+60 minutes"));
+			if (time() > strtotime($attempts[2])+strtotime("+60 minutes")) {
 				Saint::query("DELETE FROM `st_login_attempts` WHERE `id`='$attempts[0]'");
 				$attempts[1] = 0;
 			}
