@@ -1009,8 +1009,9 @@ class Saint_Model_Page {
 	public function process() {
 		# This action throws 404 pages when a subpage is given and no overriding controller is available to handle it.
 		if (isset($this->_args['subids'][0]) && $this->_args['subids'][0] != "") {
-			#$this->loadByName("404",$this->_args);
-			Saint::callPage("404",$this->_args);
+			$this->loadByName("404",$this->_args);
+			$this->render();
+			die();
 		}
 	}
 

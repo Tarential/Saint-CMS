@@ -59,6 +59,7 @@ class Saint_Controller_Page {
 	 * Process user input, scan managed directories for changes, then start the page render process.
 	 */
 	public function process() {
+		Saint::logError("Processing");
 		if(!SAINT_CACHING) {
 			Saint_Model_Layout::updateLayouts();
 			Saint_Model_Block::updateBlocks();

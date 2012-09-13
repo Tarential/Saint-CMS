@@ -29,6 +29,30 @@ p {
 	font-size: 1.4em;
 }
 
+h6 {
+	font-size: 1em;
+}
+
+h5 {
+	font-size: 1.2em;
+}
+
+h4 {
+	font-size: 1.4em;
+}
+
+h3 {
+	font-size: 1.6em;
+}
+
+h2 {
+	font-size: 1.8em;
+}
+
+h1 {
+	font-size: 2em;
+}
+
 .hidden {
 	display: none; }
 
@@ -124,7 +148,6 @@ a.addthis_button_compact {
 
 .comment {
 	padding-left: 10px;
-	font-size: 1.4em;
 }
 
 .blog-post .comment h6 {
@@ -441,6 +464,10 @@ body.dark .close-button {
 
 .saint-label {
 	font-size: 1.4em;
+}
+
+.saint-label p {
+	font-size: 1em;
 }
 
 .saint-label textarea {
@@ -840,10 +867,12 @@ body.dark .saint-admin-options {
 
 .blog-post h3 {
 	margin: 0;
+	font-size: 1.8em;
 }
 
 .blog-post h6 {
 	margin: 2px 0 10px;
+	font-size: 1em;
 	font-style: normal;
 }
 
@@ -922,6 +951,7 @@ span.match {
 	padding: 1px 0 0 18px;
 	min-height: 16px;
 	display: block;
+	font-size: 1.2em;
 	background: url('../images/rss.png') top left no-repeat;
 }
 
@@ -1443,6 +1473,7 @@ body.dark .ssm.nav-bar {
 	text-align: center;
 	margin-top: 10px;
 	height: 20px;
+	font-size: 1.4em;
 }
 
 .ssm.meta-links a {
@@ -1782,6 +1813,7 @@ body.sle-active .blackout {
 }
 
 #blog-by-month-nav h4 {
+	font-size: 1.4em;
 	margin-left: 5px; }
 
 #blog-by-month-nav h4 a {

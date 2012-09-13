@@ -574,6 +574,7 @@ class Saint {
 			self::$_pc = new Saint_Controller_Page('home',$args);
 		}
 		self::$_pc->process();
+		die();
 	}
 
 	/**

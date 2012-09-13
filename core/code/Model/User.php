@@ -251,8 +251,12 @@ class Saint_Model_User {
 				return 0;
 			}
 		} else {
+			$page = Saint::getCurrentPage();
+			$page->setTempLayout("system/error");
+			$page->addError("Saint has detected more than ten failed login attempts within the previous hour. Please wait before trying again.");
+			$page->render();
 			Saint::logError("A user from $_SERVER[REMOTE_ADDR] failed login multiple times on account '$username'.",__FILE__,__LINE__);
-			return 0;
+			die();
 		}
 	}
 	
@@ -262,9 +266,8 @@ class Saint_Model_User {
 	 */
 	public static function failedLoginAttempts() {
 		try {
-			$attempts = Saint::getRow("SELECT `id`,`attempts`,`last_attempt` FROM `st_login_attempts` WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
-			Saint::logError("Time: ".time() . " DB Time: " . strtotime($attempts[2]) . " Added: " .strtotime("+60 minutes"));
-			if (time() > strtotime($attempts[2])+strtotime("+60 minutes")) {
+			$attempts = Saint::getRow("SELECT `id`,`attempts`,UNIX_TIMESTAMP(`last_attempt`) FROM `st_login_attempts` WHERE `ip`='$_SERVER[REMOTE_ADDR]'");
+			if (time() > strtotime("+60 minutes",$attempts[2])) {
 				Saint::query("DELETE FROM `st_login_attempts` WHERE `id`='$attempts[0]'");
 				$attempts[1] = 0;
 			}
